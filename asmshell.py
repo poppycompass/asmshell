@@ -4,11 +4,19 @@
 from __future__ import print_function
 from unicorn import *
 from unicorn.x86_const import *
+import os
+import sys
 import subprocess
 import binascii
 import argparse
 import struct
 import signal
+
+CONFIG = os.path.abspath(os.path.expanduser(__file__))
+if os.path.islink(CONFIG):
+    print os.readlink(CONFIG)
+    CONFIG = os.readlink(CONFIG)
+sys.path.insert(0, os.path.dirname(CONFIG) + "/lib/")
 
 # TODO: use arguments
 parser = argparse.ArgumentParser(description='Assemblar Shell', formatter_class=argparse.RawTextHelpFormatter)
