@@ -12,26 +12,21 @@ import argparse
 import struct
 import signal
 
-CONFIG = os.path.abspath(os.path.expanduser(__file__))
-if os.path.islink(CONFIG):
-    print os.readlink(CONFIG)
-    CONFIG = os.readlink(CONFIG)
-sys.path.insert(0, os.path.dirname(CONFIG) + "/lib/")
+LIB = os.path.abspath(os.path.expanduser(__file__))
+if os.path.islink(LIB):
+    CONFIG = os.readlink(LIB)
+sys.path.insert(0, os.path.dirname(LIB) + "/lib/")
+from config import *
 
 # TODO: use arguments
 parser = argparse.ArgumentParser(description='Assemblar Shell', formatter_class=argparse.RawTextHelpFormatter)
 parser.add_argument('--arch', '-a', dest='arch', required=False, help='target architecture', default='x86')
 args = parser.parse_args()
 
-VERSION='0.01'
-ADDRESS = 0x1000000
-MEM_SIZE = 2 * 1024 * 1024 # 2MB
-STACK_SIZE = 64
 # from include/unicorn/x86.h
-X86_REGS = [UC_X86_REG_EAX,UC_X86_REG_EBX,UC_X86_REG_ECX,UC_X86_REG_EDX,UC_X86_REG_ESI,UC_X86_REG_EDI,UC_X86_REG_EIP, UC_X86_REG_ESP, UC_X86_REG_EBP, UC_X86_REG_EFLAGS,UC_X86_REG_CS,UC_X86_REG_SS,UC_X86_REG_DS,UC_X86_REG_ES,UC_X86_REG_FS,UC_X86_REG_GS]
+regs = X86_REGS
 
 saved_state = [0] * 255 # 255 is random big value than number of registers
-ESP_OFFSET=0x300000
 saved_state[UC_X86_REG_ESP] = ADDRESS + ESP_OFFSET
 saved_stack = [0] * STACK_SIZE
 
@@ -144,7 +139,6 @@ def main():
             user_code = asm(intr)
             if str(user_code) in "invalid":
                 print("[!] invalid code")
-                continue
             i386_emu(UC_MODE_32, user_code)
 
             print_saved_state()
