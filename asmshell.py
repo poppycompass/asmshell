@@ -17,6 +17,7 @@ if os.path.islink(LIB):
     CONFIG = os.readlink(LIB)
 sys.path.insert(0, os.path.dirname(LIB) + "/lib/")
 from config import *
+from utils import *
 
 # TODO: use arguments
 parser = argparse.ArgumentParser(description='Assemblar Shell', formatter_class=argparse.RawTextHelpFormatter)
@@ -29,22 +30,6 @@ regs = X86_REGS
 saved_state = [0] * 255 # 255 is random big value than number of registers
 saved_state[UC_X86_REG_ESP] = ADDRESS + ESP_OFFSET
 saved_stack = [0] * STACK_SIZE
-
-# change output color
-def red(s,e="\n")         : print("\033[91m{}\033[00m".format(s), end=e)
-def green(s,e="\n")       : print("\033[92m{}\033[00m".format(s), end=e)
-
-
-def yellow(s,e="\n")      : print("\033[93m{}\033[00m".format(s), end=e)
-def lightPurple(s,e="\n") : print("\033[94m{}\033[00m".format(s), end=e)
-
-def purple(s,e="\n")      : print("\033[95m{}\033[00m".format(s), end=e)
-def cyan(s,e="\n")        : print("\033[96m{}\033[00m".format(s), end=e)
-def lightGray(s,e="\n")   : print("\033[97m{}\033[00m".format(s), end=e)
-def black(s,e="\n")       : print("\033[98m{}\033[00m".format(s), end=e)
-def white(s,e="\n")       : print("\033[00m", end=e)
-def bold_green(s,e="\n")  : print("\033[92m\033[1m{}\033[00m".format(s), end=e)
-def bold_yellow(s,e="\n")  : print("\033[93m\033[1m{}\033[00m".format(s), end=e)
 
 def i386_emu(mode, code):
      # Initialize emulator
