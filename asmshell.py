@@ -78,6 +78,7 @@ def print_context(saved_context):
     saved_mu.mem_map(ADDRESS, 2 * 1024 * 1024)
     saved_mu.mem_map(ADDRESS+0x200000, 2 * 1024 * 1024) # if not call, "mem unmapped error" is rasied
     saved_mu.context_restore(saved_context)
+    bold_cyan("---------------- cpu context ----------------")
     cyan("eax:    0x%08x" %saved_mu.reg_read(UC_X86_REG_EAX), "    ")
     cyan("eip:    0x%08x" %saved_mu.reg_read(UC_X86_REG_EIP))
     cyan("ebx:    0x%08x" %saved_mu.reg_read(UC_X86_REG_EBX), "    ")
