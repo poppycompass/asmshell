@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 #-*- conding: utf-8 -*-
 # register reference: include/unicorn/x86.h, qemu/target-i386/unicorn.c
+# TODO: add history, x64 support, exe func
 from __future__ import print_function
 from unicorn import *
 from unicorn.x86_const import *
@@ -19,7 +20,6 @@ sys.path.insert(0, os.path.dirname(LIB) + "/lib/")
 from config import *
 from utils import *
 
-# TODO: use arguments
 parser = argparse.ArgumentParser(description='Assemblar Shell', formatter_class=argparse.RawTextHelpFormatter)
 parser.add_argument('--arch', '-a', dest='arch', required=False, help='target architecture(default: x86)', default='x86')
 parser.add_argument('--diff', '-d', action='store_true', help='run diff mode(output changed register only)')
@@ -30,7 +30,7 @@ if args.arch == 'x86':
 else:
     ARCH = UC_ARCH_X86
 MODE = UC_MODE_32
-# UNUSED, from include/unicorn/x86.h
+# UNUSED, copy from include/unicorn/x86.h
 regs = X86_REGS
 
 saved_stack = [255] * STACK_SIZE
@@ -131,6 +131,7 @@ def print_context(saved_context):
                 yellow(".", "")
         yellow("|")
 
+# TODO: fix terrible code!
 def print_diff_context(saved_context, old_context):
     now = Uc(ARCH, MODE)
     old = Uc(ARCH, MODE)
@@ -179,10 +180,14 @@ def finish(signal, handler):
     print("\ngood bye:)")
     exit(1)
 
+def banner():
+    yellow("Assembar Shell(v {})".format(VERSION))
+    yellow("Emulate i386 code")
+
 def main():
     signal.signal(signal.SIGTERM, finish)
     signal.signal(signal.SIGINT, finish)
-    yellow("Emulate i386 code")
+    banner()
 
     arch="x86"
     msg = arch
