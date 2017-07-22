@@ -3,7 +3,7 @@
 from unicorn import *
 from unicorn.x86_const import *
 
-VERSION='0.01'
+VERSION='0.03'
 ADDRESS = 0x1000000
 MEM_SIZE = 2 * 1024 * 1024 # 2MB
 STACK_SIZE = 64 + 16
