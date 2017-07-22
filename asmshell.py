@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 #-*- conding: utf-8 -*-
 # register reference: include/unicorn/x86.h, qemu/target-i386/unicorn.c
-# TODO: impl context diff(for output changed register only)
 from __future__ import print_function
 from unicorn import *
 from unicorn.x86_const import *
@@ -23,6 +22,7 @@ from utils import *
 # TODO: use arguments
 parser = argparse.ArgumentParser(description='Assemblar Shell', formatter_class=argparse.RawTextHelpFormatter)
 parser.add_argument('--arch', '-a', dest='arch', required=False, help='target architecture(default: x86)', default='x86')
+parser.add_argument('--diff', '-d', action='store_true', help='run diff mode(output changed register only)')
 args = parser.parse_args()
 
 if args.arch == 'x86':
@@ -103,7 +103,6 @@ def print_context(saved_context):
     cyan("edi:    0x%08x" %saved_mu.reg_read(UC_X86_REG_EDI), "    ")
     cyan("gs:     0x%08x" %saved_mu.reg_read(UC_X86_REG_GS), )
     esp = saved_mu.reg_read(UC_X86_REG_ESP) # tmp value
-    #stack_addr = esp-MERGIN_OFFSET
     stack_addr = ADDRESS + ESP_OFFSET - MERGIN_OFFSET
     bold_yellow("---------------- stack trace ----------------")
     global saved_stack
@@ -133,6 +132,50 @@ def print_context(saved_context):
                 yellow(".", "")
         yellow("|")
 
+def print_diff_context(saved_context, old_context):
+    now = Uc(ARCH, MODE)
+    old = Uc(ARCH, MODE)
+
+    now.context_restore(saved_context)
+    old.context_restore(old_context)
+
+    bold_cyan("---------------- cpu context ----------------")
+    if now.reg_read(UC_X86_REG_EAX) != old.reg_read(UC_X86_REG_EAX):
+        cyan("eax: 0x%08x(old: 0x%08x)" %(now.reg_read(UC_X86_REG_EAX), old.reg_read(UC_X86_REG_EAX)))
+    if now.reg_read(UC_X86_REG_EBX) != old.reg_read(UC_X86_REG_EBX):
+        cyan("ebx: 0x%08x(old: 0x%08x)" %(now.reg_read(UC_X86_REG_EBX), old.reg_read(UC_X86_REG_EBX)))
+    if now.reg_read(UC_X86_REG_ECX) != old.reg_read(UC_X86_REG_ECX):
+        cyan("ecx: 0x%08x(old: 0x%08x)" %(now.reg_read(UC_X86_REG_ECX), old.reg_read(UC_X86_REG_ECX)))
+    if now.reg_read(UC_X86_REG_EDX) != old.reg_read(UC_X86_REG_EDX):
+        cyan("edx: 0x%08x(old: 0x%08x)" %(now.reg_read(UC_X86_REG_EDX), old.reg_read(UC_X86_REG_EDX)))
+    if now.reg_read(UC_X86_REG_EBP) != old.reg_read(UC_X86_REG_EBP):
+        cyan("ebp: 0x%08x(old: 0x%08x)" %(now.reg_read(UC_X86_REG_EBP), old.reg_read(UC_X86_REG_EBP)))
+    if now.reg_read(UC_X86_REG_ESI) != old.reg_read(UC_X86_REG_ESI):
+
+        cyan("esi: 0x%08x(old: 0x%08x)" %(now.reg_read(UC_X86_REG_ESI), old.reg_read(UC_X86_REG_ESI)))
+    if now.reg_read(UC_X86_REG_EIP) != old.reg_read(UC_X86_REG_EIP):
+        cyan("eip: 0x%08x(old: 0x%08x)" %(now.reg_read(UC_X86_REG_EIP), old.reg_read(UC_X86_REG_EIP)))
+    if now.reg_read(UC_X86_REG_EDI) != old.reg_read(UC_X86_REG_EDI):
+        cyan("edi: 0x%08x(old: 0x%08x)" %(now.reg_read(UC_X86_REG_EDI), old.reg_read(UC_X86_REG_EDI)))
+    if now.reg_read(UC_X86_REG_EFLAGS) != old.reg_read(UC_X86_REG_EFLAGS):
+        cyan("eflags: 0x%08x [ ", "")
+        if (now.reg_read(UC_X86_REG_EFLAGS)&0x1) != (old.reg_read(UC_X86_REG_EFLAGS)&0x1):
+            cyan("CF(%d -> %d)" % (\
+                  (now.reg_read(UC_X86_REG_EFLAGS)&0x1), \
+                  (old.reg_read(UC_X86_REG_EFLAGS)&0x1))
+                , "")
+        if (now.reg_read(UC_X86_REG_EFLAGS)>>6&0x1) != (old.reg_read(UC_X86_REG_EFLAGS)>>6&0x1):
+            cyan("ZF(%d -> %d)" % (\
+                  (now.reg_read(UC_X86_REG_EFLAGS)>>6&0x1), \
+                  (old.reg_read(UC_X86_REG_EFLAGS)>>6&0x1))
+                , "")
+        if (now.reg_read(UC_X86_REG_EFLAGS)>>7&0x1) != (old.reg_read(UC_X86_REG_EFLAGS)>>7&0x1):
+            cyan("SF(%d -> %d)" % (\
+                  (now.reg_read(UC_X86_REG_EFLAGS)>>7&0x1), \
+                  (old.reg_read(UC_X86_REG_EFLAGS)>>7&0x1))
+                ,)
+        cyan(" ]")
+
 def finish(signal, handler):
     print("\ngood bye:)")
     exit(1)
@@ -143,10 +186,14 @@ def main():
     yellow("Emulate i386 code")
 
     arch="x86"
+    msg = arch
+    if args.diff:
+        msg = arch + ":diff"
     saved_context = init_saved_context()
+    old_context   = init_saved_context()
     while True:
         try: # catch Ctrl+d(input EOF)
-            print("(%s)> " %(arch), end="")
+            print("(%s)> " %(msg), end="")
             intr = raw_input().strip('\n')
             if "q" == intr or "quit" == intr or "exit" == intr:
                 break
@@ -156,7 +203,11 @@ def main():
                 continue
             saved_context = i386_emu(user_code, saved_context)
 
-            print_context(saved_context)
+            if args.diff:
+                print_diff_context(saved_context, old_context)
+                old_context = saved_context
+            else:
+                print_context(saved_context)
         except EOFError:
             break
     finish(0, 0) # arguments are dummy
