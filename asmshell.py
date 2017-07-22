@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 #-*- conding: utf-8 -*-
 # register reference: include/unicorn/x86.h, qemu/target-i386/unicorn.c
+# TODO: impl context diff(for output changed register only)
 from __future__ import print_function
 from unicorn import *
 from unicorn.x86_const import *
@@ -32,15 +33,13 @@ MODE = UC_MODE_32
 # UNUSED, from include/unicorn/x86.h
 regs = X86_REGS
 
-saved_state = [0] * 255 # 255 is random big value than number of registers
-saved_state[UC_X86_REG_ESP] = ADDRESS + ESP_OFFSET
-saved_stack = [0] * STACK_SIZE
+saved_stack = [255] * STACK_SIZE
 
 # retrun dummy context
 def init_saved_context():
      mu = Uc(ARCH, MODE)
      mu.mem_map(ADDRESS, 2 * 1024 * 1024)
-     mu.mem_map(ADDRESS+0x200000, 2 * 1024 * 1024)
+     mu.reg_write(UC_X86_REG_ESP, ADDRESS + ESP_OFFSET)
      return mu.context_save()
 
 def i386_emu(code, saved_context):
@@ -52,15 +51,19 @@ def i386_emu(code, saved_context):
     mu.mem_write(ADDRESS, code)
     # initialize stack
     mu.mem_map(ADDRESS+0x200000, 2 * 1024 * 1024) # if not call, "mem unmapped error" is rasied
+
     # recover saved state
     mu.context_restore(saved_context)
 
+    global saved_stack
+    #stack_addr = mu.reg_read(UC_X86_REG_ESP)-MERGIN_OFFSET
+    stack_addr = ADDRESS + ESP_OFFSET - MERGIN_OFFSET
+    mu.mem_write(stack_addr, struct.pack('B'*len(saved_stack), *saved_stack))
     # emulate machine code in infinite time
     mu.emu_start(ADDRESS, ADDRESS + len(code))
 
     # save context(regs, stack)
-    global saved_stack
-    saved_stack = mu.mem_read(ADDRESS+0x200000, STACK_SIZE)
+    saved_stack = mu.mem_read(stack_addr, STACK_SIZE)
     return mu.context_save()
 
 # assemble user input
@@ -100,20 +103,30 @@ def print_context(saved_context):
     cyan("edi:    0x%08x" %saved_mu.reg_read(UC_X86_REG_EDI), "    ")
     cyan("gs:     0x%08x" %saved_mu.reg_read(UC_X86_REG_GS), )
     esp = saved_mu.reg_read(UC_X86_REG_ESP) # tmp value
+    #stack_addr = esp-MERGIN_OFFSET
+    stack_addr = ADDRESS + ESP_OFFSET - MERGIN_OFFSET
     bold_yellow("---------------- stack trace ----------------")
     global saved_stack
     for i in xrange(0, STACK_SIZE, 16):
-        yellow("0x%08x: " %(esp+i), "")
+        yellow("0x%08x: " %(stack_addr+i), "")
         for j in xrange(0, 16, 4):
-            yellow("%02x%02x%02x%02x " % \
-                    (saved_stack[esp+i+j+3], \
-                     saved_stack[esp+i+j+2], \
-                     saved_stack[esp+i+j+1], \
-                     saved_stack[esp+i+j],   \
-                    ), "")
+            if (stack_addr+i+j) == esp:
+                red("%02x%02x%02x%02x " % \
+                        (saved_stack[i+j+3], \
+                         saved_stack[i+j+2], \
+                         saved_stack[i+j+1], \
+                         saved_stack[i+j],   \
+                        ), "")
+            else:
+                yellow("%02x%02x%02x%02x " % \
+                        (saved_stack[i+j+3], \
+                         saved_stack[i+j+2], \
+                         saved_stack[i+j+1], \
+                         saved_stack[i+j],   \
+                        ), "")
         yellow("|", "")
         for i in xrange(0, 16):
-            c  = saved_stack[esp+i]
+            c  = saved_stack[i]
             if 0x20 <= saved_stack[i] and 0x7E >= saved_stack[i]:
                 yellow("%c" %saved_stack[i], "")
             else:
