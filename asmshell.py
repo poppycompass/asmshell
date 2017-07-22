@@ -56,7 +56,6 @@ def i386_emu(code, saved_context):
     mu.context_restore(saved_context)
 
     global saved_stack
-    #stack_addr = mu.reg_read(UC_X86_REG_ESP)-MERGIN_OFFSET
     stack_addr = ADDRESS + ESP_OFFSET - MERGIN_OFFSET
     mu.mem_write(stack_addr, struct.pack('B'*len(saved_stack), *saved_stack))
     # emulate machine code in infinite time
