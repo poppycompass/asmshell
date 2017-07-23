@@ -21,14 +21,14 @@ class emu():
         self._mode = UC_MODE_32
         self._stack_size = 64 + 16
         self._stack_mergin_offset = 32
-        self._stack_addr = ADDRESS + ESP_START_OFFSET - self.stack_mergin_offset
-        self._saved_stack = [255] * self.stack_size
+        self._stack_addr = ADDRESS + ESP_START_OFFSET - self._stack_mergin_offset
+        self._saved_stack = [255] * self._stack_size
         self._str_arch = "x86"
     def banner(self):
         yellow("Assembar Shell(v {})".format(VERSION))
         yellow("Emulate i386 code")
     def get_arch_type(self):
-        return self.str_arch
+        return self._str_arch
     # assemble user input
     def asm(self, intr):
         cmd = "rasm2 -a x86 -b 32 '%s'" %(intr)
@@ -40,12 +40,12 @@ class emu():
         return out
     # return dummy context
     def init_saved_context(self):
-        mu = Uc(self.arch, self.mode)
+        mu = Uc(self._arch, self._mode)
         mu.mem_map(ADDRESS, MEM_SIZE)
         mu.reg_write(UC_X86_REG_ESP, ADDRESS + ESP_START_OFFSET)
         return mu.context_save()
     def print_context(self, saved_context):
-        saved_mu = Uc(self.arch, self.mode)
+        saved_mu = Uc(self._arch, self._mode)
         saved_mu.mem_map(ADDRESS, MEM_SIZE)
         saved_mu.mem_map(ADDRESS+MAP_OFFSET, MEM_SIZE) # if not call, "mem unmapped error" is rasied
         saved_mu.context_restore(saved_context)
@@ -72,27 +72,27 @@ class emu():
         cyan("gs:     0x%08x" %saved_mu.reg_read(UC_X86_REG_GS), )
         esp = saved_mu.reg_read(UC_X86_REG_ESP) # tmp value
         bold_yellow("---------------- stack trace ----------------")
-        for i in xrange(0, self.stack_size, 16):
-            yellow("0x%08x: " %(self.stack_addr+i), "")
+        for i in xrange(0, self._stack_size, 16):
+            yellow("0x%08x: " %(self._stack_addr+i), "")
             for j in xrange(0, 16, 4):
-                if (self.stack_addr+i+j) == esp:
+                if (self._stack_addr+i+j) == esp:
                     red("%02x%02x%02x%02x " % \
-                            (self.saved_stack[i+j+3], \
-                             self.saved_stack[i+j+2], \
-                             self.saved_stack[i+j+1], \
-                             self.saved_stack[i+j],   \
+                            (self._saved_stack[i+j+3], \
+                             self._saved_stack[i+j+2], \
+                             self._saved_stack[i+j+1], \
+                             self._saved_stack[i+j],   \
                             ), "")
                 else:
                     yellow("%02x%02x%02x%02x " % \
-                            (self.saved_stack[i+j+3], \
-                             self.saved_stack[i+j+2], \
-                             self.saved_stack[i+j+1], \
-                             self.saved_stack[i+j],   \
+                            (self._saved_stack[i+j+3], \
+                             self._saved_stack[i+j+2], \
+                             self._saved_stack[i+j+1], \
+                             self._saved_stack[i+j],   \
                             ), "")
             yellow("|", "")
             for j in xrange(0, 16, 4):
                 for k in xrange(3, -1, -1): # [3,2,1,0]
-                    c  = self.saved_stack[i+j+k]
+                    c  = self._saved_stack[i+j+k]
                     if c >= 0x20 and c <= 0x7E:
                         yellow("%c" %c, "")
                     else:
@@ -100,8 +100,8 @@ class emu():
             yellow("|")
     # TODO: fix terrible code!
     def print_diff_context(self, saved_context, old_context):
-        now = Uc(self.arch, self.mode)
-        old = Uc(self.arch, self.mode)
+        now = Uc(self._arch, self._mode)
+        old = Uc(self._arch, self._mode)
 
         now.context_restore(saved_context)
         old.context_restore(old_context)
@@ -144,7 +144,7 @@ class emu():
     def run(self, code, saved_context):
         try:
             # Initialize emulator
-            mu = Uc(self.arch, self.arch)
+            mu = Uc(self._arch, self._arch)
             # map 2MB memory for this emulation
             mu.mem_map(ADDRESS, MEM_SIZE)
             # write machine code to be emulated to memory
@@ -155,7 +155,7 @@ class emu():
             # recover saved state
             mu.context_restore(saved_context)
 
-            mu.mem_write(self.stack_addr, struct.pack('B'*len(self.saved_stack), *self.saved_stack))
+            mu.mem_write(self._stack_addr, struct.pack('B'*len(self._saved_stack), *self._saved_stack))
             try:
                 # emulate machine code in infinite time
                 mu.emu_start(ADDRESS, ADDRESS + len(code))
@@ -163,7 +163,7 @@ class emu():
                 print("ERROR: %s" % e)
 
             # save context(regs, stack)
-            self.saved_stack = mu.mem_read(self.stack_addr, self.stack_size)
+            self._saved_stack = mu.mem_read(self._stack_addr, self._stack_size)
             return mu.context_save()
         except UcError as e:
             print("ERROR: %s" % e)
