@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #-*- conding: utf-8 -*-
 # register reference: include/unicorn/x86.h, qemu/target-i386/unicorn.c
-# TODO: add history, x64 support, exe func
+# TODO: x64 support, add license, exe func, restrict history size, add unittest, too slow?(start up)
 from __future__ import print_function
 from unicorn import *
 from unicorn.x86_const import *
@@ -19,6 +19,7 @@ if os.path.islink(LIB):
 sys.path.insert(0, os.path.dirname(LIB) + "/lib/")
 from config import *
 from utils import *
+from cmd import *
 
 parser = argparse.ArgumentParser(description='Assemblar Shell', formatter_class=argparse.RawTextHelpFormatter)
 parser.add_argument('--arch', '-a', dest='arch', required=False, help='target architecture(default: x86)', default='x86')
@@ -184,21 +185,31 @@ def banner():
     yellow("Assembar Shell(v {})".format(VERSION))
     yellow("Emulate i386 code")
 
-def main():
+def set_signal_handler():
     signal.signal(signal.SIGTERM, finish)
     signal.signal(signal.SIGINT, finish)
+
+def prompt_msg(arch):
+    prompt = "(" + arch
+    if args.diff:
+        prompt += ":diff"
+    prompt += ")> "
+    return prompt
+
+def main():
+    set_signal_handler()
     banner()
 
     arch="x86"
-    msg = arch
-    if args.diff:
-        msg = arch + ":diff"
+    prompt = prompt_msg(arch)
     saved_context = init_saved_context()
     old_context   = init_saved_context()
+
+    hist = ['']
     while True:
         try: # catch Ctrl+d(input EOF)
-            print("(%s)> " %(msg), end="")
-            intr = raw_input().strip('\n')
+            print("{}".format(prompt), end="")
+            intr, hist = parse_input(hist, prompt)
             if "q" == intr or "quit" == intr or "exit" == intr:
                 break
             user_code = asm(intr)

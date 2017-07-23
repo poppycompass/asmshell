@@ -3,7 +3,7 @@
 import sys
 import termios
 
-HIST_SIZE = 256
+LINE_SIZE = 32
 def getkey():
     fd = sys.stdin.fileno()
     old = termios.tcgetattr(fd)
@@ -18,49 +18,56 @@ def getkey():
         termios.tcsetattr(fd, termios.TCSANOW, old)
     return ord(ch)
 
-def hist_prev(hist, index):
-    if index > 0 and index < len(hist):
+def hist_prev(hist, index, prompt):
+    if index > 0:
         index = index-1
-    elif index < 0:
+    elif index <= 0:
         index = 0
     elif index >= len(hist):
         index = len(hist)-1
-    sys.stdout.write('\r' + hist[index])
+    sys.stdout.write('\r' + ' '*(LINE_SIZE) + '\r' + prompt + hist[index])
     return hist, index
 
-def hist_next(hist, index):
-    if index >= 0 and index < (len(hist)-1):
+def hist_next(hist, index, prompt):
+    if index < (len(hist)-1):
         index = index+1
-    elif index < 0:
+    elif index <= 0:
         index = 0
     elif index >= len(hist):
         index = len(hist)-1
-    sys.stdout.write('\r' + hist[index])
+    sys.stdout.write('\r' + ' '*(LINE_SIZE) + '\r' + prompt + hist[index])
     return hist, index
 
-def cmd_parse():
+def parse_input(hist, prompt):
     buf = ""
-    hist = ['']
-    index = 0
+    index = len(hist)
     while True:
         key = getkey()
         if key >= 0x20 and key <= 0x7e:
             sys.stdout.write(chr(key))
             buf += chr(key)
-        elif key == 16: # Ctrl+p
-            hist, index = hist_prev(hist, index)
+        elif key == ord(''): # Ctrl+p
+            hist, index = hist_prev(hist, index, prompt)
             buf = hist[index]
-        elif key == 14: # Ctrl+n
-            hist, index = hist_next(hist, index)
+        elif key == ord(''): # Ctrl+n
+            hist, index = hist_next(hist, index, prompt)
             buf = hist[index]
+        elif key == ord(''): # Ctrl+u
+            sys.stdout.write('\r' + ' '*(LINE_SIZE) + '\r' + prompt)
+            buf = ''
+        elif key == ord('\b'): # Ctrl-h(backspace)
+            if len(buf):
+                buf = buf[0:-1]
+                sys.stdout.write("\b \b")
+        elif key == ord(''): # not implemented. Ctrl-a
+            sys.stdout.write('')
+        elif key == ord(''): # not implemented. Ctrl-e
+            sys.stdout.write('')
+        elif key == ord(''): # Ctrl-d(EOF)
+            buf = 'quit'
+            return buf, hist
         elif key == ord('\n'): # Enter
             sys.stdout.write(chr(key))
             hist.append(buf)
             index = len(hist)-1
-            buf = ""
-        elif key == ord('\b'): # Ctrl-h(backspace)
-            buf = buf[0:-1]
-            sys.stdout.write("\b \b")
-
-if __name__ == '__main__':
-    cmd_parse()
+            return buf, hist
