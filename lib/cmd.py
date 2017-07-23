@@ -3,7 +3,7 @@
 import sys
 import termios
 
-LINE_LEN = 32
+LINE_LEN = 48
 def getkey():
     fd = sys.stdin.fileno()
     old = termios.tcgetattr(fd)
@@ -44,7 +44,7 @@ def parse_input(hist, prompt):
     while True:
         key = getkey()
         #print("key: " + str(key))
-        if key >= 0x20 and key <= 0x7e:
+        if key >= 0x20 and key <= 0x7E:
             sys.stdout.write(chr(key))
             buf += chr(key)
         elif key == ord(''): # Ctrl+p
