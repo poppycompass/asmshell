@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #-*- conding: utf-8 -*-
 # register reference: include/unicorn/x86.h, qemu/target-i386/unicorn.c
-# TODO: add license, exe func, restrict history size, add unittest, too slow?(start up)
+# TODO: exe func, restrict history size, add unittest, too slow?(start up)
 from __future__ import print_function
 from unicorn import *
 from unicorn.x86_const import *
@@ -17,6 +17,7 @@ sys.path.insert(0, os.path.dirname(LIB) + "/lib/")
 from config import *
 from utils import *
 import cmd
+# currently supported architecture
 import arch.x86
 import arch.x64
 
