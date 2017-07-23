@@ -43,6 +43,7 @@ def parse_input(hist, prompt):
     index = len(hist)
     while True:
         key = getkey()
+        #print("key: " + str(key))
         if key >= 0x20 and key <= 0x7e:
             sys.stdout.write(chr(key))
             buf += chr(key)
@@ -55,7 +56,7 @@ def parse_input(hist, prompt):
         elif key == ord(''): # Ctrl+u
             sys.stdout.write('\r' + ' '*(LINE_LEN) + '\r' + prompt)
             buf = ''
-        elif key == ord('\b'): # Ctrl-h(backspace)
+        elif key == ord('\b') or key == 127: # Ctrl-h and backspace
             if len(buf):
                 buf = buf[0:-1]
                 sys.stdout.write("\b \b")
