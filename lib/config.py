@@ -3,10 +3,9 @@
 from unicorn import *
 from unicorn.x86_const import *
 
-VERSION='0.05'
+VERSION='0.06'
 ADDRESS = 0x1000000
 MEM_SIZE = 2 * 1024 * 1024 # 2MB
-STACK_SIZE = 64 + 16
 ESP_START_OFFSET=0x300000
 MAP_OFFSET=0x200000
 # for push/pop
