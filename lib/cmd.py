@@ -3,7 +3,7 @@
 import sys
 import termios
 
-LINE_SIZE = 32
+LINE_LEN = 32
 def getkey():
     fd = sys.stdin.fileno()
     old = termios.tcgetattr(fd)
@@ -25,7 +25,7 @@ def hist_prev(hist, index, prompt):
         index = 0
     elif index >= len(hist):
         index = len(hist)-1
-    sys.stdout.write('\r' + ' '*(LINE_SIZE) + '\r' + prompt + hist[index])
+    sys.stdout.write('\r' + ' '*(LINE_LEN) + '\r' + prompt + hist[index])
     return hist, index
 
 def hist_next(hist, index, prompt):
@@ -35,7 +35,7 @@ def hist_next(hist, index, prompt):
         index = 0
     elif index >= len(hist):
         index = len(hist)-1
-    sys.stdout.write('\r' + ' '*(LINE_SIZE) + '\r' + prompt + hist[index])
+    sys.stdout.write('\r' + ' '*(LINE_LEN) + '\r' + prompt + hist[index])
     return hist, index
 
 def parse_input(hist, prompt):
@@ -53,7 +53,7 @@ def parse_input(hist, prompt):
             hist, index = hist_next(hist, index, prompt)
             buf = hist[index]
         elif key == ord(''): # Ctrl+u
-            sys.stdout.write('\r' + ' '*(LINE_SIZE) + '\r' + prompt)
+            sys.stdout.write('\r' + ' '*(LINE_LEN) + '\r' + prompt)
             buf = ''
         elif key == ord('\b'): # Ctrl-h(backspace)
             if len(buf):
