@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 #-*- conding: utf-8 -*-
 # register reference: include/unicorn/x86.h, qemu/target-i386/unicorn.c
+# TODO: x64 support, add license, exe func, restrict history size, add unittest, too slow?(start up)
 from __future__ import print_function
 from unicorn import *
 from unicorn.x86_const import *
@@ -18,8 +19,8 @@ if os.path.islink(LIB):
 sys.path.insert(0, os.path.dirname(LIB) + "/lib/")
 from config import *
 from utils import *
+from cmd import *
 
-# TODO: use arguments
 parser = argparse.ArgumentParser(description='Assemblar Shell', formatter_class=argparse.RawTextHelpFormatter)
 parser.add_argument('--arch', '-a', dest='arch', required=False, help='target architecture(default: x86)', default='x86')
 parser.add_argument('--diff', '-d', action='store_true', help='run diff mode(output changed register only)')
@@ -30,7 +31,7 @@ if args.arch == 'x86':
 else:
     ARCH = UC_ARCH_X86
 MODE = UC_MODE_32
-# UNUSED, from include/unicorn/x86.h
+# UNUSED, copy from include/unicorn/x86.h
 regs = X86_REGS
 
 saved_stack = [255] * STACK_SIZE
@@ -56,7 +57,6 @@ def i386_emu(code, saved_context):
     mu.context_restore(saved_context)
 
     global saved_stack
-    #stack_addr = mu.reg_read(UC_X86_REG_ESP)-MERGIN_OFFSET
     stack_addr = ADDRESS + ESP_OFFSET - MERGIN_OFFSET
     mu.mem_write(stack_addr, struct.pack('B'*len(saved_stack), *saved_stack))
     # emulate machine code in infinite time
@@ -132,6 +132,7 @@ def print_context(saved_context):
                 yellow(".", "")
         yellow("|")
 
+# TODO: fix terrible code!
 def print_diff_context(saved_context, old_context):
     now = Uc(ARCH, MODE)
     old = Uc(ARCH, MODE)
@@ -180,21 +181,35 @@ def finish(signal, handler):
     print("\ngood bye:)")
     exit(1)
 
-def main():
-    signal.signal(signal.SIGTERM, finish)
-    signal.signal(signal.SIGINT, finish)
+def banner():
+    yellow("Assembar Shell(v {})".format(VERSION))
     yellow("Emulate i386 code")
 
-    arch="x86"
-    msg = arch
+def set_signal_handler():
+    signal.signal(signal.SIGTERM, finish)
+    signal.signal(signal.SIGINT, finish)
+
+def prompt_msg(arch):
+    prompt = "(" + arch
     if args.diff:
-        msg = arch + ":diff"
+        prompt += ":diff"
+    prompt += ")> "
+    return prompt
+
+def main():
+    set_signal_handler()
+    banner()
+
+    arch="x86"
+    prompt = prompt_msg(arch)
     saved_context = init_saved_context()
     old_context   = init_saved_context()
+
+    hist = ['']
     while True:
         try: # catch Ctrl+d(input EOF)
-            print("(%s)> " %(msg), end="")
-            intr = raw_input().strip('\n')
+            print("{}".format(prompt), end="")
+            intr, hist = parse_input(hist, prompt)
             if "q" == intr or "quit" == intr or "exit" == intr:
                 break
             user_code = asm(intr)
