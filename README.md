@@ -15,11 +15,8 @@ $ python ./asmshell.py -d
 
 ### x64
 $ python ./asmshell.py -a x64
-> mov rax, 0x4142434445464748
+> mov rax, 0x4142434445464748  
 > push rax
-<<<<<<< HEAD
-=======
 
 ### command history
 Use Ctrl-P/N
->>>>>>> develop
