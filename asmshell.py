@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #-*- conding: utf-8 -*-
 # register reference: include/unicorn/x86.h, qemu/target-i386/unicorn.c
-# TODO: x64 support, add license, exe func, restrict history size, add unittest, too slow?(start up)
+# TODO: add license, exe func, restrict history size, add unittest, too slow?(start up)
 from __future__ import print_function
 from unicorn import *
 from unicorn.x86_const import *
@@ -25,13 +25,6 @@ parser.add_argument('--arch', '-a', dest='arch', required=False, help='target ar
 parser.add_argument('--diff', '-d', action='store_true', help='run diff mode(output changed register only)')
 args = parser.parse_args()
 
-if args.arch == 'x64':
-    ARCH = UC_ARCH_X86
-    MODE = UC_MODE_64
-else: # default x86
-    ARCH = UC_ARCH_X86
-    MODE = UC_MODE_32
-
 def prompt_msg(str_arch, diff=False):
     prompt = "(" + str_arch
     if diff:
@@ -50,8 +43,12 @@ def set_signal_handler():
 def main():
     set_signal_handler()
 
-    #if args.arch == 'x86':
-    emu_arch = arch.x86.x86()
+    if args.arch == 'x86':
+        emu_arch = arch.x86.emu()
+    elif args.arch == 'x64':
+        emu_arch = arch.x64.emu()
+    else:
+        emu_arch = arch.x86.emu()
     emu_arch.banner()
     prompt = prompt_msg(emu_arch.get_arch_type(), args.diff)
     saved_context = emu_arch.init_saved_context()
