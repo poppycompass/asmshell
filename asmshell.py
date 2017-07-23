@@ -22,15 +22,16 @@ from utils import *
 from cmd import *
 
 parser = argparse.ArgumentParser(description='Assemblar Shell', formatter_class=argparse.RawTextHelpFormatter)
-parser.add_argument('--arch', '-a', dest='arch', required=False, help='target architecture(default: x86)', default='x86')
+parser.add_argument('--arch', '-a', dest='arch', required=False, help='target architecture(default: x86). support(x86/64)', default='x86')
 parser.add_argument('--diff', '-d', action='store_true', help='run diff mode(output changed register only)')
 args = parser.parse_args()
 
-if args.arch == 'x86':
+if args.arch == 'x64':
     ARCH = UC_ARCH_X86
-else:
+    MODE = UC_MODE_64
+else: # default x86
     ARCH = UC_ARCH_X86
-MODE = UC_MODE_32
+    MODE = UC_MODE_32
 # UNUSED, copy from include/unicorn/x86.h
 regs = X86_REGS
 
@@ -39,25 +40,25 @@ saved_stack = [255] * STACK_SIZE
 # retrun dummy context
 def init_saved_context():
      mu = Uc(ARCH, MODE)
-     mu.mem_map(ADDRESS, 2 * 1024 * 1024)
-     mu.reg_write(UC_X86_REG_ESP, ADDRESS + ESP_OFFSET)
+     mu.mem_map(ADDRESS, MEM_SIZE)
+     mu.reg_write(UC_X86_REG_ESP, ADDRESS + ESP_START_OFFSET)
      return mu.context_save()
 
 def i386_emu(code, saved_context):
     # Initialize emulator
     mu = Uc(ARCH, MODE)
     # map 2MB memory for this emulation
-    mu.mem_map(ADDRESS, 2 * 1024 * 1024)
+    mu.mem_map(ADDRESS, MEM_SIZE)
     # write machine code to be emulated to memory
     mu.mem_write(ADDRESS, code)
     # initialize stack
-    mu.mem_map(ADDRESS+0x200000, 2 * 1024 * 1024) # if not call, "mem unmapped error" is rasied
+    mu.mem_map(ADDRESS+MAP_OFFSET, MEM_SIZE) # if not call, "mem unmapped error" is rasied
 
     # recover saved state
     mu.context_restore(saved_context)
 
     global saved_stack
-    stack_addr = ADDRESS + ESP_OFFSET - MERGIN_OFFSET
+    stack_addr = ADDRESS + ESP_START_OFFSET - STACK_MERGIN_OFFSET
     mu.mem_write(stack_addr, struct.pack('B'*len(saved_stack), *saved_stack))
     # emulate machine code in infinite time
     mu.emu_start(ADDRESS, ADDRESS + len(code))
@@ -78,8 +79,8 @@ def asm(intr):
 
 def print_context(saved_context):
     saved_mu = Uc(ARCH, MODE)
-    saved_mu.mem_map(ADDRESS, 2 * 1024 * 1024)
-    saved_mu.mem_map(ADDRESS+0x200000, 2 * 1024 * 1024) # if not call, "mem unmapped error" is rasied
+    saved_mu.mem_map(ADDRESS, MEM_SIZE)
+    saved_mu.mem_map(ADDRESS+MAP_OFFSET, MEM_SIZE) # if not call, "mem unmapped error" is rasied
     saved_mu.context_restore(saved_context)
     bold_cyan("---------------- cpu context ----------------")
     cyan("eax:    0x%08x" %saved_mu.reg_read(UC_X86_REG_EAX), "    ")
@@ -103,7 +104,7 @@ def print_context(saved_context):
     cyan("edi:    0x%08x" %saved_mu.reg_read(UC_X86_REG_EDI), "    ")
     cyan("gs:     0x%08x" %saved_mu.reg_read(UC_X86_REG_GS), )
     esp = saved_mu.reg_read(UC_X86_REG_ESP) # tmp value
-    stack_addr = ADDRESS + ESP_OFFSET - MERGIN_OFFSET
+    stack_addr = ADDRESS + ESP_START_OFFSET - STACK_MERGIN_OFFSET
     bold_yellow("---------------- stack trace ----------------")
     global saved_stack
     for i in xrange(0, STACK_SIZE, 16):
