@@ -3,7 +3,7 @@
 from unicorn import *
 from unicorn.x86_const import *
 
-VERSION='0.06'
+VERSION='0.07'
 ADDRESS = 0x1000000
 MEM_SIZE = 2 * 1024 * 1024 # 2MB
 ESP_START_OFFSET=0x300000
