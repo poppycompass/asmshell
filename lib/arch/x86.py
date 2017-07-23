@@ -20,7 +20,8 @@ class x86():
         self.arch = UC_ARCH_X86
         self.mode = UC_MODE_32
         self.stack_size = 64 + 16
-        self.stack_addr = ADDRESS + ESP_START_OFFSET - STACK_MERGIN_OFFSET
+        self.stack_mergin_offset = 32
+        self.stack_addr = ADDRESS + ESP_START_OFFSET - self.stack_mergin_offset
         self.saved_stack = [255] * self.stack_size
         self.str_arch = "x86"
     def banner(self):
