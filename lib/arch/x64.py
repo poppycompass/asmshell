@@ -55,7 +55,7 @@ class emu():
             (saved_mu.reg_read(UC_X86_REG_EFLAGS)&0x1),
             (saved_mu.reg_read(UC_X86_REG_EFLAGS)>>6&0x1),
             (saved_mu.reg_read(UC_X86_REG_EFLAGS)>>7&0x1),
-            ), "")
+            ))
         cyan("rcx:    0x%016x" %saved_mu.reg_read(UC_X86_REG_RCX), "    ")
         cyan("cs:     0x%016x" %saved_mu.reg_read(UC_X86_REG_CS))
         cyan("rdx:    0x%016x" %saved_mu.reg_read(UC_X86_REG_RDX), "    ")
