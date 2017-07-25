@@ -28,16 +28,16 @@ NEED [Unicorn](https://github.com/unicorn-engine/unicorn) and [radare2](https://
 
 ### x86
 	$ python ./asmshell.py
-![x86 mode](https://github.com/poppycompass/asmshell/images/x86.jpg)
+![x86 mode](https://github.com/poppycompass/asmshell/blob/master/images/x86.jpg)
 
 
 ### diff mode(output changed register only)
 	$ python ./asmshell.py -d
-![x86 diff mode](https://github.com/poppycompass/asmshell/images/diff.jpg)
+![x86 diff mode](https://github.com/poppycompass/asmshell/blob/master/images/diff.jpg)
 
 ### x64
 	$ python ./asmshell.py -a x64
-![x64 mode](https://github.com/poppycompass/asmshell/images/x64.jpg)
+![x64 mode](https://github.com/poppycompass/asmshell/blob/master/images/x64.jpg)
 
 ### Support Function
 
