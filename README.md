@@ -21,6 +21,7 @@ NEED [Unicorn](https://github.com/unicorn-engine/unicorn) and [radare2](https://
 	$ git clone https://github.com/unicorn-engine/unicorn
 	$ cd unicorn && ./make.sh
 	$ sudo make install
+	$ sudo python unicorn/bindings/python/setup.py install
 	$ git clone https://github.com/radare/radare2
 	$ cd radare2 && sys/install.sh
 
