@@ -47,6 +47,18 @@ NEED [Unicorn](https://github.com/unicorn-engine/unicorn) and [radare2](https://
 
 - Backspace(Ctrl-H/Backspace key)
 
+## Trouble Shooting
+
+### UserWarning: .python-eggs is writable
+If you have warnings such as 
+```
+/usr/lib/python2.7/dist-packages/pkg_resources.py:1031: UserWarning: /home/vagrant/.python-eggs is writable by group/others and vulnerable to attack when used with get_resource_filename. Consider a more secure location (set with .set_extraction_path or the PYTHON_EGG_CACHE environment variable).
+```
+, run this command.
+```
+$ chmod g-wx,o-wx ~/.python-eggs
+```
+
 ## License
 
 This tool is released under the [GPL license](COPYING)
