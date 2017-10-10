@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #-*- conding: utf-8 -*-
 # register reference: include/unicorn/x86.h, qemu/target-i386/unicorn.c
-# TODO: exe func, restrict history size, add unittest, too slow?(start up), add banner, enable history with arrow keys, support other architecture
+# TODO: exe func, write assemble engine with capstone(remove rasm2 disassemble), restrict history size, add unittest, too slow?(start up), add banner, enable history with arrow keys, support other architecture
 from __future__ import print_function
 from unicorn import *
 from unicorn.x86_const import *
