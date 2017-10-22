@@ -62,7 +62,7 @@ $ chmod g-wx,o-wx ~/.python-eggs
 
 ## License
 
-This tool is released under the [GPL license](COPYING)
+The software in this repository is covered by the MIT license[the MIT license](LICENSE).
 
 
 ## Author
