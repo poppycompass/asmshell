@@ -6,6 +6,7 @@ import (
     "github.com/jessevdk/go-flags"
     "github.com/abiosoft/ishell"
     "github.com/chzyer/readline"
+    "github.com/keystone-engine/keystone/bindings/go/keystone"
 //    "github.com/poppycompass/asmshell/go/utils"
 )
 
@@ -35,7 +36,12 @@ func promptMsg(arch string, diff bool) string {
 
 // handle unregistered commands
 func handleNotFound(c *ishell.Context) {
-    c.Print("handleNotFound\n")
+    insn, err := assemble(strings.Join(c.Args, " "))
+    if err != nil {
+        c.Printf("[-] %s\n", err)
+        return
+    }
+    c.Printf("%s: [%x]\n", strings.Join(c.Args, " "), insn)
 }
 // handle EOF(Ctrl-D)
 func handleEOF(c *ishell.Context) {
@@ -129,4 +135,23 @@ func main() {
     shell.Run()
     shell.Close()
     finish()
+}
+
+func assemble(mnemonic string) ([]byte, error){
+
+    ks, err := keystone.New(keystone.ARCH_X86, keystone.MODE_32)
+    if err != nil {
+        return nil, err
+    }
+    defer ks.Close()
+
+    if err := ks.Option(keystone.OPT_SYNTAX, keystone.OPT_SYNTAX_INTEL); err != nil {
+        return nil, fmt.Errorf("Error: set syntax option to intel")
+    }
+
+    if insn, _, ok := ks.Assemble(mnemonic, 0); !ok {
+        return nil, fmt.Errorf("Error: assemble instruction")
+    } else {
+        return insn, nil
+    }
 }
