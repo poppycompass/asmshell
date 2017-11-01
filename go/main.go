@@ -7,6 +7,7 @@ import (
     "github.com/abiosoft/ishell"
     "github.com/chzyer/readline"
     "github.com/keystone-engine/keystone/bindings/go/keystone"
+    uc "github.com/unicorn-engine/unicorn/bindings/go/unicorn"
 //    "github.com/poppycompass/asmshell/go/utils"
 )
 
@@ -36,12 +37,13 @@ func promptMsg(arch string, diff bool) string {
 
 // handle unregistered commands
 func handleNotFound(c *ishell.Context) {
-    insn, err := assemble(strings.Join(c.Args, " "))
+    code, err := assemble(strings.Join(c.Args, " "))
     if err != nil {
         c.Printf("[-] %s\n", err)
         return
     }
-    c.Printf("%s: [%x]\n", strings.Join(c.Args, " "), insn)
+    run(code)
+    c.Printf("%s: [%x]\n", strings.Join(c.Args, " "), code)
 }
 // handle EOF(Ctrl-D)
 func handleEOF(c *ishell.Context) {
@@ -96,7 +98,6 @@ func main() {
         Aliases: []string{"s"},
         Help: "simple assemblar shell",
         Func: func(c *ishell.Context) {
-            //c.SetPrompt("thadfads")
             var intr string = ""
             c.ShowPrompt(false)
             defer c.ShowPrompt(true)
@@ -112,26 +113,40 @@ func main() {
         },
     })
 
-    shell.AddCmd(&ishell.Cmd{
+    funcList := make(map[string]string)
+    funcs := &ishell.Cmd{
         Name: "function",
         Aliases: []string{"func"},
-        Help: "Function mode",
+        Help: "register Function",
         Func: func(c *ishell.Context) {
-            var (
-                intr string = ""
-            )
-            c.ShowPrompt(false)
-            defer c.ShowPrompt(true)
-            for {
-                c.Print("(func:" + "x86" + ")> ")
-                intr = c.ReadMultiLines(";")
-                if strings.Index(intr, "exit") == -1 || strings.Index(intr, "quit") == -1 || strings.Index(intr, "q") == -1 {
-                    break
-                }
-                c.Println("input: " + intr)
+            c.SetPrompt("(input)>")
+            if len(c.Args) == 0 {
+                c.Println("output func help")
             }
+            funcList[c.Args[0]] = c.ReadMultiLines(";")
+            //c.ShowPrompt(false)
+            //defer c.ShowPrompt(true)
+            //for {
+            //    c.Print("(func:" + "x86" + ")> ")
+            //    intr = c.ReadMultiLines(";")
+            //    if strings.Index(intr, "exit") == -1 || strings.Index(intr, "quit") == -1 || strings.Index(intr, "q") == -1 {
+            //        break
+            //    }
+            //    c.Println("input: " + intr)
+            //}
+        },
+    }
+    funcs.AddCmd(&ishell.Cmd{
+        Name: "show",
+        Help: "show registeref functions",
+        Func: func(c *ishell.Context) {
+          c.Print("Names: ")
+          for key, value := range funcList {
+              c.Printf("%s(%s), ", key, value)
+          }
         },
     })
+    shell.AddCmd(funcs)
     shell.Run()
     shell.Close()
     finish()
@@ -149,9 +164,35 @@ func assemble(mnemonic string) ([]byte, error){
         return nil, fmt.Errorf("Error: set syntax option to intel")
     }
 
-    if insn, _, ok := ks.Assemble(mnemonic, 0); !ok {
+    if code, _, ok := ks.Assemble(mnemonic, 0); !ok {
         return nil, fmt.Errorf("Error: assemble instruction")
     } else {
-        return insn, nil
+        return code, nil
     }
+}
+
+func run(code []byte) error {
+    mu, err := uc.NewUnicorn(uc.ARCH_X86, uc.MODE_32)
+    if err != nil {
+        return err
+    }
+    if err := mu.MemMap(0x1000, 0x1000); err != nil {
+        return err
+    }
+    if err := mu.MemWrite(0x1000, code); err != nil {
+        return err
+    }
+    // create stack
+    if err := mu.MemMap(0x4000, 0x1000); err != nil {
+        return err
+    }
+    if err := mu.Start(0x1000, 0x1000+uint64(len(code))); err != nil {
+        return err
+    }
+    eax, err := mu.RegRead(uc.X86_REG_EAX);
+    if err != nil {
+        return err
+    }
+    fmt.Printf("EAX: %d\n", eax)
+    return nil
 }
