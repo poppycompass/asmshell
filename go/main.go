@@ -3,6 +3,7 @@ package main
 import (
     "fmt"
     "strings"
+    "os/exec"
     "github.com/jessevdk/go-flags"
     "github.com/abiosoft/ishell"
     "github.com/chzyer/readline"
@@ -37,6 +38,14 @@ func promptMsg(arch string, diff bool) string {
 
 // handle unregistered commands
 func handleNotFound(c *ishell.Context) {
+    // run shell command(linux only)
+    // TODO: windows support
+    if strings.Index(c.Args[0], "!") == 0 {
+        c.Args[0] = strings.Replace(c.Args[0], "!", "", 1)
+        out, _ := exec.Command("sh", "-c", strings.Join(c.Args, " ")).Output()
+        c.Printf("%s", out)
+        return
+    }
     code, err := assemble(strings.Join(c.Args, " "))
     if err != nil {
         c.Printf("[-] %s\n", err)
@@ -60,7 +69,7 @@ func finish() {
 func main() {
     var (
       err error
-      prompt string
+//      prompt string
       conf readline.Config
     )
 //    fmt.Println(strings.Split("a,b,c,d,e,f", ","))
@@ -84,7 +93,7 @@ func main() {
         case "x86_64": fmt.Print("")
         default      : fmt.Print("")
     }
-    prompt = promptMsg(opts.OptArch, opts.OptDiff)
+    //prompt = promptMsg(opts.OptArch, opts.OptDiff)
     conf.Prompt = "(master)> "
     shell := ishell.NewWithConfig(&conf)
     shell.EOF(handleEOF)
@@ -94,22 +103,12 @@ func main() {
     shell.Println("Assemblar Shell(v " + Version + ")")
 
     shell.AddCmd(&ishell.Cmd{
-        Name: "single",
-        Aliases: []string{"s"},
-        Help: "simple assemblar shell",
+        Name: "cmd",
+        Aliases: []string{"!"},
+        Help: "run shell command",
         Func: func(c *ishell.Context) {
-            var intr string = ""
-            c.ShowPrompt(false)
-            defer c.ShowPrompt(true)
-            for {
-                c.Print(prompt)
-                intr = c.ReadLine()
-                if intr == "exit" || intr == "q" || intr == "quit" {
-                    c.Println("exit")
-                    break
-                }
-                c.Println("input: " + intr)
-            }
+            out, _ := exec.Command("sh", "-c", strings.Join(c.Args, " ")).Output()
+            c.Printf("%s", out)
         },
     })
 
