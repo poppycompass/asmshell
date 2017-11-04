@@ -116,7 +116,7 @@ func main() {
     asmshell.UnicornArch = uc.ARCH_X86
     asmshell.UnicornMode = uc.MODE_32
     asmshell.SavedCtx = nil
-    asmshell.SavedStackSize = 255
+    asmshell.SavedStackSize = 256
     asmshell.SavedStack = make([]byte, asmshell.SavedStackSize)
     for i := uint64(0); i < asmshell.SavedStackSize; i++ {
         asmshell.SavedStack[i] = 0xFF
@@ -269,7 +269,7 @@ var Regs = map[string]int{
     " fs": uc.X86_REG_FS,
     " gs": uc.X86_REG_GS,
 }
-var RegOrder = []string{"eax", "ebx", "ecx", "edx", "eip", "esp", "ebp", "esi", "edi", " cs", " ss", " ds", " es", " fs", " gs", "eflags"}
+var RegOrder = []string{"eax", "eip", "ebx", "eflags", "ecx", " cs", "edx", " ss", "esp", " ds", "ebp", " es", "esi", " fs", "edi", " gs"}
 func PrintCtx(c *ishell.Context, mu uc.Unicorn, code []byte) error {
     c.ColorPrintf(pallet.BoldWhite, "mnemonic: %s[hex: %x]\n", strings.Join(c.Args, " "), code)
     c.ColorPrintf(pallet.BoldCyan, "---------------------- CPU CONTEXT ----------------------\n")
@@ -282,20 +282,26 @@ func PrintCtx(c *ishell.Context, mu uc.Unicorn, code []byte) error {
             c.Println("")
         }
         if key == "eflags" {
-            c.Printf("%s: 0x%08x [ CF(%d) ZF(%d) SF(%d) ]",
+            c.Printf("%s: 0x%08x [ CF(%d) PF(%d) AF(%d) ZF(%d) SF(%d) IF(%d) DF(%d) OF(%d) ]",
               key,
               reg,
               reg & 0x1,
+              (reg>>2)&0x1,
+              (reg>>4)&0x1,
               (reg>>6)&0x1,
-              (reg>>7)&0x1)
+              (reg>>7)&0x1,
+              (reg>>9)&0x1,
+              (reg>>10)&0x1,
+              (reg>>11)&0x1)
         } else {
-            c.Printf("%s: 0x%08x   ", key, reg)
+            c.Printf("%s:    0x%08x   ", key, reg)
         }
     }
     c.ColorPrintf(pallet.BoldYellow, "\n---------------------- STACK TRACE ----------------------\n")
     HexPrint32(c, mu)
     return nil
 }
+// TODO: simple code
 func HexPrint32(c *ishell.Context, mu uc.Unicorn) error {
     var middle uint64 = 32
     esp, err := mu.RegRead(Regs["esp"])
@@ -305,7 +311,7 @@ func HexPrint32(c *ishell.Context, mu uc.Unicorn) error {
     for i := uint64(0); i < asmshell.PrintSize; i+=16 {
         c.Printf("0x%08x: ", esp-middle+i)
         for j := uint64(0); j < 16; j+=4 {
-            if middle == i {
+            if middle == (i-j) {
                 c.ColorPrintf(pallet.HiRed, "%02x%02x%02x%02x ",
                   asmshell.SavedStack[asmshell.SavedStackSize/2-middle+i+j+3],
                   asmshell.SavedStack[asmshell.SavedStackSize/2-middle+i+j+2],
