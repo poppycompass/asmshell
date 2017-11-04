@@ -1,4 +1,4 @@
-// TODO: cmd suggestion
+// TODO: cmd suggestion, jmp handling
 package main
 
 import (
@@ -59,7 +59,7 @@ func handleNotFound(c *ishell.Context) {
         return
     }
     if err = run(c, code); err != nil {
-        panic(err)
+        c.Printf("[-] %s\n", err)
     }
     c.Printf(asmshell.Prompt)
 }
@@ -132,13 +132,13 @@ func main() {
 
     funcList := make(map[string]string)
     funcs := &ishell.Cmd{
-        Name: "function",
-        Aliases: []string{"func"},
-        Help: "register Function",
+        Name: "fragment",
+        Aliases: []string{"frag"},
+        Help: "register assemblar fragment",
         Func: func(c *ishell.Context) {
             c.SetPrompt("(input)>")
             if len(c.Args) == 0 {
-                c.Println("output func help")
+                c.Println("output frag help")
             }
             funcList[c.Args[0]] = c.ReadMultiLines(";")
             //c.ShowPrompt(false)
@@ -155,7 +155,7 @@ func main() {
     }
     funcs.AddCmd(&ishell.Cmd{
         Name: "show",
-        Help: "show registeref functions",
+        Help: "show registered fragments",
         Func: func(c *ishell.Context) {
           c.Print("Names: ")
           for key, value := range funcList {
@@ -168,6 +168,13 @@ func main() {
         Help: "set architecture and mode",
         Func: func(c *ishell.Context) {
             c.Print("set mode")
+        },
+    })
+    shell.AddCmd(&ishell.Cmd{
+        Name: "readExe",
+        Help: "read exe file",
+        Func: func(c *ishell.Context) {
+            c.Print("read exe")
         },
     })
     shell.AddCmd(funcs)
@@ -233,10 +240,6 @@ func run(c *ishell.Context, code []byte) error {
     if err := mu.Start(asmshell.CodeAddr, asmshell.CodeAddr+uint64(len(code))); err != nil {
         return err
     }
-    asmshell.SavedCtx, err = mu.ContextSave(nil)
-    if err != nil {
-        return err
-    }
     esp, err = mu.RegRead(Regs["esp"])
     if err != nil {
         return err
@@ -246,6 +249,10 @@ func run(c *ishell.Context, code []byte) error {
         return err
     }
     if err = PrintCtx(c, mu, code); err != nil {
+        return err
+    }
+    asmshell.SavedCtx, err = mu.ContextSave(nil)
+    if err != nil {
         return err
     }
     return nil
@@ -271,6 +278,19 @@ var Regs = map[string]int{
 }
 var RegOrder = []string{"eax", "eip", "ebx", "eflags", "ecx", " cs", "edx", " ss", "esp", " ds", "ebp", " es", "esi", " fs", "edi", " gs"}
 func PrintCtx(c *ishell.Context, mu uc.Unicorn, code []byte) error {
+    old, err := uc.NewUnicorn(asmshell.UnicornArch, asmshell.UnicornMode)
+    if asmshell.SavedCtx != nil {
+        err = old.ContextRestore(asmshell.SavedCtx)
+        if err != nil {
+            return err
+        }
+    } else {
+        asmshell.SavedCtx, err = mu.ContextSave(nil)
+        err = old.ContextRestore(asmshell.SavedCtx)
+        if err != nil {
+            return err
+        }
+    }
     c.ColorPrintf(pallet.BoldWhite, "mnemonic: %s[hex: %x]\n", strings.Join(c.Args, " "), code)
     c.ColorPrintf(pallet.BoldCyan, "---------------------- CPU CONTEXT ----------------------\n")
     for idx, key := range RegOrder {
@@ -278,23 +298,68 @@ func PrintCtx(c *ishell.Context, mu uc.Unicorn, code []byte) error {
         if err != nil {
             return err
         }
+        oldReg, err := old.RegRead(Regs[key])
+        if err != nil {
+            return err
+        }
         if idx != 0 && idx % 2 == 0 {
             c.Println("")
         }
         if key == "eflags" {
-            c.Printf("%s: 0x%08x [ CF(%d) PF(%d) AF(%d) ZF(%d) SF(%d) IF(%d) DF(%d) OF(%d) ]",
-              key,
-              reg,
-              reg & 0x1,
-              (reg>>2)&0x1,
-              (reg>>4)&0x1,
-              (reg>>6)&0x1,
-              (reg>>7)&0x1,
-              (reg>>9)&0x1,
-              (reg>>10)&0x1,
-              (reg>>11)&0x1)
+            if reg != oldReg {
+                c.ColorPrintf(pallet.HiRed, "%s: 0x%08x [ ", key, reg)
+                if (reg & 0x1) != (oldReg & 0x1) {
+                    c.ColorPrintf(pallet.HiRed, "CF(%d -> %d) ", oldReg&0x1, reg&0x1)
+                } else {
+                    c.Printf("CF(%d) ", reg&0x1)
+                }
+                if ((reg>>2) & 0x1) != ((oldReg>>2) & 0x1) {
+                    c.ColorPrintf(pallet.HiRed, "PF(%d -> %d) ",(oldReg>>2)&0x1, (reg>>2)&0x1)
+                } else {
+                    c.Printf("PF(%d) ", (reg>>2)&0x1)
+                }
+                if ((reg>>4) & 0x1) != ((oldReg>>4) & 0x1) {
+                    c.ColorPrintf(pallet.HiRed, "AF(%d -> %d) ",(oldReg>>4)&0x1, (reg>>4)&0x1)
+                } else {
+                    c.Printf("AF(%d) ", (reg>>4)&0x1)
+                }
+                if ((reg>>6) & 0x1) != ((oldReg>>6) & 0x1) {
+                    c.ColorPrintf(pallet.HiRed, "ZF(%d -> %d) ", (oldReg>>6)&0x1, (reg>>6)&0x1)
+                } else {
+                    c.Printf("ZF(%d) ", (reg>>6)&0x1)
+                }
+                if ((reg>>7) & 0x1) != ((oldReg>>7) & 0x1) {
+                    c.ColorPrintf(pallet.HiRed, "SF(%d -> %d) ", (oldReg>>7)&0x1, (reg>>7)&0x1)
+                } else {
+                    c.Printf("SF(%d) ", (reg>>7)&0x1)
+                }
+                if ((reg>>9) & 0x1) != ((oldReg>>9) & 0x1) {
+                    c.ColorPrintf(pallet.HiRed, "IF(%d -> %d) ", (oldReg>>9)&0x1, (reg>>9)&0x1)
+                } else {
+                    c.Printf("IF(%d) ", (reg>>9)&0x1)
+                }
+                if ((reg>>10) & 0x1) != ((oldReg>>10) & 0x1) {
+                    c.ColorPrintf(pallet.HiRed, "DF(%d -> %d) ", (oldReg>>10)&0x1, (reg>>10)&0x1)
+                } else {
+                    c.Printf("DF(%d) ", (reg>>10)&0x1)
+                }
+                if ((reg>>11) & 0x1) != ((oldReg>>11) & 0x1) {
+                    c.ColorPrintf(pallet.HiRed, "OF(%d -> %d) ", (oldReg>>10)&0x1, (reg>>10)&0x1)
+                } else {
+                    c.Printf("OF(%d) ", (reg>>10)&0x1)
+                }
+                c.Printf("]")
+            } else {
+                c.Printf("%s: 0x%08x [ CF(%d) PF(%d) AF(%d) ZF(%d) SF(%d) IF(%d) DF(%d) OF(%d) ]",
+                  key, reg, reg & 0x1, (reg>>2)&0x1, (reg>>4)&0x1, (reg>>6)&0x1, (reg>>7)&0x1, (reg>>9)&0x1, (reg>>10)&0x1, (reg>>11)&0x1)
+            }
         } else {
-            c.Printf("%s:    0x%08x   ", key, reg)
+            if reg != oldReg {
+                //c.ColorPrintf(pallet.HiRed, "%s:    0x%08x(old: %08x)   ", key, reg, oldReg)
+                c.ColorPrintf(pallet.HiRed, "%s:    0x%08x   ", key, reg)
+            } else {
+                c.Printf("%s:    0x%08x   ", key, reg)
+            }
         }
     }
     c.ColorPrintf(pallet.BoldYellow, "\n---------------------- STACK TRACE ----------------------\n")
