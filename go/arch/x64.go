@@ -27,6 +27,7 @@ func InitX64(asmsh *as.AsmShell) {
         asmsh.SavedStack[i] = 0xFF
     }
     asmsh.Prompt = "(x64)> "
+    // if you want R8-15 register, add X86_REG_R8-15
     asmsh.RegOrder = []string{"rax", "rip", "rbx", "eflags", "rcx", " cs", "rdx", " ss", "rsp", " ds", "rbp", " es", "rsi", " fs", "rdi", " gs"}
     asmsh.Regs = map[string]int{
         "rax"    : uc.X86_REG_RAX,
