@@ -1,10 +1,10 @@
 package arch
 
-/* import ( */
-/*     "github.com/keystone-engine/keystone/bindings/go/keystone" */
-/*     uc "github.com/unicorn-engine/unicorn/bindings/go/unicorn" */
+import (
+    "github.com/keystone-engine/keystone/bindings/go/keystone"
+    uc "github.com/unicorn-engine/unicorn/bindings/go/unicorn"
     as "github.com/poppycompass/asmshell/go"
-/* ) */
+)
 
 func InitX64(asmsh *as.AsmShell) {
     asmsh.CodeAddr  = 0x100000
@@ -46,5 +46,6 @@ func InitX64(asmsh *as.AsmShell) {
         " fs"    : uc.X86_REG_FS,
         " gs"    : uc.X86_REG_GS,
     }
+    asmsh.PrintCtx = asmsh.PrintCtx64
 }
 
