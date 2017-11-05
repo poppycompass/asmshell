@@ -325,44 +325,45 @@ func PrintCtx(c *ishell.Context, mu uc.Unicorn, code []byte) error {
         }
         if key == "eflags" {
             if reg != oldReg {
-                c.ColorPrintf(pallet.HiRed, "%s: 0x%08x [ ", key, reg)
+                c.ColorPrintf(pallet.HiRed, "%s: 0x%08x", key, reg)
+                c.ColorPrintf(pallet.HiWhite, " [ ")
                 if (reg & 0x1) != (oldReg & 0x1) {
-                    c.ColorPrintf(pallet.HiRed, "CF(%d -> %d) ", oldReg&0x1, reg&0x1)
+                    c.ColorPrintf(pallet.HiRed, "CF(%d) ", reg&0x1)
                 } else {
                     c.Printf("CF(%d) ", reg&0x1)
                 }
                 if ((reg>>2) & 0x1) != ((oldReg>>2) & 0x1) {
-                    c.ColorPrintf(pallet.HiRed, "PF(%d -> %d) ",(oldReg>>2)&0x1, (reg>>2)&0x1)
+                    c.ColorPrintf(pallet.HiRed, "PF(%d) ", (reg>>2)&0x1)
                 } else {
                     c.Printf("PF(%d) ", (reg>>2)&0x1)
                 }
                 if ((reg>>4) & 0x1) != ((oldReg>>4) & 0x1) {
-                    c.ColorPrintf(pallet.HiRed, "AF(%d -> %d) ",(oldReg>>4)&0x1, (reg>>4)&0x1)
+                    c.ColorPrintf(pallet.HiRed, "AF(%d) ", (reg>>4)&0x1)
                 } else {
                     c.Printf("AF(%d) ", (reg>>4)&0x1)
                 }
                 if ((reg>>6) & 0x1) != ((oldReg>>6) & 0x1) {
-                    c.ColorPrintf(pallet.HiRed, "ZF(%d -> %d) ", (oldReg>>6)&0x1, (reg>>6)&0x1)
+                    c.ColorPrintf(pallet.HiRed, "ZF(%d) ", (reg>>6)&0x1)
                 } else {
                     c.Printf("ZF(%d) ", (reg>>6)&0x1)
                 }
                 if ((reg>>7) & 0x1) != ((oldReg>>7) & 0x1) {
-                    c.ColorPrintf(pallet.HiRed, "SF(%d -> %d) ", (oldReg>>7)&0x1, (reg>>7)&0x1)
+                    c.ColorPrintf(pallet.HiRed, "SF(%d) ", (reg>>7)&0x1)
                 } else {
                     c.Printf("SF(%d) ", (reg>>7)&0x1)
                 }
                 if ((reg>>9) & 0x1) != ((oldReg>>9) & 0x1) {
-                    c.ColorPrintf(pallet.HiRed, "IF(%d -> %d) ", (oldReg>>9)&0x1, (reg>>9)&0x1)
+                    c.ColorPrintf(pallet.HiRed, "IF(%d) ", (reg>>9)&0x1)
                 } else {
                     c.Printf("IF(%d) ", (reg>>9)&0x1)
                 }
                 if ((reg>>10) & 0x1) != ((oldReg>>10) & 0x1) {
-                    c.ColorPrintf(pallet.HiRed, "DF(%d -> %d) ", (oldReg>>10)&0x1, (reg>>10)&0x1)
+                    c.ColorPrintf(pallet.HiRed, "DF(%d) ", (reg>>10)&0x1)
                 } else {
                     c.Printf("DF(%d) ", (reg>>10)&0x1)
                 }
                 if ((reg>>11) & 0x1) != ((oldReg>>11) & 0x1) {
-                    c.ColorPrintf(pallet.HiRed, "OF(%d -> %d) ", (oldReg>>10)&0x1, (reg>>10)&0x1)
+                    c.ColorPrintf(pallet.HiRed, "OF(%d) ", (reg>>10)&0x1)
                 } else {
                     c.Printf("OF(%d) ", (reg>>10)&0x1)
                 }
