@@ -143,7 +143,7 @@ func main() {
         Help: "register assemblar fragment",
         Func: func(c *ishell.Context) {
             if len(c.Args) == 0 {
-                c.Println("output frag help")
+                c.Println("Usage: [fragment/f] [<word>/show/run]")
                 return
             }
             c.SetPrompt("in> ")
@@ -171,13 +171,14 @@ func main() {
         Help: "run registered fragments",
         Func: func(c *ishell.Context) {
             if len(c.Args) == 0 {
-                c.Println("output frag help")
+                c.Println("Usage: fragment run <registered frag>")
                 return
             }
             err := emulate(c, fragList[c.Args[0]])
             if err != nil {
                 c.Printf("[-] %s\n", err)
             }
+            c.Printf("%s", asmshell.Prompt)
         },
     })
     shell.AddCmd(&ishell.Cmd{
