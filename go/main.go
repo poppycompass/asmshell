@@ -1,4 +1,4 @@
-// TODO: cmd suggestion, jmp handling
+// TODO: cmd suggestion, jmp handling, custom run(http)
 package main
 
 import (
@@ -53,15 +53,11 @@ func handleNotFound(c *ishell.Context) {
         c.Printf("%s", out)
         return
     }
-    code, err := assemble(strings.Join(c.Args, " "))
+    err := emulate(c, strings.Join(c.Args, " "))
     if err != nil {
         c.Printf("[-] %s\n", err)
-        return
     }
-    if err = run(c, code); err != nil {
-        c.Printf("[-] %s\n", err)
-    }
-    c.Printf(asmshell.Prompt)
+    c.Printf("%s", asmshell.Prompt)
 }
 // handle EOF(Ctrl-D)
 func handleEOF(c *ishell.Context) {
@@ -75,6 +71,16 @@ func finish() {
     fmt.Println("good bye:)")
 }
 
+func emulate(c *ishell.Context, mnemonic string) error {
+    code, err := assemble(mnemonic)
+    if err != nil {
+        return err
+    }
+    if err = run(c, code); err != nil {
+        return err
+    }
+    return nil
+}
 func main() {
     var (
         err error
@@ -130,37 +136,48 @@ func main() {
     shell.SetHomeHistoryPath(".asmshell_history")
     shell.ColorPrintln(pallet.BoldYellow, "Assemblar Shell(v " + Version + ")")
 
-    funcList := make(map[string]string)
-    funcs := &ishell.Cmd{
+    fragList := make(map[string]string)
+    frags := &ishell.Cmd{
         Name: "fragment",
-        Aliases: []string{"frag"},
+        Aliases: []string{"frag", "f"},
         Help: "register assemblar fragment",
         Func: func(c *ishell.Context) {
-            c.SetPrompt("(input)>")
             if len(c.Args) == 0 {
                 c.Println("output frag help")
+                return
             }
-            funcList[c.Args[0]] = c.ReadMultiLines(";")
-            //c.ShowPrompt(false)
-            //defer c.ShowPrompt(true)
-            //for {
-            //    c.Print("(func:" + "x86" + ")> ")
-            //    intr = c.ReadMultiLines(";")
-            //    if strings.Index(intr, "exit") == -1 || strings.Index(intr, "quit") == -1 || strings.Index(intr, "q") == -1 {
-            //        break
-            //    }
-            //    c.Println("input: " + intr)
-            //}
+            c.SetPrompt("in> ")
+            fragList[c.Args[0]] = c.ReadMultiLines(";")
+            fragList[c.Args[0]] = strings.Replace(fragList[c.Args[0]], "\n", ";", -1)
+            c.Printf("'%s' is registered\n", c.Args[0])
+            c.SetPrompt(asmshell.Prompt)
         },
     }
-    funcs.AddCmd(&ishell.Cmd{
+    frags.AddCmd(&ishell.Cmd{
         Name: "show",
+        Aliases: []string{"s"},
         Help: "show registered fragments",
         Func: func(c *ishell.Context) {
           c.Print("Names: ")
-          for key, value := range funcList {
+          for key, value := range fragList {
               c.Printf("%s(%s), ", key, value)
           }
+          c.Printf("\n")
+        },
+    })
+    frags.AddCmd(&ishell.Cmd{
+        Name: "run",
+        Aliases: []string{"r"},
+        Help: "run registered fragments",
+        Func: func(c *ishell.Context) {
+            if len(c.Args) == 0 {
+                c.Println("output frag help")
+                return
+            }
+            err := emulate(c, fragList[c.Args[0]])
+            if err != nil {
+                c.Printf("[-] %s\n", err)
+            }
         },
     })
     shell.AddCmd(&ishell.Cmd{
@@ -177,7 +194,7 @@ func main() {
             c.Print("read exe")
         },
     })
-    shell.AddCmd(funcs)
+    shell.AddCmd(frags)
     shell.Run()
     shell.Close()
     finish()
@@ -292,6 +309,7 @@ func PrintCtx(c *ishell.Context, mu uc.Unicorn, code []byte) error {
         }
     }
     c.ColorPrintf(pallet.BoldWhite, "mnemonic: %s[hex: %x]\n", strings.Join(c.Args, " "), code)
+    //c.ColorPrintf(pallet.BoldWhite, "mnemonic: %s[hex: %x]\n", fragList[c.Args[0]], code)
     c.ColorPrintf(pallet.BoldCyan, "---------------------- CPU CONTEXT ----------------------\n")
     for idx, key := range RegOrder {
         reg, err := mu.RegRead(Regs[key])
