@@ -1,4 +1,4 @@
-// TODO: cmd suggestion, jmp handling, custom run(http)
+// TODO: mnemonic suggestion, jmp handling, custom run(http)
 package main
 
 import (
@@ -23,7 +23,6 @@ type Machine struct {
     stackSize uint64
     stackMergin uint64
     stackAddr uint64
-//    savedStack []byte
 }
 
 type Options struct {
@@ -76,7 +75,7 @@ func emulate(c *ishell.Context, mnemonic string) error {
     if err != nil {
         return err
     }
-    if err = run(c, code); err != nil {
+    if err = run(c, mnemonic, code); err != nil {
         return err
     }
     return nil
@@ -220,7 +219,7 @@ func assemble(mnemonic string) ([]byte, error){
     }
 }
 
-func run(c *ishell.Context, code []byte) error {
+func run(c *ishell.Context, mnemonic string, code []byte) error {
     mu, err := uc.NewUnicorn(asmshell.UnicornArch, asmshell.UnicornMode)
     if err != nil {
         return err
@@ -266,7 +265,7 @@ func run(c *ishell.Context, code []byte) error {
     if err != nil {
         return err
     }
-    if err = PrintCtx(c, mu, code); err != nil {
+    if err = PrintCtx(c, mu, mnemonic, code); err != nil {
         return err
     }
     asmshell.SavedCtx, err = mu.ContextSave(nil)
@@ -277,25 +276,25 @@ func run(c *ishell.Context, code []byte) error {
 }
 
 var Regs = map[string]int{
-    "eax": uc.X86_REG_EAX,
-    "ebx": uc.X86_REG_EBX,
-    "ecx": uc.X86_REG_ECX,
-    "edx": uc.X86_REG_EDX,
-    "eip": uc.X86_REG_EIP,
-    "esp": uc.X86_REG_ESP,
-    "ebp": uc.X86_REG_EBP,
-    "esi": uc.X86_REG_ESI,
-    "edi": uc.X86_REG_EDI,
-    "eflags": uc.X86_REG_EFLAGS,
-    " cs": uc.X86_REG_CS,
-    " ss": uc.X86_REG_SS,
-    " ds": uc.X86_REG_DS,
-    " es": uc.X86_REG_ES,
-    " fs": uc.X86_REG_FS,
-    " gs": uc.X86_REG_GS,
+    "eax"    : uc.X86_REG_EAX,
+    "ebx"    : uc.X86_REG_EBX,
+    "ecx"    : uc.X86_REG_ECX,
+    "edx"    : uc.X86_REG_EDX,
+    "eip"    : uc.X86_REG_EIP,
+    "esp"    : uc.X86_REG_ESP,
+    "ebp"    : uc.X86_REG_EBP,
+    "esi"    : uc.X86_REG_ESI,
+    "edi"    : uc.X86_REG_EDI,
+    "eflags" : uc.X86_REG_EFLAGS,
+    " cs"    : uc.X86_REG_CS,
+    " ss"    : uc.X86_REG_SS,
+    " ds"    : uc.X86_REG_DS,
+    " es"    : uc.X86_REG_ES,
+    " fs"    : uc.X86_REG_FS,
+    " gs"    : uc.X86_REG_GS,
 }
 var RegOrder = []string{"eax", "eip", "ebx", "eflags", "ecx", " cs", "edx", " ss", "esp", " ds", "ebp", " es", "esi", " fs", "edi", " gs"}
-func PrintCtx(c *ishell.Context, mu uc.Unicorn, code []byte) error {
+func PrintCtx(c *ishell.Context, mu uc.Unicorn, mnemonic string, code []byte) error {
     old, err := uc.NewUnicorn(asmshell.UnicornArch, asmshell.UnicornMode)
     if asmshell.SavedCtx != nil {
         err = old.ContextRestore(asmshell.SavedCtx)
@@ -309,7 +308,8 @@ func PrintCtx(c *ishell.Context, mu uc.Unicorn, code []byte) error {
             return err
         }
     }
-    c.ColorPrintf(pallet.BoldWhite, "mnemonic: %s[hex: %x]\n", strings.Join(c.Args, " "), code)
+    //c.ColorPrintf(pallet.BoldWhite, "mnemonic: %s[hex: %x]\n", strings.Join(c.Args, " "), code)
+    c.ColorPrintf(pallet.BoldWhite, "mnemonic: %s[hex: %x]\n", mnemonic, code)
     //c.ColorPrintf(pallet.BoldWhite, "mnemonic: %s[hex: %x]\n", fragList[c.Args[0]], code)
     c.ColorPrintf(pallet.BoldCyan, "---------------------- CPU CONTEXT ----------------------\n")
     for idx, key := range RegOrder {
