@@ -1,4 +1,4 @@
-// TODO: mnemonic suggestion, jmp handling, custom run(http), symbol resolve, diff(arm, armeb...etc)
+// TODO: mnemonic suggestion, jmp handling, custom run(http), symbol resolve, arm(vector support)
 package main
 
 import (
