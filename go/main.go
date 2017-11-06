@@ -1,4 +1,4 @@
-// TODO: mnemonic suggestion, jmp handling, custom run(http)
+// TODO: mnemonic suggestion, jmp handling, custom run(http), symbol resolve, diff(arm, armeb...etc)
 package main
 
 import (
@@ -85,10 +85,18 @@ func main() {
         help()
     }
     switch opts.OptArch {
-        case "i8086" : arch.InitI8086(&asmsh)
-        case "x86"   : arch.InitX86(&asmsh)
-        case "x64"   : arch.InitX64(&asmsh)
-        default      : arch.InitX86(&asmsh)
+        case "i8086"   : arch.InitI8086(&asmsh)
+        case "x86"     : arch.InitX86(&asmsh)
+        case "x64"     : arch.InitX64(&asmsh)
+        case "arm"     : arch.InitArm(&asmsh)
+        case "armeb"   : arch.InitArmeb(&asmsh)
+        case "arm64"   : arch.InitArm64(&asmsh)   // armv8
+        case "arm64eb" : arch.InitArm64eb(&asmsh) // armv8
+        case "m68k"    : arch.InitX86(&asmsh) // not implemented
+        case "mips"    : arch.InitX86(&asmsh) // not implemented
+        case "sparc"   : arch.InitX86(&asmsh) // not implemented
+//        case "powerpc" : arch.InitX86(&asmsh)
+        default        : arch.InitX86(&asmsh)
     }
     conf.Prompt = asmsh.Prompt
     shell := ishell.NewWithConfig(&conf)
