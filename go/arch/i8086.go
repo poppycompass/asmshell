@@ -46,5 +46,6 @@ func InitI8086(asmsh *as.AsmShell) {
         " fs"    : uc.X86_REG_FS,
         " gs"    : uc.X86_REG_GS,
     }
+    asmsh.SP = uc.X86_REG_SP
     asmsh.PrintCtx = asmsh.PrintCtx16
 }

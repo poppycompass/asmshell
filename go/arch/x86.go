@@ -46,5 +46,6 @@ func InitX86(asmsh *as.AsmShell) {
         " fs"    : uc.X86_REG_FS,
         " gs"    : uc.X86_REG_GS,
     }
+    asmsh.SP = uc.X86_REG_ESP
     asmsh.PrintCtx = asmsh.PrintCtx32
 }
