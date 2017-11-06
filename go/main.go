@@ -85,18 +85,20 @@ func main() {
         help()
     }
     switch opts.OptArch {
-        case "i8086"   : arch.InitI8086(&asmsh)
-        case "x86"     : arch.InitX86(&asmsh)
-        case "x64"     : arch.InitX64(&asmsh)
-        case "arm"     : arch.InitArm(&asmsh  , false)
-        case "armeb"   : arch.InitArm(&asmsh  , true)
-        case "arm64"   : arch.InitArm64(&asmsh, false)
-//        case "arm64eb" : arch.InitArm64(&asmsh, true)
-        case "m68k"    : arch.InitX86(&asmsh) // not implemented
-        case "mips"    : arch.InitX86(&asmsh) // not implemented
-        case "sparc"   : arch.InitX86(&asmsh) // not implemented
+        case "i8086"       : arch.InitI8086(&asmsh)
+        case "x86"         : arch.InitX86(&asmsh)
+        case "x64"         : arch.InitX64(&asmsh)
+        case "arm-thumb"   : arch.InitArmThumb(&asmsh, false)
+        case "arm-thumbeb" : arch.InitArmThumb(&asmsh, true)
+        case "arm"         : arch.InitArm(&asmsh  , false)
+        case "armeb"       : arch.InitArm(&asmsh  , true)
+        case "arm64"       : arch.InitArm64(&asmsh, false)
+//        case "arm64eb"     : arch.InitArm64(&asmsh, true)
+        case "m68k"        : arch.InitX86(&asmsh) // not implemented
+        case "mips"        : arch.InitX86(&asmsh) // not implemented
+        case "sparc"       : arch.InitX86(&asmsh) // not implemented
 //        case "powerpc" : arch.InitX86(&asmsh)
-        default        : arch.InitX86(&asmsh)
+        default            : arch.InitX86(&asmsh)
     }
     conf.Prompt = asmsh.Prompt
     shell := ishell.NewWithConfig(&conf)
