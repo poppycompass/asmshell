@@ -6,7 +6,8 @@ import (
     as "github.com/poppycompass/asmshell/go"
 )
 
-func InitArm64(asmsh *as.AsmShell) {
+// 'AArch64'? ref: bindings/vb6/mKeystone.bas:ARM-64, also called AArch64
+func InitArm64(asmsh *as.AsmShell, bigEndian bool) {
     asmsh.CodeAddr  = 0x100000
     asmsh.PrintSize = 128 + 32
     asmsh.PrintMergin = 64
@@ -14,19 +15,25 @@ func InitArm64(asmsh *as.AsmShell) {
     asmsh.StackSize   = 2 * 1024 * 1024
     asmsh.StackAddr = asmsh.StackStart + (asmsh.StackSize / 2)
 
-    asmsh.KeystoneArch = keystone.ARCH_ARM64
-    asmsh.KeystoneMode = keystone.MODE_LITTLE_ENDIAN
-/*     asmsh.KeystoneOPTType = keystone.OPT_SYNTAX */
-/*     asmsh.KeystoneOPTVal = keystone.OPT_SYNTAX_INTEL */
     asmsh.UnicornArch = uc.ARCH_ARM64
-    asmsh.UnicornMode = uc.MODE_ARM
+    // fixme: arm64eb(armebv8) cannot assemble with keystone, but keystone say supported!
+    if bigEndian {
+        asmsh.KeystoneArch = keystone.ARCH_ARM
+        asmsh.KeystoneMode = keystone.MODE_ARM + keystone.MODE_BIG_ENDIAN + keystone.MODE_V8
+        asmsh.UnicornMode = uc.MODE_ARM + uc.MODE_BIG_ENDIAN
+        asmsh.Prompt = "(arm64eb)> "
+    } else {
+        asmsh.KeystoneArch = keystone.ARCH_ARM64
+        asmsh.KeystoneMode = keystone.MODE_LITTLE_ENDIAN
+        asmsh.UnicornMode = uc.MODE_ARM
+        asmsh.Prompt = "(arm64)> "
+    }
     asmsh.SavedCtx = nil
     asmsh.SavedStackSize = 256
     asmsh.SavedStack = make([]byte, asmsh.SavedStackSize)
     for i := uint64(0); i < asmsh.SavedStackSize; i++ {
         asmsh.SavedStack[i] = 0xFF
     }
-    asmsh.Prompt = "(arm64)> "
     asmsh.RegOrder = []string{"x0", " x8", "x1", " x9", "x2", "x10", "x3", "x11", "x4", "x12", "x5", "x13", "x6", " sp", "x7", " pc", "nzcv"}
     asmsh.Regs = map[string]int{
         "x0"    : uc.ARM64_REG_X0,
@@ -37,8 +44,8 @@ func InitArm64(asmsh *as.AsmShell) {
         "x5"    : uc.ARM64_REG_X5,
         "x6"    : uc.ARM64_REG_X6,
         "x7"    : uc.ARM64_REG_X7,
-        " x8"    : uc.ARM64_REG_X8,
-        " x9"    : uc.ARM64_REG_X9,
+        " x8"   : uc.ARM64_REG_X8,
+        " x9"   : uc.ARM64_REG_X9,
         "x10"   : uc.ARM64_REG_X10,
         "x11"   : uc.ARM64_REG_X11,
         "x12"   : uc.ARM64_REG_X12,
@@ -60,8 +67,8 @@ func InitArm64(asmsh *as.AsmShell) {
         "x28"   : uc.ARM64_REG_X28,
         "x29"   : uc.ARM64_REG_X29,
         "x30"   : uc.ARM64_REG_X30,
-        " sp"    : uc.ARM64_REG_SP,
-        " pc"    : uc.ARM64_REG_PC,
+        " sp"   : uc.ARM64_REG_SP,
+        " pc"   : uc.ARM64_REG_PC,
         "nzcv"  : uc.ARM64_REG_NZCV,
     }
     asmsh.SP = uc.ARM64_REG_SP

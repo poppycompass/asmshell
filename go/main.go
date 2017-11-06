@@ -1,4 +1,4 @@
-// TODO: mnemonic suggestion, jmp handling, custom run(http), symbol resolve, arm(vector support)
+// TODO: mnemonic suggestion, jmp handling, custom run(http), symbol resolve, arm(vector support), arm thumb, input '#', arm64eb support
 package main
 
 import (
@@ -88,10 +88,10 @@ func main() {
         case "i8086"   : arch.InitI8086(&asmsh)
         case "x86"     : arch.InitX86(&asmsh)
         case "x64"     : arch.InitX64(&asmsh)
-        case "arm"     : arch.InitArm(&asmsh)
-        case "armeb"   : arch.InitArmeb(&asmsh)
-        case "arm64"   : arch.InitArm64(&asmsh)   // armv8
-        case "arm64eb" : arch.InitArm64eb(&asmsh) // armv8
+        case "arm"     : arch.InitArm(&asmsh  , false)
+        case "armeb"   : arch.InitArm(&asmsh  , true)
+        case "arm64"   : arch.InitArm64(&asmsh, false)
+//        case "arm64eb" : arch.InitArm64(&asmsh, true)
         case "m68k"    : arch.InitX86(&asmsh) // not implemented
         case "mips"    : arch.InitX86(&asmsh) // not implemented
         case "sparc"   : arch.InitX86(&asmsh) // not implemented

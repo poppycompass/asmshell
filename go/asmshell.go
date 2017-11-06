@@ -45,7 +45,6 @@ func (asmsh *AsmShell) Assemble(mnemonic string) ([]byte, error){
             return nil, fmt.Errorf("Error: set syntax option to intel")
         }
     }
-
     if code, _, ok := ks.Assemble(mnemonic, 0); !ok {
         return nil, fmt.Errorf("Error: assemble instruction")
     } else {

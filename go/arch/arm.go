@@ -6,7 +6,7 @@ import (
     as "github.com/poppycompass/asmshell/go"
 )
 
-func InitArm(asmsh *as.AsmShell) {
+func InitArm(asmsh *as.AsmShell, bigEndian bool) {
     asmsh.CodeAddr  = 0x100000
     asmsh.PrintSize = 64 + 16
     asmsh.PrintMergin = 32
@@ -15,18 +15,24 @@ func InitArm(asmsh *as.AsmShell) {
     asmsh.StackAddr = asmsh.StackStart + (asmsh.StackSize / 2)
 
     asmsh.KeystoneArch = keystone.ARCH_ARM
-    asmsh.KeystoneMode = keystone.MODE_ARM
-/*     asmsh.KeystoneOPTType = keystone.OPT_SYNTAX */
-/*     asmsh.KeystoneOPTVal = keystone.OPT_SYNTAX_INTEL */
     asmsh.UnicornArch = uc.ARCH_ARM
-    asmsh.UnicornMode = uc.MODE_ARM
+
+    if bigEndian {
+        asmsh.KeystoneMode = keystone.MODE_ARM + keystone.MODE_BIG_ENDIAN
+        asmsh.UnicornMode = uc.MODE_ARM + uc.MODE_BIG_ENDIAN
+        asmsh.Prompt = "(armeb)> "
+    } else {
+        asmsh.KeystoneMode = keystone.MODE_ARM + keystone.MODE_LITTLE_ENDIAN
+        asmsh.UnicornMode = uc.MODE_ARM
+        asmsh.Prompt = "(arm)> "
+    }
+
     asmsh.SavedCtx = nil
     asmsh.SavedStackSize = 256
     asmsh.SavedStack = make([]byte, asmsh.SavedStackSize)
     for i := uint64(0); i < asmsh.SavedStackSize; i++ {
         asmsh.SavedStack[i] = 0xFF
     }
-    asmsh.Prompt = "(arm)> "
     asmsh.RegOrder = []string{"r0",  "    r8", "r1", "    r9", "r2", "   r10", "r3", "r11/fp", "r4", "r12/ip", "r5", "r13/sp", "r6", "r14/lr", "r7", "r15/pc", "cpsr"}
     asmsh.Regs = map[string]int{
         "r0"        : uc.ARM_REG_R0,
