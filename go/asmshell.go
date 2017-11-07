@@ -22,6 +22,7 @@ type AsmShell struct {
     KeystoneOPTVal keystone.OptionValue
     UnicornArch int
     UnicornMode int
+
     SavedCtx uc.Context
     SavedStack []byte
     SavedStackSize uint64
@@ -140,6 +141,7 @@ func (asmsh *AsmShell) Run(c *ishell.Context, mnemonic string, code []byte) erro
     }
     return nil
 }
+
 func (asmsh *AsmShell) PrintCtx32(c *ishell.Context, mu uc.Unicorn, mnemonic string, code []byte) error {
     old, err := uc.NewUnicorn(asmsh.UnicornArch, asmsh.UnicornMode)
     if asmsh.SavedCtx != nil {

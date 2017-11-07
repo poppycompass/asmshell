@@ -19,6 +19,7 @@ const (
     version  string  = "0.1.0"
     availableArch string = "i8086, x86, x64, arm-thumb(eb), arm(eb), arm64(eb), mips(eb), mips64(eb), sparc(el), sparc64, [ppc|powerpc], [ppc64(el)|powerpc64(el)], [sysz|systemz|systemZ]"
 )
+
 type Options struct {
     OptHelp bool   `short:"h" long:"help"`
     OptArch string `short:"a" long:"arch" default:"x86"`
@@ -108,7 +109,7 @@ func main() {
         printArchList()
         return
     }
-    setAsmShell(opts.OptArch)
+    setArch(opts.OptArch, &asmsh)
 
     conf.Prompt = asmsh.Prompt
     shell := ishell.NewWithConfig(&conf)
@@ -172,7 +173,7 @@ func main() {
                 c.Printf("Usage: set <arch>\n")
                 c.Printf("available arch: %s\n", availableArch)
             } else {
-                setAsmShell(c.Args[0])
+                setArch(c.Args[0], &asmsh)
                 c.SetPrompt(asmsh.Prompt)
             }
         },
@@ -190,34 +191,34 @@ func main() {
     finish()
 }
 
-func setAsmShell(strArch string) {
+func setArch(strArch string, asmsh *as.AsmShell) {
     switch strArch {
-        case "i8086"       : arch.SetI8086(&asmsh)
-        case "x86"         : arch.SetX86(&asmsh)
-        case "x64"         : arch.SetX64(&asmsh)
-        case "arm-thumb"   : arch.SetArmThumb(&asmsh, false)
-        case "arm-thumbeb" : arch.SetArmThumb(&asmsh, true)
-        case "arm"         : arch.SetArm(&asmsh  , false)
-        case "armeb"       : arch.SetArm(&asmsh  , true)
-        case "arm64"       : arch.SetArm64(&asmsh, false)
-        case "arm64eb"     : arch.SetArm64(&asmsh, true) // not implemented
-        case "mips"        : arch.SetMips(&asmsh, false)
-        case "mipseb"      : arch.SetMips(&asmsh, true)
-        case "mips64"      : arch.SetMips64(&asmsh, false) // fixme: something wrong?
-        case "mips64eb"    : arch.SetMips64(&asmsh, true) // fixme: something wrong?
-        case "sparc"       : arch.SetSparc(&asmsh, true) // sparc standard is big-endian
-        case "sparcel"     : arch.SetSparc(&asmsh, false) // assemble only, unicorn: UNSUPPORTED, keystone: supported
-        case "sparc64"     : arch.SetSparc64(&asmsh, true) // fixme: something wrong?, sparc standard is big-endian
+        case "i8086"       : arch.SetI8086(asmsh)
+        case "x86"         : arch.SetX86(asmsh)
+        case "x64"         : arch.SetX64(asmsh)
+        case "arm-thumb"   : arch.SetArmThumb(asmsh, false)
+        case "arm-thumbeb" : arch.SetArmThumb(asmsh, true)
+        case "arm"         : arch.SetArm(asmsh  , false)
+        case "armeb"       : arch.SetArm(asmsh  , true)
+        case "arm64"       : arch.SetArm64(asmsh, false)
+        case "arm64eb"     : arch.SetArm64(asmsh, true) // not implemented
+        case "mips"        : arch.SetMips(asmsh, false)
+        case "mipseb"      : arch.SetMips(asmsh, true)
+        case "mips64"      : arch.SetMips64(asmsh, false) // fixme: something wrong?
+        case "mips64eb"    : arch.SetMips64(asmsh, true) // fixme: something wrong?
+        case "sparc"       : arch.SetSparc(asmsh, true) // sparc standard is big-endian
+        case "sparcel"     : arch.SetSparc(asmsh, false) // assemble only, unicorn: UNSUPPORTED, keystone: supported
+        case "sparc64"     : arch.SetSparc64(asmsh, true) // fixme: something wrong?, sparc standard is big-endian
         case "ppc",
-             "powerpc"     : arch.SetPowerPC(&asmsh, true)
+             "powerpc"     : arch.SetPowerPC(asmsh, true)
         case "ppc64",
-             "powerpc64"   : arch.SetPowerPC64(&asmsh, true)
+             "powerpc64"   : arch.SetPowerPC64(asmsh, true)
         case "ppc64el",
-             "powerpc64el" : arch.SetPowerPC64(&asmsh, false)
+             "powerpc64el" : arch.SetPowerPC64(asmsh, false)
         case "sysz",
              "systemz",
-             "systemZ"     : arch.SetSystemZ(&asmsh)
+             "systemZ"     : arch.SetSystemZ(asmsh)
         //case "m68k"        : arcSetitM68k(&asmsh) // unicorn: supported, keystone: UNSUPPORTED
-        default            : arch.SetX86(&asmsh)
+        default            : arch.SetX86(asmsh)
     }
 }
