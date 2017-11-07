@@ -1,4 +1,4 @@
-// TODO: test, (jmp handling,symbol resolve), custom run(http), mnemonic suggestion,arm(vector support), arm64eb support, add float and 128bit registers(x86, arm, mips), add hook?
+// TODO: test, (jmp handling, symbol resolve), README, custom run(http), mnemonic suggestion,arm(vector support), arm64eb support, add float and 128bit registers(x86, arm, mips), add hook?, timeout(infinite loop)
 
 package main
 
@@ -32,7 +32,7 @@ func help() {
     fmt.Printf("optional arguments:\n")
     fmt.Printf("  -h, --help             Show this help message and exit \n")
     fmt.Printf("  -a ARCH, --arch ARCH,  Target architecture(Default: x86)\n")
-    fmt.Printf("     Support: %s\n", AvailableArch)
+    fmt.Printf("     Support: %s\n", availableArch)
 }
 
 func printArchList() {
@@ -157,6 +157,7 @@ func main() {
                 return
             }
             err := asmsh.Emulate(c, fragList[c.Args[0]])
+            c.Printf("[-] %s, %s\n", c.Args[0], fragList[c.Args[0]])
             if err != nil {
                 c.Printf("[-] %s\n", err)
             }

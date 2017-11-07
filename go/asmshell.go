@@ -47,6 +47,7 @@ func (asmsh *AsmShell) Assemble(mnemonic string) ([]byte, error){
         }
     }
     if code, _, ok := ks.Assemble(mnemonic, 0); !ok {
+        //fmt.Printf("[debug]: %s\n", mnemonic)
         return nil, fmt.Errorf("Error: assemble instruction")
     } else {
         //fmt.Printf("[debug]: code(%x)\n", code)

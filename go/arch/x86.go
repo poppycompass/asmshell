@@ -6,6 +6,7 @@ import (
     as "github.com/poppycompass/asmshell/go"
 )
 
+// sample: mov ecx, 0x20; j1:; inc eax; dec ecx; jnz j1
 func SetX86(asmsh *as.AsmShell) {
     asmsh.CodeAddr  = 0x100000
     asmsh.PrintSize = 64 + 16
