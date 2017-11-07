@@ -10,9 +10,9 @@ import (
     "github.com/chzyer/readline"
     "github.com/poppycompass/ishell"
     as "github.com/poppycompass/asmshell/go"
-//    uc "github.com/unicorn-engine/unicorn/bindings/go/unicorn"
     "github.com/poppycompass/asmshell/go/arch"
     utils "github.com/poppycompass/asmshell/go/utils"
+//    uc "github.com/unicorn-engine/unicorn/bindings/go/unicorn"
 )
 
 const (
@@ -108,7 +108,7 @@ func main() {
         printArchList()
         return
     }
-    SetAsmShell(opts.OptArch)
+    setAsmShell(opts.OptArch)
 
     conf.Prompt = asmsh.Prompt
     shell := ishell.NewWithConfig(&conf)
@@ -172,7 +172,7 @@ func main() {
                 c.Printf("Usage: set <arch>\n")
                 c.Printf("available arch: %s\n", availableArch)
             } else {
-                SetAsmShell(c.Args[0])
+                setAsmShell(c.Args[0])
                 c.SetPrompt(asmsh.Prompt)
             }
         },
@@ -190,7 +190,7 @@ func main() {
     finish()
 }
 
-func SetAsmShell(strArch string) {
+func setAsmShell(strArch string) {
     switch strArch {
         case "i8086"       : arch.SetI8086(&asmsh)
         case "x86"         : arch.SetX86(&asmsh)
