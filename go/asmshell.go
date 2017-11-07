@@ -46,6 +46,7 @@ func (asmsh *AsmShell) Assemble(mnemonic string) ([]byte, error){
             return nil, fmt.Errorf("Error: set syntax option to intel")
         }
     }
+    // TODO: What is the effect of the second argument(address) of Assemble
     if code, _, ok := ks.Assemble(mnemonic, 0); !ok {
         //fmt.Printf("[debug]: %s\n", mnemonic)
         return nil, fmt.Errorf("Error: assemble instruction")
