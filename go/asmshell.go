@@ -154,7 +154,7 @@ func (asmsh *AsmShell) PrintCtx32(c *ishell.Context, mu uc.Unicorn, mnemonic str
             return err
         }
     }
-    c.ColorPrintf(asmsh.Pallet.BoldWhite, "mnemonic: %s [hex: %x]\n", mnemonic, code)
+    c.ColorPrintf(asmsh.Pallet.BoldWhite, "mnemonic: %s [ hex: %x ]\n", mnemonic, code)
     c.ColorPrintf(asmsh.Pallet.BoldCyan, "---------------------------- CPU CONTEXT ----------------------------\n")
     for idx, key := range asmsh.RegOrder {
         reg, err := mu.RegRead(asmsh.Regs[key])
