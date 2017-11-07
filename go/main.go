@@ -12,12 +12,11 @@ import (
     as "github.com/poppycompass/asmshell/go"
     "github.com/poppycompass/asmshell/go/arch"
     utils "github.com/poppycompass/asmshell/go/utils"
-//    uc "github.com/unicorn-engine/unicorn/bindings/go/unicorn"
 )
 
 const (
-    version  string  = "0.1.0"
-    availableArch string = "i8086, x86, x64, arm-thumb(eb), arm(eb), arm64(eb), mips(eb), mips64(eb), sparc(el), sparc64, [ppc|powerpc], [ppc64(el)|powerpc64(el)], [sysz|systemz|systemZ]"
+    VERSION  string  = "0.1.0"
+    SUPPORTED string = "i8086, x86, x64, arm-thumb(eb), arm(eb), arm64(eb), mips(eb), mips64(eb), sparc(el), sparc64, [ppc|powerpc], [ppc64(el)|powerpc64(el)], [sysz|systemz|systemZ]"
 )
 
 type Options struct {
@@ -28,12 +27,11 @@ type Options struct {
 
 // TODO: fix f*ck help
 func help() {
-    fmt.Printf("Usage: ./asmshell [-h|--help] [-a|--arch ARCH] \n\n")
-    fmt.Printf("Assembler Shell\n\n")
-    fmt.Printf("optional arguments:\n")
-    fmt.Printf("  -h, --help             Show this help message and exit \n")
-    fmt.Printf("  -a ARCH, --arch ARCH,  Target architecture(Default: x86)\n")
-    fmt.Printf("     Support: %s\n", availableArch)
+    fmt.Printf("Usage: asmshell [-h|--help] [-a|--arch ARCH] [-L|--List]\n\n")
+    fmt.Printf("    -h, --help             Show this help message and exit \n")
+    fmt.Printf("    -a ARCH, --arch ARCH   Target architecture(Default: x86, see '-L')\n")
+    fmt.Printf("       Supported: %s\n", SUPPORTED)
+    fmt.Printf("    -L, --List             Show details of supported architectures\n")
 }
 
 func printArchList() {
@@ -41,14 +39,14 @@ func printArchList() {
     fmt.Printf("    i8086         : Intel 16-bit. iAPX 86. little endian\n")
     fmt.Printf("    x86           : Intel 32-bit. 80386/IA-32. Extended i8086 to 32-bits. little endian\n")
     fmt.Printf("    x64           : Intel 64-bit. AMD64. Extended x86 to 64-bits. little endian\n")
-    fmt.Printf("    arm-thumb(eb) : Arm Thumb mode(including Thumb-2). Mainly 16-bit. arm-thumbeb is big endian.\n")
+    fmt.Printf("    arm-thumb(eb) : Arm Thumb mode(including Thumb-2). Mainly 16-bit. arm-thumbeb is big endian\n")
     fmt.Printf("    arm(eb)       : Advanced RISC Machine. 32-bit. armeb is big endian\n")
     fmt.Printf("    arm64(eb)     : Armv8, 64-bit. arm64eb is big endian\n")
     fmt.Printf("    mips(eb)      : MIPS, 32-bit. mipseb is big endian\n")
     fmt.Printf("    mips64(eb)    : MIPS, 64-bit. mips64eb is big endian\n")
-    fmt.Printf("    sparc(el)     : SPARC, 32-bit. sparcel only supports assembly. sparcel is little endian.\n")
-    fmt.Printf("    sparc64       : SPARC, 64-bit. big-endian.\n")
-    fmt.Printf("    powerpc       : Support assemble only. PowerPC, 32-bit. big-endian.\n")
+    fmt.Printf("    sparc(el)     : SPARC, 32-bit. sparcel only supports assembly. sparcel is little endian\n")
+    fmt.Printf("    sparc64       : SPARC, 64-bit. big-endian\n")
+    fmt.Printf("    powerpc       : Support assemble only. PowerPC, 32-bit. big-endian\n")
     fmt.Printf("    powerpc64(el) : Support assemble only. PowerPC, 64-bit. powerpc64el is little endian\n")
     fmt.Printf("    systemZ       : Support assemble only. Architecture for IBM eServer zSeries. big-endian\n")
 }
@@ -117,7 +115,7 @@ func main() {
     shell.Interrupt(handleInterrupt)
     shell.NotFound(handleNotFound)
     shell.SetHomeHistoryPath(".asmshell_history")
-    shell.ColorPrintln(asmsh.Pallet.BoldYellow, "Assembler Shell(v " + version + ")")
+    shell.ColorPrintln(asmsh.Pallet.BoldYellow, "Assembler Shell(v " + VERSION + ")")
 
     fragList := make(map[string]string)
     frags := &ishell.Cmd{
@@ -171,7 +169,7 @@ func main() {
         Func: func(c *ishell.Context) {
             if len(c.Args) == 0 {
                 c.Printf("Usage: set <arch>\n")
-                c.Printf("available arch: %s\n", availableArch)
+                c.Printf("Supported arch: %s\n", SUPPORTED)
             } else {
                 setArch(c.Args[0], &asmsh)
                 c.SetPrompt(asmsh.Prompt)
