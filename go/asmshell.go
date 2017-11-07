@@ -163,99 +163,10 @@ func (asmsh *AsmShell) PrintCtx32(c *ishell.Context, mu uc.Unicorn, mnemonic str
                 c.Println("")
             }
         }
-        if key == "eflags" {
-            if reg != oldReg {
-                c.ColorPrintf(asmsh.Pallet.HiRed, "%s: 0x%08x", key, reg)
-                c.ColorPrintf(asmsh.Pallet.HiWhite, " [ ")
-                if (reg & 0x1) != (oldReg & 0x1) {
-                    c.ColorPrintf(asmsh.Pallet.HiRed, "CF(%d) ", reg&0x1)
-                } else {
-                    c.Printf("CF(%d) ", reg&0x1)
-                }
-                if ((reg>>2) & 0x1) != ((oldReg>>2) & 0x1) {
-                    c.ColorPrintf(asmsh.Pallet.HiRed, "PF(%d) ", (reg>>2)&0x1)
-                } else {
-                    c.Printf("PF(%d) ", (reg>>2)&0x1)
-                }
-                if ((reg>>4) & 0x1) != ((oldReg>>4) & 0x1) {
-                    c.ColorPrintf(asmsh.Pallet.HiRed, "AF(%d) ", (reg>>4)&0x1)
-                } else {
-                    c.Printf("AF(%d) ", (reg>>4)&0x1)
-                }
-                if ((reg>>6) & 0x1) != ((oldReg>>6) & 0x1) {
-                    c.ColorPrintf(asmsh.Pallet.HiRed, "ZF(%d) ", (reg>>6)&0x1)
-                } else {
-                    c.Printf("ZF(%d) ", (reg>>6)&0x1)
-                }
-                if ((reg>>7) & 0x1) != ((oldReg>>7) & 0x1) {
-                    c.ColorPrintf(asmsh.Pallet.HiRed, "SF(%d) ", (reg>>7)&0x1)
-                } else {
-                    c.Printf("SF(%d) ", (reg>>7)&0x1)
-                }
-                if ((reg>>9) & 0x1) != ((oldReg>>9) & 0x1) {
-                    c.ColorPrintf(asmsh.Pallet.HiRed, "IF(%d) ", (reg>>9)&0x1)
-                } else {
-                    c.Printf("IF(%d) ", (reg>>9)&0x1)
-                }
-                if ((reg>>10) & 0x1) != ((oldReg>>10) & 0x1) {
-                    c.ColorPrintf(asmsh.Pallet.HiRed, "DF(%d) ", (reg>>10)&0x1)
-                } else {
-                    c.Printf("DF(%d) ", (reg>>10)&0x1)
-                }
-                if ((reg>>11) & 0x1) != ((oldReg>>11) & 0x1) {
-                    c.ColorPrintf(asmsh.Pallet.HiRed, "OF(%d) ", (reg>>10)&0x1)
-                } else {
-                    c.Printf("OF(%d) ", (reg>>10)&0x1)
-                }
-                c.Printf("]")
-            } else {
-                c.Printf("%s: 0x%08x [ CF(%d) PF(%d) AF(%d) ZF(%d) SF(%d) IF(%d) DF(%d) OF(%d) ]",
-                  key, reg, reg & 0x1, (reg>>2)&0x1, (reg>>4)&0x1, (reg>>6)&0x1, (reg>>7)&0x1, (reg>>9)&0x1, (reg>>10)&0x1, (reg>>11)&0x1)
-            }
+        if key == "eflags" {      // x86
+            asmsh.PrintEflags32(c, key, reg, oldReg)
         } else if key == "cpsr" { // arm
-            if reg != oldReg {
-                c.ColorPrintf(asmsh.Pallet.HiRed, "%s: 0x%08x", key, reg)
-                c.ColorPrintf(asmsh.Pallet.HiWhite, " [ ")
-                if ((reg>>5) & 0x1) != ((oldReg>>5) & 0x1) { // T=0: ARM state, T=1: Thumb state
-                    c.ColorPrintf(asmsh.Pallet.HiRed, "T(%d) ", (reg>>5)&0x1)
-                } else {
-                    c.Printf("T(%d) ", (reg>>5)&0x1)
-                }
-                if ((reg>>9) & 0x1) != ((oldReg>>9) & 0x1) { // endian for load/store
-                    c.ColorPrintf(asmsh.Pallet.HiRed, "E(%d) ", (reg>>9)&0x1)
-                } else {
-                    c.Printf("E(%d) ", (reg>>9)&0x1)
-                }
-                if ((reg>>27) & 0x1) != ((oldReg>>27) & 0x1) { // overflow flag
-                    c.ColorPrintf(asmsh.Pallet.HiRed, "Q(%d) ", (reg>>4)&0x1)
-                } else {
-                    c.Printf("Q(%d) ", (reg>>27)&0x1)
-                }
-                if ((reg>>28) & 0x1) != ((oldReg>>28) & 0x1) { // overflow flag
-                    c.ColorPrintf(asmsh.Pallet.HiRed, "V(%d) ", (reg>>28)&0x1)
-                } else {
-                    c.Printf("V(%d) ", (reg>>28)&0x1)
-                }
-                if ((reg>>29) & 0x1) != ((oldReg>>29) & 0x1) { // carry out
-                    c.ColorPrintf(asmsh.Pallet.HiRed, "C(%d) ", (reg>>29)&0x1)
-                } else {
-                    c.Printf("C(%d) ", (reg>>29)&0x1)
-                }
-                if ((reg>>30) & 0x1) != ((oldReg>>30) & 0x1) { // zero flag
-                    c.ColorPrintf(asmsh.Pallet.HiRed, "Z(%d) ", (reg>>30)&0x1)
-                } else {
-                    c.Printf("Z(%d) ", (reg>>30)&0x1)
-                }
-                if ((reg>>31) & 0x1) != ((oldReg>>31) & 0x1) { // negative flag
-                    c.ColorPrintf(asmsh.Pallet.HiRed, "N(%d) ", (reg>>31)&0x1)
-                } else {
-                    c.Printf("N(%d) ", (reg>>31)&0x1)
-                }
-                c.Printf("]")
-            } else {
-                c.Printf("%s: 0x%08x [ T(%d) E(%d) Q(%d) V(%d) C(%d) Z(%d) N(%d) ]",
-                  key, reg, (reg>>5) & 0x1, (reg>>9)&0x1, (reg>>27)&0x1, (reg>>28)&0x1, (reg>>29)&0x1, (reg>>30)&0x1, (reg>>31)&0x1)
-            }
+            asmsh.PrintCpsr32(c, key, reg, oldReg)
         } else {
             if reg != oldReg {
                 //c.ColorPrintf(asmsh.Pallet.HiRed, "%s:    0x%08x(old: %08x)   ", key, reg, oldReg)
@@ -309,7 +220,101 @@ func (asmsh *AsmShell) HexPrint32(c *ishell.Context, mu uc.Unicorn) error {
     return nil
 }
 
-
+func (asmsh *AsmShell) PrintEflags32(c *ishell.Context, key string, reg uint64, oldReg uint64) {
+    if reg != oldReg {
+        c.ColorPrintf(asmsh.Pallet.HiRed, "%s: 0x%08x", key, reg)
+        c.ColorPrintf(asmsh.Pallet.HiWhite, " [ ")
+        if (reg & 0x1) != (oldReg & 0x1) {
+            c.ColorPrintf(asmsh.Pallet.HiRed, "CF(%d) ", reg&0x1)
+        } else {
+            c.Printf("CF(%d) ", reg&0x1)
+        }
+        if ((reg>>2) & 0x1) != ((oldReg>>2) & 0x1) {
+            c.ColorPrintf(asmsh.Pallet.HiRed, "PF(%d) ", (reg>>2)&0x1)
+        } else {
+            c.Printf("PF(%d) ", (reg>>2)&0x1)
+        }
+        if ((reg>>4) & 0x1) != ((oldReg>>4) & 0x1) {
+            c.ColorPrintf(asmsh.Pallet.HiRed, "AF(%d) ", (reg>>4)&0x1)
+        } else {
+            c.Printf("AF(%d) ", (reg>>4)&0x1)
+        }
+        if ((reg>>6) & 0x1) != ((oldReg>>6) & 0x1) {
+            c.ColorPrintf(asmsh.Pallet.HiRed, "ZF(%d) ", (reg>>6)&0x1)
+        } else {
+            c.Printf("ZF(%d) ", (reg>>6)&0x1)
+        }
+        if ((reg>>7) & 0x1) != ((oldReg>>7) & 0x1) {
+            c.ColorPrintf(asmsh.Pallet.HiRed, "SF(%d) ", (reg>>7)&0x1)
+        } else {
+            c.Printf("SF(%d) ", (reg>>7)&0x1)
+        }
+        if ((reg>>9) & 0x1) != ((oldReg>>9) & 0x1) {
+            c.ColorPrintf(asmsh.Pallet.HiRed, "IF(%d) ", (reg>>9)&0x1)
+        } else {
+            c.Printf("IF(%d) ", (reg>>9)&0x1)
+        }
+        if ((reg>>10) & 0x1) != ((oldReg>>10) & 0x1) {
+            c.ColorPrintf(asmsh.Pallet.HiRed, "DF(%d) ", (reg>>10)&0x1)
+        } else {
+            c.Printf("DF(%d) ", (reg>>10)&0x1)
+        }
+        if ((reg>>11) & 0x1) != ((oldReg>>11) & 0x1) {
+            c.ColorPrintf(asmsh.Pallet.HiRed, "OF(%d) ", (reg>>10)&0x1)
+        } else {
+            c.Printf("OF(%d) ", (reg>>10)&0x1)
+        }
+        c.Printf("]")
+    } else {
+        c.Printf("%s: 0x%08x [ CF(%d) PF(%d) AF(%d) ZF(%d) SF(%d) IF(%d) DF(%d) OF(%d) ]",
+                  key, reg, reg & 0x1, (reg>>2)&0x1, (reg>>4)&0x1, (reg>>6)&0x1, (reg>>7)&0x1, (reg>>9)&0x1, (reg>>10)&0x1, (reg>>11)&0x1)
+    }
+}
+func (asmsh *AsmShell) PrintCpsr32(c *ishell.Context, key string, reg uint64, oldReg uint64) {
+    if reg != oldReg {
+        c.ColorPrintf(asmsh.Pallet.HiRed, "%s: 0x%08x", key, reg)
+        c.ColorPrintf(asmsh.Pallet.HiWhite, " [ ")
+        if ((reg>>5) & 0x1) != ((oldReg>>5) & 0x1) { // T=0: ARM state, T=1: Thumb state
+            c.ColorPrintf(asmsh.Pallet.HiRed, "T(%d) ", (reg>>5)&0x1)
+        } else {
+            c.Printf("T(%d) ", (reg>>5)&0x1)
+        }
+        if ((reg>>9) & 0x1) != ((oldReg>>9) & 0x1) { // endian for load/store
+            c.ColorPrintf(asmsh.Pallet.HiRed, "E(%d) ", (reg>>9)&0x1)
+        } else {
+            c.Printf("E(%d) ", (reg>>9)&0x1)
+        }
+        if ((reg>>27) & 0x1) != ((oldReg>>27) & 0x1) { // overflow flag
+            c.ColorPrintf(asmsh.Pallet.HiRed, "Q(%d) ", (reg>>4)&0x1)
+        } else {
+            c.Printf("Q(%d) ", (reg>>27)&0x1)
+        }
+        if ((reg>>28) & 0x1) != ((oldReg>>28) & 0x1) { // overflow flag
+            c.ColorPrintf(asmsh.Pallet.HiRed, "V(%d) ", (reg>>28)&0x1)
+        } else {
+            c.Printf("V(%d) ", (reg>>28)&0x1)
+        }
+        if ((reg>>29) & 0x1) != ((oldReg>>29) & 0x1) { // carry out
+            c.ColorPrintf(asmsh.Pallet.HiRed, "C(%d) ", (reg>>29)&0x1)
+        } else {
+            c.Printf("C(%d) ", (reg>>29)&0x1)
+        }
+        if ((reg>>30) & 0x1) != ((oldReg>>30) & 0x1) { // zero flag
+            c.ColorPrintf(asmsh.Pallet.HiRed, "Z(%d) ", (reg>>30)&0x1)
+        } else {
+            c.Printf("Z(%d) ", (reg>>30)&0x1)
+        }
+        if ((reg>>31) & 0x1) != ((oldReg>>31) & 0x1) { // negative flag
+            c.ColorPrintf(asmsh.Pallet.HiRed, "N(%d) ", (reg>>31)&0x1)
+        } else {
+            c.Printf("N(%d) ", (reg>>31)&0x1)
+        }
+        c.Printf("]")
+    } else {
+        c.Printf("%s: 0x%08x [ T(%d) E(%d) Q(%d) V(%d) C(%d) Z(%d) N(%d) ]",
+          key, reg, (reg>>5) & 0x1, (reg>>9)&0x1, (reg>>27)&0x1, (reg>>28)&0x1, (reg>>29)&0x1, (reg>>30)&0x1, (reg>>31)&0x1)
+    }
+}
 func (asmsh *AsmShell) PrintCtx16(c *ishell.Context, mu uc.Unicorn, mnemonic string, code []byte) error {
     old, err := uc.NewUnicorn(asmsh.UnicornArch, asmsh.UnicornMode)
     if asmsh.SavedCtx != nil {
@@ -338,99 +343,10 @@ func (asmsh *AsmShell) PrintCtx16(c *ishell.Context, mu uc.Unicorn, mnemonic str
         if idx != 0 && idx % 2 == 0 {
             c.Println("")
         }
-        if key == "eflags" {
-            if reg != oldReg {
-                c.ColorPrintf(asmsh.Pallet.HiRed, "%s: 0x%04x", key, reg)
-                c.ColorPrintf(asmsh.Pallet.HiWhite, " [ ")
-                if (reg & 0x1) != (oldReg & 0x1) {
-                    c.ColorPrintf(asmsh.Pallet.HiRed, "CF(%d) ", reg&0x1)
-                } else {
-                    c.Printf("CF(%d) ", reg&0x1)
-                }
-                if ((reg>>2) & 0x1) != ((oldReg>>2) & 0x1) {
-                    c.ColorPrintf(asmsh.Pallet.HiRed, "PF(%d) ", (reg>>2)&0x1)
-                } else {
-                    c.Printf("PF(%d) ", (reg>>2)&0x1)
-                }
-                if ((reg>>4) & 0x1) != ((oldReg>>4) & 0x1) {
-                    c.ColorPrintf(asmsh.Pallet.HiRed, "AF(%d) ", (reg>>4)&0x1)
-                } else {
-                    c.Printf("AF(%d) ", (reg>>4)&0x1)
-                }
-                if ((reg>>6) & 0x1) != ((oldReg>>6) & 0x1) {
-                    c.ColorPrintf(asmsh.Pallet.HiRed, "ZF(%d) ", (reg>>6)&0x1)
-                } else {
-                    c.Printf("ZF(%d) ", (reg>>6)&0x1)
-                }
-                if ((reg>>7) & 0x1) != ((oldReg>>7) & 0x1) {
-                    c.ColorPrintf(asmsh.Pallet.HiRed, "SF(%d) ", (reg>>7)&0x1)
-                } else {
-                    c.Printf("SF(%d) ", (reg>>7)&0x1)
-                }
-                if ((reg>>9) & 0x1) != ((oldReg>>9) & 0x1) {
-                    c.ColorPrintf(asmsh.Pallet.HiRed, "IF(%d) ", (reg>>9)&0x1)
-                } else {
-                    c.Printf("IF(%d) ", (reg>>9)&0x1)
-                }
-                if ((reg>>10) & 0x1) != ((oldReg>>10) & 0x1) {
-                    c.ColorPrintf(asmsh.Pallet.HiRed, "DF(%d) ", (reg>>10)&0x1)
-                } else {
-                    c.Printf("DF(%d) ", (reg>>10)&0x1)
-                }
-                if ((reg>>11) & 0x1) != ((oldReg>>11) & 0x1) {
-                    c.ColorPrintf(asmsh.Pallet.HiRed, "OF(%d) ", (reg>>10)&0x1)
-                } else {
-                    c.Printf("OF(%d) ", (reg>>10)&0x1)
-                }
-                c.Printf("]")
-            } else {
-                c.Printf("%s: 0x%04x [ CF(%d) PF(%d) AF(%d) ZF(%d) SF(%d) IF(%d) DF(%d) OF(%d) ]",
-                  key, reg, reg & 0x1, (reg>>2)&0x1, (reg>>4)&0x1, (reg>>6)&0x1, (reg>>7)&0x1, (reg>>9)&0x1, (reg>>10)&0x1, (reg>>11)&0x1)
-            }
-        } else if key == "cpsr" { // arm
-            if reg != oldReg {
-                c.ColorPrintf(asmsh.Pallet.HiRed, "%s:      0x%08x", key, reg)
-                c.ColorPrintf(asmsh.Pallet.HiWhite, " [ ")
-                if ((reg>>5) & 0x1) != ((oldReg>>5) & 0x1) { // T=0: ARM state, T=1: Thumb state
-                    c.ColorPrintf(asmsh.Pallet.HiRed, "T(%d) ", (reg>>5)&0x1)
-                } else {
-                    c.Printf("T(%d) ", (reg>>5)&0x1)
-                }
-                if ((reg>>9) & 0x1) != ((oldReg>>9) & 0x1) { // endian for load/store
-                    c.ColorPrintf(asmsh.Pallet.HiRed, "E(%d) ", (reg>>9)&0x1)
-                } else {
-                    c.Printf("E(%d) ", (reg>>9)&0x1)
-                }
-                if ((reg>>27) & 0x1) != ((oldReg>>27) & 0x1) { // overflow flag
-                    c.ColorPrintf(asmsh.Pallet.HiRed, "Q(%d) ", (reg>>4)&0x1)
-                } else {
-                    c.Printf("Q(%d) ", (reg>>27)&0x1)
-                }
-                if ((reg>>28) & 0x1) != ((oldReg>>28) & 0x1) { // overflow flag
-                    c.ColorPrintf(asmsh.Pallet.HiRed, "V(%d) ", (reg>>28)&0x1)
-                } else {
-                    c.Printf("V(%d) ", (reg>>28)&0x1)
-                }
-                if ((reg>>29) & 0x1) != ((oldReg>>29) & 0x1) { // carry out
-                    c.ColorPrintf(asmsh.Pallet.HiRed, "C(%d) ", (reg>>29)&0x1)
-                } else {
-                    c.Printf("C(%d) ", (reg>>29)&0x1)
-                }
-                if ((reg>>30) & 0x1) != ((oldReg>>30) & 0x1) { // zero flag
-                    c.ColorPrintf(asmsh.Pallet.HiRed, "Z(%d) ", (reg>>30)&0x1)
-                } else {
-                    c.Printf("Z(%d) ", (reg>>30)&0x1)
-                }
-                if ((reg>>31) & 0x1) != ((oldReg>>31) & 0x1) { // negative flag
-                    c.ColorPrintf(asmsh.Pallet.HiRed, "N(%d) ", (reg>>31)&0x1)
-                } else {
-                    c.Printf("N(%d) ", (reg>>31)&0x1)
-                }
-                c.Printf("]")
-            } else {
-                c.Printf("%s:      0x%08x [ T(%d) E(%d) Q(%d) V(%d) C(%d) Z(%d) N(%d) ]",
-                  key, reg, (reg>>5) & 0x1, (reg>>9)&0x1, (reg>>27)&0x1, (reg>>28)&0x1, (reg>>29)&0x1, (reg>>30)&0x1, (reg>>31)&0x1)
-            }
+        if key == "eflags" {      // i8086
+            asmsh.PrintEflags16(c, key, reg, oldReg)
+        } else if key == "cpsr" { // arm thumb
+            asmsh.PrintCpsr32(c, key, reg, oldReg)
         } else {
             if reg != oldReg {
                 //c.ColorPrintf(asmsh.Pallet.HiRed, "%s:    0x%04x(old: %04x)   ", key, reg, oldReg)
@@ -479,6 +395,58 @@ func (asmsh *AsmShell) HexPrint16(c *ishell.Context, mu uc.Unicorn) error {
     }
     return nil
 }
+
+func (asmsh *AsmShell) PrintEflags16(c *ishell.Context, key string, reg uint64, oldReg uint64) {
+    if reg != oldReg {
+        c.ColorPrintf(asmsh.Pallet.HiRed, "%s: 0x%04x", key, reg)
+        c.ColorPrintf(asmsh.Pallet.HiWhite, " [ ")
+        if (reg & 0x1) != (oldReg & 0x1) {
+            c.ColorPrintf(asmsh.Pallet.HiRed, "CF(%d) ", reg&0x1)
+        } else {
+            c.Printf("CF(%d) ", reg&0x1)
+        }
+        if ((reg>>2) & 0x1) != ((oldReg>>2) & 0x1) {
+            c.ColorPrintf(asmsh.Pallet.HiRed, "PF(%d) ", (reg>>2)&0x1)
+        } else {
+            c.Printf("PF(%d) ", (reg>>2)&0x1)
+        }
+        if ((reg>>4) & 0x1) != ((oldReg>>4) & 0x1) {
+            c.ColorPrintf(asmsh.Pallet.HiRed, "AF(%d) ", (reg>>4)&0x1)
+        } else {
+            c.Printf("AF(%d) ", (reg>>4)&0x1)
+        }
+        if ((reg>>6) & 0x1) != ((oldReg>>6) & 0x1) {
+            c.ColorPrintf(asmsh.Pallet.HiRed, "ZF(%d) ", (reg>>6)&0x1)
+        } else {
+            c.Printf("ZF(%d) ", (reg>>6)&0x1)
+        }
+        if ((reg>>7) & 0x1) != ((oldReg>>7) & 0x1) {
+            c.ColorPrintf(asmsh.Pallet.HiRed, "SF(%d) ", (reg>>7)&0x1)
+        } else {
+            c.Printf("SF(%d) ", (reg>>7)&0x1)
+        }
+        if ((reg>>9) & 0x1) != ((oldReg>>9) & 0x1) {
+            c.ColorPrintf(asmsh.Pallet.HiRed, "IF(%d) ", (reg>>9)&0x1)
+        } else {
+            c.Printf("IF(%d) ", (reg>>9)&0x1)
+        }
+        if ((reg>>10) & 0x1) != ((oldReg>>10) & 0x1) {
+            c.ColorPrintf(asmsh.Pallet.HiRed, "DF(%d) ", (reg>>10)&0x1)
+        } else {
+            c.Printf("DF(%d) ", (reg>>10)&0x1)
+        }
+        if ((reg>>11) & 0x1) != ((oldReg>>11) & 0x1) {
+            c.ColorPrintf(asmsh.Pallet.HiRed, "OF(%d) ", (reg>>10)&0x1)
+        } else {
+            c.Printf("OF(%d) ", (reg>>10)&0x1)
+        }
+        c.Printf("]")
+    } else {
+        c.Printf("%s: 0x%04x [ CF(%d) PF(%d) AF(%d) ZF(%d) SF(%d) IF(%d) DF(%d) OF(%d) ]",
+          key, reg, reg & 0x1, (reg>>2)&0x1, (reg>>4)&0x1, (reg>>6)&0x1, (reg>>7)&0x1, (reg>>9)&0x1, (reg>>10)&0x1, (reg>>11)&0x1)
+    }
+}
+
 func (asmsh *AsmShell) PrintCtx64(c *ishell.Context, mu uc.Unicorn, mnemonic string, code []byte) error {
     old, err := uc.NewUnicorn(asmsh.UnicornArch, asmsh.UnicornMode)
     if asmsh.SavedCtx != nil {
@@ -507,84 +475,10 @@ func (asmsh *AsmShell) PrintCtx64(c *ishell.Context, mu uc.Unicorn, mnemonic str
         if idx != 0 && idx % 2 == 0 {
             c.Println("")
         }
-        if key == "eflags" {
-            if reg != oldReg {
-                c.ColorPrintf(asmsh.Pallet.HiRed, "%s: 0x%016x", key, reg)
-                c.ColorPrintf(asmsh.Pallet.HiWhite, " [ ")
-                if (reg & 0x1) != (oldReg & 0x1) {
-                    c.ColorPrintf(asmsh.Pallet.HiRed, "CF(%d) ", reg&0x1)
-                } else {
-                    c.Printf("CF(%d) ", reg&0x1)
-                }
-                if ((reg>>2) & 0x1) != ((oldReg>>2) & 0x1) {
-                    c.ColorPrintf(asmsh.Pallet.HiRed, "PF(%d) ", (reg>>2)&0x1)
-                } else {
-                    c.Printf("PF(%d) ", (reg>>2)&0x1)
-                }
-                if ((reg>>4) & 0x1) != ((oldReg>>4) & 0x1) {
-                    c.ColorPrintf(asmsh.Pallet.HiRed, "AF(%d) ", (reg>>4)&0x1)
-                } else {
-                    c.Printf("AF(%d) ", (reg>>4)&0x1)
-                }
-                if ((reg>>6) & 0x1) != ((oldReg>>6) & 0x1) {
-                    c.ColorPrintf(asmsh.Pallet.HiRed, "ZF(%d) ", (reg>>6)&0x1)
-                } else {
-                    c.Printf("ZF(%d) ", (reg>>6)&0x1)
-                }
-                if ((reg>>7) & 0x1) != ((oldReg>>7) & 0x1) {
-                    c.ColorPrintf(asmsh.Pallet.HiRed, "SF(%d) ", (reg>>7)&0x1)
-                } else {
-                    c.Printf("SF(%d) ", (reg>>7)&0x1)
-                }
-                if ((reg>>9) & 0x1) != ((oldReg>>9) & 0x1) {
-                    c.ColorPrintf(asmsh.Pallet.HiRed, "IF(%d) ", (reg>>9)&0x1)
-                } else {
-                    c.Printf("IF(%d) ", (reg>>9)&0x1)
-                }
-                if ((reg>>10) & 0x1) != ((oldReg>>10) & 0x1) {
-                    c.ColorPrintf(asmsh.Pallet.HiRed, "DF(%d) ", (reg>>10)&0x1)
-                } else {
-                    c.Printf("DF(%d) ", (reg>>10)&0x1)
-                }
-                if ((reg>>11) & 0x1) != ((oldReg>>11) & 0x1) {
-                    c.ColorPrintf(asmsh.Pallet.HiRed, "OF(%d) ", (reg>>10)&0x1)
-                } else {
-                    c.Printf("OF(%d) ", (reg>>10)&0x1)
-                }
-                c.Printf("]")
-            } else {
-                c.Printf("%s: 0x%016x [ CF(%d) PF(%d) AF(%d) ZF(%d) SF(%d) IF(%d) DF(%d) OF(%d) ]",
-                  key, reg, reg & 0x1, (reg>>2)&0x1, (reg>>4)&0x1, (reg>>6)&0x1, (reg>>7)&0x1, (reg>>9)&0x1, (reg>>10)&0x1, (reg>>11)&0x1)
-            }
+        if key == "eflags" {      // x64
+            asmsh.PrintEflags64(c, key, reg, oldReg)
         } else if key == "nzcv" { // arm64
-            if reg != oldReg {
-                c.ColorPrintf(asmsh.Pallet.HiRed, "%s: 0x%08x", key, reg)
-                c.ColorPrintf(asmsh.Pallet.HiWhite, " [ ")
-                if ((reg>>28) & 0x1) != ((oldReg>>28) & 0x1) { // overflow flag
-                    c.ColorPrintf(asmsh.Pallet.HiRed, "V(%d) ", (reg>>28)&0x1)
-                } else {
-                    c.Printf("V(%d) ", (reg>>28)&0x1)
-                }
-                if ((reg>>29) & 0x1) != ((oldReg>>29) & 0x1) { // carry out
-                    c.ColorPrintf(asmsh.Pallet.HiRed, "C(%d) ", (reg>>29)&0x1)
-                } else {
-                    c.Printf("C(%d) ", (reg>>29)&0x1)
-                }
-                if ((reg>>30) & 0x1) != ((oldReg>>30) & 0x1) { // zero flag
-                    c.ColorPrintf(asmsh.Pallet.HiRed, "Z(%d) ", (reg>>30)&0x1)
-                } else {
-                    c.Printf("Z(%d) ", (reg>>30)&0x1)
-                }
-                if ((reg>>31) & 0x1) != ((oldReg>>31) & 0x1) { // negative flag
-                    c.ColorPrintf(asmsh.Pallet.HiRed, "N(%d) ", (reg>>31)&0x1)
-                } else {
-                    c.Printf("N(%d) ", (reg>>31)&0x1)
-                }
-                c.Printf("]")
-            } else {
-                c.Printf("%s: 0x%08x [ V(%d) C(%d) Z(%d) N(%d) ]",
-                  key, reg, (reg>>28)&0x1, (reg>>29)&0x1, (reg>>30)&0x1, (reg>>31)&0x1)
-            }
+            asmsh.PrintNzcv(c, key, reg, oldReg)
         } else {
             if reg != oldReg {
                 //c.ColorPrintf(asmsh.Pallet.HiRed, "%s:    0x%016x(old: %016x)   ", key, reg, oldReg)
@@ -644,4 +538,86 @@ func (asmsh *AsmShell) HexPrint64(c *ishell.Context, mu uc.Unicorn) error {
         c.ColorPrintf(asmsh.Pallet.Yellow, "|\n")
     }
     return nil
+}
+
+func (asmsh *AsmShell) PrintEflags64(c *ishell.Context, key string, reg uint64, oldReg uint64) {
+    if reg != oldReg {
+        c.ColorPrintf(asmsh.Pallet.HiRed, "%s: 0x%016x", key, reg)
+        c.ColorPrintf(asmsh.Pallet.HiWhite, " [ ")
+        if (reg & 0x1) != (oldReg & 0x1) {
+            c.ColorPrintf(asmsh.Pallet.HiRed, "CF(%d) ", reg&0x1)
+        } else {
+            c.Printf("CF(%d) ", reg&0x1)
+        }
+        if ((reg>>2) & 0x1) != ((oldReg>>2) & 0x1) {
+            c.ColorPrintf(asmsh.Pallet.HiRed, "PF(%d) ", (reg>>2)&0x1)
+        } else {
+            c.Printf("PF(%d) ", (reg>>2)&0x1)
+        }
+        if ((reg>>4) & 0x1) != ((oldReg>>4) & 0x1) {
+            c.ColorPrintf(asmsh.Pallet.HiRed, "AF(%d) ", (reg>>4)&0x1)
+        } else {
+            c.Printf("AF(%d) ", (reg>>4)&0x1)
+        }
+        if ((reg>>6) & 0x1) != ((oldReg>>6) & 0x1) {
+            c.ColorPrintf(asmsh.Pallet.HiRed, "ZF(%d) ", (reg>>6)&0x1)
+        } else {
+            c.Printf("ZF(%d) ", (reg>>6)&0x1)
+        }
+        if ((reg>>7) & 0x1) != ((oldReg>>7) & 0x1) {
+            c.ColorPrintf(asmsh.Pallet.HiRed, "SF(%d) ", (reg>>7)&0x1)
+        } else {
+            c.Printf("SF(%d) ", (reg>>7)&0x1)
+        }
+        if ((reg>>9) & 0x1) != ((oldReg>>9) & 0x1) {
+            c.ColorPrintf(asmsh.Pallet.HiRed, "IF(%d) ", (reg>>9)&0x1)
+        } else {
+            c.Printf("IF(%d) ", (reg>>9)&0x1)
+        }
+        if ((reg>>10) & 0x1) != ((oldReg>>10) & 0x1) {
+            c.ColorPrintf(asmsh.Pallet.HiRed, "DF(%d) ", (reg>>10)&0x1)
+        } else {
+            c.Printf("DF(%d) ", (reg>>10)&0x1)
+        }
+        if ((reg>>11) & 0x1) != ((oldReg>>11) & 0x1) {
+            c.ColorPrintf(asmsh.Pallet.HiRed, "OF(%d) ", (reg>>10)&0x1)
+        } else {
+            c.Printf("OF(%d) ", (reg>>10)&0x1)
+        }
+        c.Printf("]")
+    } else {
+        c.Printf("%s: 0x%016x [ CF(%d) PF(%d) AF(%d) ZF(%d) SF(%d) IF(%d) DF(%d) OF(%d) ]",
+          key, reg, reg & 0x1, (reg>>2)&0x1, (reg>>4)&0x1, (reg>>6)&0x1, (reg>>7)&0x1, (reg>>9)&0x1, (reg>>10)&0x1, (reg>>11)&0x1)
+    }
+}
+// for arm64
+func (asmsh *AsmShell) PrintNzcv(c *ishell.Context, key string, reg uint64, oldReg uint64) {
+    if reg != oldReg {
+        c.ColorPrintf(asmsh.Pallet.HiRed, "%s: 0x%08x", key, reg)
+        c.ColorPrintf(asmsh.Pallet.HiWhite, " [ ")
+        if ((reg>>28) & 0x1) != ((oldReg>>28) & 0x1) { // overflow flag
+            c.ColorPrintf(asmsh.Pallet.HiRed, "V(%d) ", (reg>>28)&0x1)
+        } else {
+            c.Printf("V(%d) ", (reg>>28)&0x1)
+        }
+        if ((reg>>29) & 0x1) != ((oldReg>>29) & 0x1) { // carry out
+            c.ColorPrintf(asmsh.Pallet.HiRed, "C(%d) ", (reg>>29)&0x1)
+        } else {
+            c.Printf("C(%d) ", (reg>>29)&0x1)
+        }
+        if ((reg>>30) & 0x1) != ((oldReg>>30) & 0x1) { // zero flag
+            c.ColorPrintf(asmsh.Pallet.HiRed, "Z(%d) ", (reg>>30)&0x1)
+        } else {
+            c.Printf("Z(%d) ", (reg>>30)&0x1)
+        }
+        if ((reg>>31) & 0x1) != ((oldReg>>31) & 0x1) { // negative flag
+            c.ColorPrintf(asmsh.Pallet.HiRed, "N(%d) ", (reg>>31)&0x1)
+        } else {
+            c.Printf("N(%d) ", (reg>>31)&0x1)
+        }
+        c.Printf("]")
+    } else {
+        c.Printf("%s: 0x%08x [ V(%d) C(%d) Z(%d) N(%d) ]",
+          key, reg, (reg>>28)&0x1, (reg>>29)&0x1, (reg>>30)&0x1, (reg>>31)&0x1)
+    }
 }
