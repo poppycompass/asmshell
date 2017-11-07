@@ -1,4 +1,4 @@
-// TODO: test, (jmp handling, symbol resolve), README, custom run(http), mnemonic suggestion,arm(vector support), arm64eb support, add float and 128bit registers(x86, arm, mips), add hook?
+// TODO: test, README, custom run(http), add float and 128bit registers(x86, arm, mips), add hook?, arm64eb support, mnemonic suggestion,arm(vector support), 
 
 package main
 

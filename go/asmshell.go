@@ -118,7 +118,7 @@ func (asmsh *AsmShell) Run(c *ishell.Context, mnemonic string, code []byte) erro
             return err
         }
     } else {
-        if err := mu.StartWithOptions(asmsh.CodeAddr | 1, asmsh.CodeAddr+uint64(len(code)), &ucOptions); err != nil {
+        if err := mu.StartWithOptions(asmsh.CodeAddr, asmsh.CodeAddr+uint64(len(code)), &ucOptions); err != nil {
             return err
         }
     }
