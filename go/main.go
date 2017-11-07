@@ -1,4 +1,5 @@
-// TODO: mnemonic suggestion, jmp handling, custom run(http), symbol resolve, arm(vector support), arm thumb, input '#', arm64eb support
+// TODO: mnemonic suggestion, jmp handling, custom run(http), symbol resolve, arm(vector support), input '#', arm64eb support, print status register
+
 package main
 
 import (
@@ -93,11 +94,12 @@ func main() {
         case "arm"         : arch.InitArm(&asmsh  , false)
         case "armeb"       : arch.InitArm(&asmsh  , true)
         case "arm64"       : arch.InitArm64(&asmsh, false)
-//        case "arm64eb"     : arch.InitArm64(&asmsh, true)
-        case "m68k"        : arch.InitX86(&asmsh) // not implemented
-        case "mips"        : arch.InitX86(&asmsh) // not implemented
+        case "arm64eb"     : arch.InitArm64(&asmsh, true) // not implemented
+        case "mips"        : arch.InitMips(&asmsh, false)
+        case "mipseb"      : arch.InitMips(&asmsh, true)
         case "sparc"       : arch.InitX86(&asmsh) // not implemented
-//        case "powerpc" : arch.InitX86(&asmsh)
+        //case "powerpc" : arch.InitX86(&asmsh)
+        //case "m68k"        : arch.InitM68k(&asmsh) // not implemented
         default            : arch.InitX86(&asmsh)
     }
     conf.Prompt = asmsh.Prompt

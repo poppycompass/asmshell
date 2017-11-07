@@ -7,6 +7,7 @@ import (
     uc "github.com/unicorn-engine/unicorn/bindings/go/unicorn"
     utils "github.com/poppycompass/asmshell/go/utils"
 )
+
 type AsmShell struct {
     CodeAddr uint64
     StackStart uint64
@@ -32,8 +33,11 @@ type AsmShell struct {
     PrintCtx func(*ishell.Context, uc.Unicorn, string, []byte) error
 }
 
+// '' assemble with rasm2
 func (asmsh *AsmShell) Assemble(mnemonic string) ([]byte, error){
 
+//    if asmsh.UnicornArch == uc.ARCH_M68K {
+//    }
     ks, err := keystone.New(asmsh.KeystoneArch, asmsh.KeystoneMode)
     if err != nil {
         return nil, err
@@ -152,8 +156,14 @@ func (asmsh *AsmShell) PrintCtx32(c *ishell.Context, mu uc.Unicorn, mnemonic str
         if err != nil {
             return err
         }
-        if idx != 0 && idx % 2 == 0 {
-            c.Println("")
+        if asmsh.UnicornArch == uc.ARCH_MIPS {
+            if idx != 0 && idx % 4 == 0 {
+                c.Println("")
+            }
+        } else {
+            if idx != 0 && idx % 2 == 0 {
+                c.Println("")
+            }
         }
         if key == "eflags" {
             if reg != oldReg {
