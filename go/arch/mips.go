@@ -33,8 +33,9 @@ func InitMips(asmsh *as.AsmShell, bigEndian bool) {
     for i := uint64(0); i < asmsh.SavedStackSize; i++ {
         asmsh.SavedStack[i] = 0xFF
     }
-    asmsh.RegOrder = []string{ "zr", "at", "v0", "v1", "a0", "a1", "a2", "a3", "t0", "t1", "t2", "t3", "t4", "t5", "t6", "t7", "s0", "s1", "s2", "s3", "s4", "s5", "s6", "s7", "t8", "t9", "k0", "k1", "gp", "sp", "fp", "ra"}
+    asmsh.RegOrder = []string{ "zr", "at", "v0", "v1", "a0", "a1", "a2", "a3", "t0", "t1", "t2", "t3", "t4", "t5", "t6", "t7", "s0", "s1", "s2", "s3", "s4", "s5", "s6", "s7", "t8", "t9", "k0", "k1", "gp", "sp", "fp", "ra", "pc"}
     asmsh.Regs = map[string]int{
+        "pc"    : uc.MIPS_REG_PC,
         "zr"    : uc.MIPS_REG_0,
         "at"    : uc.MIPS_REG_1,
         "v0"    : uc.MIPS_REG_2,
