@@ -1,4 +1,4 @@
-// TODO: mnemonic suggestion, jmp handling, custom run(http), symbol resolve, arm(vector support), arm64eb support, add float and 128bit registers(x86, arm, mips), ppc32/64, systemz
+// TODO: mnemonic suggestion, jmp handling, custom run(http), symbol resolve, arm(vector support), arm64eb support, add float and 128bit registers(x86, arm, mips), systemz
 
 package main
 
@@ -107,6 +107,9 @@ func main() {
              "powerpc64"   : arch.InitPowerPC64(&asmsh, true)
         case "ppc64el",
              "powerpc64el" : arch.InitPowerPC64(&asmsh, false)
+        case "sysz",
+             "systemz",
+             "systemZ"     : arch.InitSystemZ(&asmsh)
         //case "m68k"        : arch.InitM68k(&asmsh) // unicorn: supported, keystone: UNSUPPORTED
         default            : arch.InitX86(&asmsh)
     }
