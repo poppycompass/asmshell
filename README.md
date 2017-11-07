@@ -1,7 +1,7 @@
-Assemblar Shell(asmshell)
+Assembler Shell(asmshell)
 ==============
 
-Assemblar Shell(asmshell) is a command line assembler emulator. 
+Assembler Shell(asmshell) is a command line assembler emulator. 
 
 You can easily check the execution result of the assembler.
 

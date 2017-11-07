@@ -6,7 +6,7 @@ import (
     as "github.com/poppycompass/asmshell/go"
 )
 
-// keystone is not supported, rasm2 supports only disassemblar
+// keystone is not supported, rasm2 supports only disassembler
 func InitM68k(asmsh *as.AsmShell) {
     asmsh.CodeAddr  = 0x100000
     asmsh.PrintSize = 64 + 16

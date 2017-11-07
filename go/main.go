@@ -26,7 +26,7 @@ type Options struct {
 // TODO: fix f*ck help
 func help() {
   fmt.Print("usage: ./asmshell [-h] [--arch ARCH] [--diff]\n\n")
-  fmt.Print("Assemblar Shell\n\n")
+  fmt.Print("Assembler Shell\n\n")
   fmt.Print("optional arguments:\n")
   fmt.Print("  -h, --help             show this help message and exit \n")
   fmt.Print("  -a ARCH, --arch ARCH,  target architecture(default: x86). available archtecture(x86/x86_64)\n")
@@ -102,7 +102,7 @@ func main() {
         case "sparc"       : arch.InitSparc(&asmsh, true) // sparc standard is big-endian
         //case "sparcel"     : arch.InitSparc(&asmsh, false) // unicorn: UNSUPPORTED, keystone: supported
         //case "powerpc" : arch.InitX86(&asmsh)
-        //case "m68k"        : arch.InitM68k(&asmsh) // not implemented
+        //case "m68k"        : arch.InitM68k(&asmsh) // unicorn: supported, keystone: UNSUPPORTED
         default            : arch.InitX86(&asmsh)
     }
     conf.Prompt = asmsh.Prompt
@@ -111,13 +111,13 @@ func main() {
     shell.Interrupt(handleInterrupt)
     shell.NotFound(handleNotFound)
     shell.SetHomeHistoryPath(".asmshell_history")
-    shell.ColorPrintln(asmsh.Pallet.BoldYellow, "Assemblar Shell(v " + Version + ")")
+    shell.ColorPrintln(asmsh.Pallet.BoldYellow, "Assembler Shell(v " + Version + ")")
 
     fragList := make(map[string]string)
     frags := &ishell.Cmd{
         Name: "fragment",
         Aliases: []string{"frag", "f"},
-        Help: "register assemblar fragment",
+        Help: "register assembler fragment",
         Func: func(c *ishell.Context) {
             if len(c.Args) == 0 {
                 c.Println("Usage: [fragment/f] [<word>/show/run]")

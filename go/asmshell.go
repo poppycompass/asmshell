@@ -33,11 +33,8 @@ type AsmShell struct {
     PrintCtx func(*ishell.Context, uc.Unicorn, string, []byte) error
 }
 
-// '' assemble with rasm2
 func (asmsh *AsmShell) Assemble(mnemonic string) ([]byte, error){
 
-//    if asmsh.UnicornArch == uc.ARCH_M68K {
-//    }
     ks, err := keystone.New(asmsh.KeystoneArch, asmsh.KeystoneMode)
     if err != nil {
         return nil, err
