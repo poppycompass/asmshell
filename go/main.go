@@ -1,4 +1,4 @@
-// TODO: help, test, (jmp handling,symbol resolve), custom run(http), mnemonic suggestion,arm(vector support), arm64eb support, add float and 128bit registers(x86, arm, mips), add hook?
+// TODO: test, (jmp handling,symbol resolve), custom run(http), mnemonic suggestion,arm(vector support), arm64eb support, add float and 128bit registers(x86, arm, mips), add hook?
 
 package main
 
@@ -17,23 +17,41 @@ import (
 
 const (
     Version  string  = "0.1.0"
+    AvailableArch string = "i8086, x86, x64, arm-thumb(eb), arm(eb), arm64(eb), mips(eb), mips64(eb), sparc(el), sparc64, [ppc|powerpc], [ppc64(el)|powerpc64(el)], [sysz|systemz|systemZ]"
 )
 type Options struct {
-    OptHelp           bool   `short:"h" long:"help"`
-    OptDiff           bool   `short:"d" long:"diff"`
-    OptArch           string `short:"a" long:"arch" default:"x86"`
-}
-// TODO: fix f*ck help
-func help() {
-  fmt.Print("usage: ./asmshell [-h] [--arch ARCH] [--diff]\n\n")
-  fmt.Print("Assembler Shell\n\n")
-  fmt.Print("optional arguments:\n")
-  fmt.Print("  -h, --help             show this help message and exit \n")
-  fmt.Print("  -a ARCH, --arch ARCH,  target architecture(default: x86). available archtecture(x86/x86_64)\n")
-  fmt.Print("  -d, --diff             run diff mode(output changed register only) \n")
+    OptHelp bool   `short:"h" long:"help"`
+    OptArch string `short:"a" long:"arch" default:"x86"`
+    OptList bool   `short:"L" long:"List"`
 }
 
-//var asmsh as.AsmShell
+// TODO: fix f*ck help
+func help() {
+    fmt.Printf("Usage: ./asmshell [-h|--help] [-a|--arch ARCH] \n\n")
+    fmt.Printf("Assembler Shell\n\n")
+    fmt.Printf("optional arguments:\n")
+    fmt.Printf("  -h, --help             Show this help message and exit \n")
+    fmt.Printf("  -a ARCH, --arch ARCH,  Target architecture(Default: x86)\n")
+    fmt.Printf("     Support: %s\n", AvailableArch)
+}
+
+func printArchList() {
+    fmt.Printf("Details of supported Archtecture: \n")
+    fmt.Printf("    i8086         : Intel 16-bit. iAPX 86. little endian\n")
+    fmt.Printf("    x86           : Intel 32-bit. 80386/IA-32. Extended i8086 to 32-bits. little endian\n")
+    fmt.Printf("    x64           : Intel 64-bit. AMD64. Extended x86 to 64-bits. little endian\n")
+    fmt.Printf("    arm-thumb(eb) : Arm Thumb mode(including Thumb-2). Mainly 16-bit. arm-thumbeb is big endian.\n")
+    fmt.Printf("    arm(eb)       : Advanced RISC Machine. 32-bit. armeb is big endian\n")
+    fmt.Printf("    arm64(eb)     : Armv8, 64-bit. arm64eb is big endian\n")
+    fmt.Printf("    mips(eb)      : MIPS, 32-bit. mipseb is big endian\n")
+    fmt.Printf("    mips64(eb)    : MIPS, 64-bit. mips64eb is big endian\n")
+    fmt.Printf("    sparc(el)     : SPARC, 32-bit. sparcel only supports assembly. sparcel is little endian.\n")
+    fmt.Printf("    sparc64       : SPARC, 64-bit. big-endian.\n")
+    fmt.Printf("    powerpc       : Support assemble only. PowerPC, 32-bit. big-endian.\n")
+    fmt.Printf("    powerpc64(el) : Support assemble only. PowerPC, 64-bit. powerpc64el is little endian\n")
+    fmt.Printf("    systemZ       : Support assemble only. Architecture for IBM eServer zSeries. big-endian\n")
+}
+
 var asmsh as.AsmShell
 
 // handle unregistered commands
@@ -84,6 +102,11 @@ func main() {
 
     if opts.OptHelp {
         help()
+        return
+    }
+    if opts.OptList {
+        printArchList()
+        return
     }
     SetAsmShell(opts.OptArch)
 
@@ -146,7 +169,7 @@ func main() {
         Func: func(c *ishell.Context) {
             if len(c.Args) == 0 {
                 c.Printf("Usage: set <arch>\n")
-                c.Printf("available arch: i8086, x86, x64, arm-thumb(eb), arm(eb), arm64(eb), mips(eb), mips64(eb), sparc(el), sparc64, [ppc|powerpc], [ppc64(el)|powerpc64(el)], [sysz|systemz|systemZ]\n")
+                c.Printf("available arch: %s\n", AvailableArch)
             } else {
                 SetAsmShell(c.Args[0])
                 c.SetPrompt(asmsh.Prompt)
