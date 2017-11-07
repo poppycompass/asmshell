@@ -6,7 +6,7 @@ import (
     as "github.com/poppycompass/asmshell/go"
 )
 
-func InitX64(asmsh *as.AsmShell) {
+func SetX64(asmsh *as.AsmShell) {
     asmsh.CodeAddr  = 0x100000
     asmsh.PrintSize = 128 + 32
     asmsh.PrintMergin = 64

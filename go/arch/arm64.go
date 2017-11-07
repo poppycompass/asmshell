@@ -7,7 +7,7 @@ import (
 )
 
 // 'AArch64'? ref: bindings/vb6/mKeystone.bas:ARM-64, also called AArch64
-func InitArm64(asmsh *as.AsmShell, bigEndian bool) {
+func SetArm64(asmsh *as.AsmShell, bigEndian bool) {
     asmsh.CodeAddr  = 0x100000
     asmsh.PrintSize = 128 + 32
     asmsh.PrintMergin = 64

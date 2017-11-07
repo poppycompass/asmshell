@@ -8,7 +8,7 @@ import (
 
 // 32bit only
 // sample: add %g1, %g2, %g3
-func InitSparc(asmsh *as.AsmShell, bigEndian bool) {
+func SetSparc(asmsh *as.AsmShell, bigEndian bool) {
     asmsh.CodeAddr  = 0x100000
     asmsh.PrintSize = 64 + 16
     asmsh.PrintMergin = 32

@@ -7,7 +7,7 @@ import (
 )
 
 // TODO: comfirm the list of registers is correct
-func InitMips64(asmsh *as.AsmShell, bigEndian bool) {
+func SetMips64(asmsh *as.AsmShell, bigEndian bool) {
     asmsh.CodeAddr  = 0x100000
     asmsh.PrintSize = 128 + 32
     asmsh.PrintMergin = 64

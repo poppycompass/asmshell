@@ -8,7 +8,7 @@ import (
 
 // sample: add %g1, 4, %g3; add %g1, %g2, %g3;
 // add %g1,4,%g3(g1 + 4 -> g3)
-func InitSparc64(asmsh *as.AsmShell, bigEndian bool) {
+func SetSparc64(asmsh *as.AsmShell, bigEndian bool) {
     asmsh.CodeAddr  = 0x100000
     asmsh.PrintSize = 128 + 32
     asmsh.PrintMergin = 64

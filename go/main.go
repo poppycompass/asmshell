@@ -1,4 +1,4 @@
-// TODO: mnemonic suggestion, jmp handling, custom run(http), symbol resolve, arm(vector support), arm64eb support, add float and 128bit registers(x86, arm, mips), sparc64
+// TODO: help, test, (jmp handling,symbol resolve), custom run(http), mnemonic suggestion,arm(vector support), arm64eb support, add float and 128bit registers(x86, arm, mips), add hook?
 
 package main
 
@@ -79,41 +79,14 @@ func main() {
     }
 
     if 0 < len(args) {
-      fmt.Print(args[0] + "\n")
+        fmt.Print(args[0] + "\n")
     }
 
     if opts.OptHelp {
         help()
     }
-    switch opts.OptArch {
-        case "i8086"       : arch.InitI8086(&asmsh)
-        case "x86"         : arch.InitX86(&asmsh)
-        case "x64"         : arch.InitX64(&asmsh)
-        case "arm-thumb"   : arch.InitArmThumb(&asmsh, false)
-        case "arm-thumbeb" : arch.InitArmThumb(&asmsh, true)
-        case "arm"         : arch.InitArm(&asmsh  , false)
-        case "armeb"       : arch.InitArm(&asmsh  , true)
-        case "arm64"       : arch.InitArm64(&asmsh, false)
-        case "arm64eb"     : arch.InitArm64(&asmsh, true) // not implemented
-        case "mips"        : arch.InitMips(&asmsh, false)
-        case "mipseb"      : arch.InitMips(&asmsh, true)
-        case "mips64"      : arch.InitMips64(&asmsh, false) // fixme: something wrong?
-        case "mips64eb"    : arch.InitMips64(&asmsh, true) // fixme: something wrong?
-        case "sparc"       : arch.InitSparc(&asmsh, true) // sparc standard is big-endian
-        case "sparcel"     : arch.InitSparc(&asmsh, false) // assemble only, unicorn: UNSUPPORTED, keystone: supported
-        case "sparc64"     : arch.InitSparc64(&asmsh, true) // fixme: something wrong?, sparc standard is big-endian
-        case "ppc",
-             "powerpc"     : arch.InitPowerPC(&asmsh, true)
-        case "ppc64",
-             "powerpc64"   : arch.InitPowerPC64(&asmsh, true)
-        case "ppc64el",
-             "powerpc64el" : arch.InitPowerPC64(&asmsh, false)
-        case "sysz",
-             "systemz",
-             "systemZ"     : arch.InitSystemZ(&asmsh)
-        //case "m68k"        : arch.InitM68k(&asmsh) // unicorn: supported, keystone: UNSUPPORTED
-        default            : arch.InitX86(&asmsh)
-    }
+    SetAsmShell(opts.OptArch)
+
     conf.Prompt = asmsh.Prompt
     shell := ishell.NewWithConfig(&conf)
     shell.EOF(handleEOF)
@@ -171,7 +144,13 @@ func main() {
         Name: "set",
         Help: "set architecture and mode",
         Func: func(c *ishell.Context) {
-            c.Print("set mode")
+            if len(c.Args) == 0 {
+                c.Printf("Usage: set <arch>\n")
+                c.Printf("available arch: i8086, x86, x64, arm-thumb(eb), arm(eb), arm64(eb), mips(eb), mips64(eb), sparc(el), sparc64, [ppc|powerpc], [ppc64(el)|powerpc64(el)], [sysz|systemz|systemZ]\n")
+            } else {
+                SetAsmShell(c.Args[0])
+                c.SetPrompt(asmsh.Prompt)
+            }
         },
     })
     shell.AddCmd(&ishell.Cmd{
@@ -185,4 +164,36 @@ func main() {
     shell.Run()
     shell.Close()
     finish()
+}
+
+func SetAsmShell(strArch string) {
+    switch strArch {
+        case "i8086"       : arch.SetI8086(&asmsh)
+        case "x86"         : arch.SetX86(&asmsh)
+        case "x64"         : arch.SetX64(&asmsh)
+        case "arm-thumb"   : arch.SetArmThumb(&asmsh, false)
+        case "arm-thumbeb" : arch.SetArmThumb(&asmsh, true)
+        case "arm"         : arch.SetArm(&asmsh  , false)
+        case "armeb"       : arch.SetArm(&asmsh  , true)
+        case "arm64"       : arch.SetArm64(&asmsh, false)
+        case "arm64eb"     : arch.SetArm64(&asmsh, true) // not implemented
+        case "mips"        : arch.SetMips(&asmsh, false)
+        case "mipseb"      : arch.SetMips(&asmsh, true)
+        case "mips64"      : arch.SetMips64(&asmsh, false) // fixme: something wrong?
+        case "mips64eb"    : arch.SetMips64(&asmsh, true) // fixme: something wrong?
+        case "sparc"       : arch.SetSparc(&asmsh, true) // sparc standard is big-endian
+        case "sparcel"     : arch.SetSparc(&asmsh, false) // assemble only, unicorn: UNSUPPORTED, keystone: supported
+        case "sparc64"     : arch.SetSparc64(&asmsh, true) // fixme: something wrong?, sparc standard is big-endian
+        case "ppc",
+             "powerpc"     : arch.SetPowerPC(&asmsh, true)
+        case "ppc64",
+             "powerpc64"   : arch.SetPowerPC64(&asmsh, true)
+        case "ppc64el",
+             "powerpc64el" : arch.SetPowerPC64(&asmsh, false)
+        case "sysz",
+             "systemz",
+             "systemZ"     : arch.SetSystemZ(&asmsh)
+        //case "m68k"        : arcSetitM68k(&asmsh) // unicorn: supported, keystone: UNSUPPORTED
+        default            : arch.SetX86(&asmsh)
+    }
 }

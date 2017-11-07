@@ -6,7 +6,7 @@ import (
     as "github.com/poppycompass/asmshell/go"
 )
 
-func InitI8086(asmsh *as.AsmShell) {
+func SetI8086(asmsh *as.AsmShell) {
     asmsh.CodeAddr  = 0x1000
     asmsh.PrintSize = 32 + 8
     asmsh.PrintMergin = 16

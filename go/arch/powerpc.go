@@ -7,7 +7,7 @@ import (
 )
 
 // sample: add, 1, 2, 3
-func InitPowerPC(asmsh *as.AsmShell, bigEndian bool) {
+func SetPowerPC(asmsh *as.AsmShell, bigEndian bool) {
     asmsh.CodeAddr  = 0x100000
     asmsh.PrintSize = 64 + 16
     asmsh.PrintMergin = 32

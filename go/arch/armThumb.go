@@ -6,7 +6,7 @@ import (
     as "github.com/poppycompass/asmshell/go"
 )
 
-func InitArmThumb(asmsh *as.AsmShell, bigEndian bool) {
+func SetArmThumb(asmsh *as.AsmShell, bigEndian bool) {
     asmsh.CodeAddr  = 0x1000
     asmsh.PrintSize = 32 + 8
     asmsh.PrintMergin = 16

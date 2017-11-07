@@ -7,7 +7,7 @@ import (
 )
 
 // sample: a %r0, 4095(%r15,%r1)
-func InitSystemZ(asmsh *as.AsmShell) {
+func SetSystemZ(asmsh *as.AsmShell) {
     asmsh.CodeAddr  = 0x100000
     asmsh.PrintSize = 64 + 16
     asmsh.PrintMergin = 32

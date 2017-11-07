@@ -8,7 +8,7 @@ import (
 
 // 32bit only
 // sample code: ori $at, $at, 0x3456
-func InitMips(asmsh *as.AsmShell, bigEndian bool) {
+func SetMips(asmsh *as.AsmShell, bigEndian bool) {
     asmsh.CodeAddr  = 0x100000
     asmsh.PrintSize = 64 + 16
     asmsh.PrintMergin = 32
