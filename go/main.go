@@ -16,8 +16,8 @@ import (
 )
 
 const (
-    Version  string  = "0.1.0"
-    AvailableArch string = "i8086, x86, x64, arm-thumb(eb), arm(eb), arm64(eb), mips(eb), mips64(eb), sparc(el), sparc64, [ppc|powerpc], [ppc64(el)|powerpc64(el)], [sysz|systemz|systemZ]"
+    version  string  = "0.1.0"
+    availableArch string = "i8086, x86, x64, arm-thumb(eb), arm(eb), arm64(eb), mips(eb), mips64(eb), sparc(el), sparc64, [ppc|powerpc], [ppc64(el)|powerpc64(el)], [sysz|systemz|systemZ]"
 )
 type Options struct {
     OptHelp bool   `short:"h" long:"help"`
@@ -116,7 +116,7 @@ func main() {
     shell.Interrupt(handleInterrupt)
     shell.NotFound(handleNotFound)
     shell.SetHomeHistoryPath(".asmshell_history")
-    shell.ColorPrintln(asmsh.Pallet.BoldYellow, "Assembler Shell(v " + Version + ")")
+    shell.ColorPrintln(asmsh.Pallet.BoldYellow, "Assembler Shell(v " + version + ")")
 
     fragList := make(map[string]string)
     frags := &ishell.Cmd{
@@ -169,7 +169,7 @@ func main() {
         Func: func(c *ishell.Context) {
             if len(c.Args) == 0 {
                 c.Printf("Usage: set <arch>\n")
-                c.Printf("available arch: %s\n", AvailableArch)
+                c.Printf("available arch: %s\n", availableArch)
             } else {
                 SetAsmShell(c.Args[0])
                 c.SetPrompt(asmsh.Prompt)
