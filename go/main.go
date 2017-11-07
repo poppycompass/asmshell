@@ -1,4 +1,4 @@
-// TODO: mnemonic suggestion, jmp handling, custom run(http), symbol resolve, arm(vector support), input '#', arm64eb support, print status register
+// TODO: mnemonic suggestion, jmp handling, custom run(http), symbol resolve, arm(vector support), input '#', arm64eb support, print status register, add float and 128bit registers(x86, arm, mips)
 
 package main
 
@@ -97,6 +97,8 @@ func main() {
         case "arm64eb"     : arch.InitArm64(&asmsh, true) // not implemented
         case "mips"        : arch.InitMips(&asmsh, false)
         case "mipseb"      : arch.InitMips(&asmsh, true)
+        case "mips64"      : arch.InitMips64(&asmsh, false) // fixme: something wrong?
+        case "mips64eb"    : arch.InitMips64(&asmsh, true) // fixme: something wrong?
         case "sparc"       : arch.InitX86(&asmsh) // not implemented
         //case "powerpc" : arch.InitX86(&asmsh)
         //case "m68k"        : arch.InitM68k(&asmsh) // not implemented
