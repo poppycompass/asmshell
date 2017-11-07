@@ -103,10 +103,10 @@ func main() {
         case "sparcel"     : arch.InitSparc(&asmsh, false) // assemble only, unicorn: UNSUPPORTED, keystone: supported
         case "ppc",
              "powerpc"     : arch.InitPowerPC(&asmsh, true)
-        //case "ppc64",
-        //     "powerpc64"   : arch.InitPowerPC64(&asmsh, true)
-        //case "ppc64el",
-        //     "powerpc64el" : arch.InitPowerPC64(&asmsh, false)
+        case "ppc64",
+             "powerpc64"   : arch.InitPowerPC64(&asmsh, true)
+        case "ppc64el",
+             "powerpc64el" : arch.InitPowerPC64(&asmsh, false)
         //case "m68k"        : arch.InitM68k(&asmsh) // unicorn: supported, keystone: UNSUPPORTED
         default            : arch.InitX86(&asmsh)
     }
