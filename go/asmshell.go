@@ -52,6 +52,7 @@ func (asmsh *AsmShell) Assemble(mnemonic string) ([]byte, error){
     if code, _, ok := ks.Assemble(mnemonic, 0); !ok {
         return nil, fmt.Errorf("Error: assemble instruction")
     } else {
+        //fmt.Printf("[debug]: code(%x)\n", code)
         return code, nil
     }
 }
@@ -156,7 +157,7 @@ func (asmsh *AsmShell) PrintCtx32(c *ishell.Context, mu uc.Unicorn, mnemonic str
         if err != nil {
             return err
         }
-        if asmsh.UnicornArch == uc.ARCH_MIPS {
+        if asmsh.UnicornArch == uc.ARCH_MIPS || asmsh.UnicornArch == uc.ARCH_SPARC {
             if idx != 0 && idx % 4 == 0 {
                 c.Println("")
             }

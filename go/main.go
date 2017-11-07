@@ -99,7 +99,8 @@ func main() {
         case "mipseb"      : arch.InitMips(&asmsh, true)
         case "mips64"      : arch.InitMips64(&asmsh, false) // fixme: something wrong?
         case "mips64eb"    : arch.InitMips64(&asmsh, true) // fixme: something wrong?
-        case "sparc"       : arch.InitX86(&asmsh) // not implemented
+        case "sparc"       : arch.InitSparc(&asmsh, true) // sparc standard is big-endian
+        //case "sparcel"     : arch.InitSparc(&asmsh, false) // unicorn: UNSUPPORTED, keystone: supported
         //case "powerpc" : arch.InitX86(&asmsh)
         //case "m68k"        : arch.InitM68k(&asmsh) // not implemented
         default            : arch.InitX86(&asmsh)
