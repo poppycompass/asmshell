@@ -17,12 +17,13 @@ func InitSparc(asmsh *as.AsmShell, bigEndian bool) {
     asmsh.StackAddr = asmsh.StackStart + (asmsh.StackSize / 2)
 
     asmsh.KeystoneArch = keystone.ARCH_SPARC
-    asmsh.UnicornArch = uc.ARCH_SPARC
     if bigEndian {
+        asmsh.UnicornArch = uc.ARCH_SPARC
         asmsh.KeystoneMode = keystone.MODE_SPARC32 + keystone.MODE_BIG_ENDIAN
         asmsh.UnicornMode = uc.MODE_SPARC32 | uc.MODE_BIG_ENDIAN
         asmsh.Prompt = "(sparc)> "
     } else {
+        asmsh.UnicornArch = uc.ARCH_MAX
         asmsh.KeystoneMode = keystone.MODE_SPARC32 + keystone.MODE_LITTLE_ENDIAN
         asmsh.UnicornMode = uc.MODE_SPARC32 | uc.MODE_LITTLE_ENDIAN
         asmsh.Prompt = "(sparcel)> "

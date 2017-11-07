@@ -1,4 +1,4 @@
-// TODO: mnemonic suggestion, jmp handling, custom run(http), symbol resolve, arm(vector support), input '#', arm64eb support, print status register, add float and 128bit registers(x86, arm, mips)
+// TODO: mnemonic suggestion, jmp handling, custom run(http), symbol resolve, arm(vector support), arm64eb support, add float and 128bit registers(x86, arm, mips), ppc32/64, sparcel, systemz
 
 package main
 
@@ -100,7 +100,7 @@ func main() {
         case "mips64"      : arch.InitMips64(&asmsh, false) // fixme: something wrong?
         case "mips64eb"    : arch.InitMips64(&asmsh, true) // fixme: something wrong?
         case "sparc"       : arch.InitSparc(&asmsh, true) // sparc standard is big-endian
-        //case "sparcel"     : arch.InitSparc(&asmsh, false) // unicorn: UNSUPPORTED, keystone: supported
+        case "sparcel"     : arch.InitSparc(&asmsh, false) // assemble only, unicorn: UNSUPPORTED, keystone: supported
         //case "powerpc" : arch.InitX86(&asmsh)
         //case "m68k"        : arch.InitM68k(&asmsh) // unicorn: supported, keystone: UNSUPPORTED
         default            : arch.InitX86(&asmsh)

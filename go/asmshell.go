@@ -59,8 +59,13 @@ func (asmsh *AsmShell) Emulate(c *ishell.Context, mnemonic string) error {
     if err != nil {
         return err
     }
-    if err = asmsh.Run(c, mnemonic, code); err != nil {
-        return err
+    if asmsh.UnicornArch == uc.ARCH_MAX { // unsupported architectures
+        c.ColorPrintf(asmsh.Pallet.BoldWhite, "mnemonic: %s [hex: %x]\n", mnemonic, code)
+        return nil
+    } else {
+        if err = asmsh.Run(c, mnemonic, code); err != nil {
+            return err
+        }
     }
     return nil
 }
