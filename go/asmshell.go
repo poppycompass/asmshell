@@ -108,13 +108,17 @@ func (asmsh *AsmShell) Run(c *ishell.Context, mnemonic string, code []byte) erro
         c.Printf("[debug]: MemWrite stack\n")
         return err
     }
+    // If you want add timeout, set Timeout
+    var ucOptions uc.UcOptions
+    ucOptions.Timeout = 60000000 // microseconds, now: 60 seconds
+    ucOptions.Count   = 0
     if asmsh.UnicornMode & uc.MODE_THUMB > 0 {
         // start at ADDRESS | 1 to indicate THUMB mode.
-        if err := mu.Start(asmsh.CodeAddr | 1, asmsh.CodeAddr+uint64(len(code))); err != nil {
+        if err := mu.StartWithOptions(asmsh.CodeAddr | 1, asmsh.CodeAddr+uint64(len(code)), &ucOptions); err != nil {
             return err
         }
     } else {
-        if err := mu.Start(asmsh.CodeAddr, asmsh.CodeAddr+uint64(len(code))); err != nil {
+        if err := mu.StartWithOptions(asmsh.CodeAddr | 1, asmsh.CodeAddr+uint64(len(code)), &ucOptions); err != nil {
             return err
         }
     }
