@@ -1,4 +1,4 @@
-// TODO: tests, README, custom run(http), add float and 128bit registers(x86, arm, mips), add hook?, arm64eb support, mnemonic suggestion,arm(vector support), windows/mac/linux installer|prebuild
+// TODO: tests, README, custom run(http), add float and 128bit registers(x86, arm, mips), add hook?, arm64eb support, mnemonic suggestion,arm(vector support), windows/mac/linux installer|prebuild, 
 
 package main
 
@@ -200,7 +200,7 @@ func main() {
         Func: func(c *ishell.Context) {
             if len(c.Args) == 0 {
                 c.Printf("Usage: set <arch>\n")
-                c.Printf("Supported arch: %s\n", SUPPORTED)
+                c.Printf("Supported: %s\n", SUPPORTED)
             } else {
                 setArch(c.Args[0], &asmsh)
                 c.SetPrompt(asmsh.Prompt)
