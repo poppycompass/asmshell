@@ -5,6 +5,7 @@ package main
 import (
     "fmt"
     "strings"
+    "io/ioutil"
     "os/exec"
     "github.com/jessevdk/go-flags"
     "github.com/chzyer/readline"
@@ -17,6 +18,7 @@ import (
 const (
     VERSION  string  = "0.1.0"
     SUPPORTED string = "i8086, x86, x64, arm-thumb(eb), arm(eb), arm64(eb), mips(eb), mips64(eb), sparc(el), sparc64, [ppc|powerpc], [ppc64(el)|powerpc64(el)], [sysz|systemz|systemZ]"
+    BUFSIZE uint64 = 1024
 )
 
 type Options struct {
@@ -124,28 +126,28 @@ func main() {
         Help: "register assembler fragment",
         Func: func(c *ishell.Context) {
             if len(c.Args) == 0 {
-                c.Println("Usage: [fragment/f] [<word>/show/run]")
+                c.Println("Usage: [fragment/f] [<word>|file <file>|show <word>|run <word>]")
+                c.Println("register: fragment <word> or fragment <word> <file>\n")
                 return
             }
-            c.SetPrompt("in> ")
-            fragList[c.Args[0]] = c.ReadMultiLines(";")
+            if len(c.Args) == 1 {
+                c.SetPrompt("in> ")
+                fragList[c.Args[0]] = c.ReadMultiLines(";")
+            } else if len(c.Args) == 2{
+                // register from file
+                buf := make([]byte, BUFSIZE)
+                buf, err := ioutil.ReadFile(c.Args[1]) // fixme: file traversal vulnueravility?
+                if err != nil {
+                    c.Printf("Error: read '%s'\n", c.Args[1])
+                    return
+                }
+                fragList[c.Args[0]] = string(buf)
+            }
             fragList[c.Args[0]] = strings.Replace(fragList[c.Args[0]], "\n", ";", -1)
             c.Printf("'%s' is registered\n", c.Args[0])
             c.SetPrompt(asmsh.Prompt)
         },
     }
-    frags.AddCmd(&ishell.Cmd{
-        Name: "show",
-        Aliases: []string{"s"},
-        Help: "show registered fragments",
-        Func: func(c *ishell.Context) {
-          c.Print("Names: ")
-          for key, value := range fragList {
-              c.Printf("%s(%s), ", key, value)
-          }
-          c.Printf("\n")
-        },
-    })
     frags.AddCmd(&ishell.Cmd{
         Name: "run",
         Aliases: []string{"r"},
@@ -156,11 +158,40 @@ func main() {
                 return
             }
             err := asmsh.Emulate(c, fragList[c.Args[0]])
-            c.Printf("[-] %s, %s\n", c.Args[0], fragList[c.Args[0]])
             if err != nil {
+                c.Printf("[-] %s, %s\n", c.Args[0], fragList[c.Args[0]])
                 c.Printf("[-] %s\n", err)
             }
             c.Printf("%s", asmsh.Prompt)
+        },
+    })
+    frags.AddCmd(&ishell.Cmd{
+        Name: "show",
+        Aliases: []string{"s"},
+        Help: "show registered fragments",
+        Func: func(c *ishell.Context) {
+            // show arbitary symbol,  if not registered, print blank
+            if len(c.Args) > 0 {
+                for _, value := range c.Args {
+                    c.Printf("'%s'\n    ", value)
+                    tmp := strings.Replace(fragList[value], ";", "\n    ", -1) // line
+                    tmp = strings.Replace(tmp, ":", ":  ", -1) // symbol
+                    c.Printf("%s\n", tmp)
+                }
+            } else {
+                // show all
+                for key, value := range fragList {
+                    c.Printf("'%s'\n    ", key)
+                    value = strings.Replace(value, ";", "\n    ", -1) // line
+                    value = strings.Replace(value, ":", ":  ", -1) // symbol
+                    c.Printf("%s\n", value)
+                }
+                c.Print("Name> ")
+                for key, _ := range fragList {
+                    c.Printf("'%s', ", key)
+                }
+                c.Printf("\n")
+            }
         },
     })
     shell.AddCmd(&ishell.Cmd{
