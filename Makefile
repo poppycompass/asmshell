@@ -128,6 +128,8 @@ asmshell: .gopath
 	@sh -c "PATH=$(PATHX) go get -u github.com/abiosoft/ishell"
 	@echo "go get -u github.com/chzyer/readline"
 	@sh -c "PATH=$(PATHX) go get -u github.com/chzyer/readline"
+	@echo "go get -u github.com/gorilla/websocket"
+	@sh -c "PATH=$(PATHX) go get -u github.com/gorilla/websocket"
 	@echo "$(GOBUILD) -o asmshell ./go"
 	@sh -c "PATH=$(PATHX) $(GOBUILD) -o asmshell ./go"
 #	$(FIXRPATH) asmshell

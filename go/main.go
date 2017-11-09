@@ -1,4 +1,4 @@
-// TODO: tests, README, custom run(http), add float and 128bit registers(x86, arm, mips), add hook?, arm64eb support, mnemonic suggestion,arm(vector support), windows/mac/linux installer|prebuild, 
+// TODO: tests, README, add float and 128bit registers(x86, arm, mips), add hook?, arm64eb support, mnemonic suggestion,arm(vector support), windows/mac/linux installer|prebuild, fmt.print/c.print
 
 package main
 
@@ -25,6 +25,8 @@ type Options struct {
     OptHelp bool   `short:"h" long:"help"`
     OptArch string `short:"a" long:"arch" default:"x86"`
     OptList bool   `short:"L" long:"List"`
+    OptHttp bool   `short:"H" long:"HTTP"`
+    OptPort string `short:"p" long:"port" default:"8080"`
 }
 
 // TODO: fix f*ck help
@@ -34,6 +36,8 @@ func help() {
     fmt.Printf("    -a ARCH, --arch ARCH   Target architecture(Default: x86, see '-L')\n")
     fmt.Printf("       Supported: %s\n", SUPPORTED)
     fmt.Printf("    -L, --List             Show details of supported architectures\n")
+    fmt.Printf("    -H, --HTTP             (Not implemented)Run with http server\n")
+    fmt.Printf("    -p PORT, --port PORT   (Not implemented)Set port(Default: 8080)\n")
 }
 
 func printArchList() {
@@ -107,6 +111,11 @@ func main() {
     }
     if opts.OptList {
         printArchList()
+        return
+    }
+    // TODO: HTTP mode, Not implemented
+    if opts.OptHttp {
+        fmt.Printf("Assembler Shell on Web is not implemented\nComming soon...(port: %s)\n", opts.OptPort)
         return
     }
     setArch(opts.OptArch, &asmsh)
