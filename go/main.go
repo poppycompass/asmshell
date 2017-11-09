@@ -1,4 +1,4 @@
-// TODO: tests, README, add float and 128bit registers(x86, arm, mips), add hook?, arm64eb support, mnemonic suggestion,arm(vector support), windows/mac/linux installer|prebuild, fmt.print/c.print
+// TODO: tests, README, add vector(arm), float and 128bit registers(x86, arm, mips), add hook?, arm64eb support, mnemonic suggestion, windows/mac/linux installer|prebuild, merge fmt.print/c.print
 
 package main
 
