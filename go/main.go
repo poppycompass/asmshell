@@ -65,7 +65,7 @@ func parseOption() (options, error) {
 func setArch(strArch string) arch.Machine {
     var mc arch.Machine
     switch strArch {
-//        case "i8086"       : arch.SetI8086(asmsh)
+        case "i8086"       : mc = arch.SetI8086()
         case "x86"         : mc = arch.SetX86()
         case "x64"         : mc = arch.SetX64()
 //        case "arm-thumb"   : arch.SetArmThumb(asmsh, false)
