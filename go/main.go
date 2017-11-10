@@ -81,12 +81,12 @@ func setArch(strArch string) arch.Machine {
         case "sparc"       : mc = arch.SetSparc(true)   // sparc standard is big-endian
         case "sparcel"     : mc = arch.SetSparc(false)  // assemble only, unicorn: UNSUPPORTED, keystone: supported
         case "sparc64"     : mc = arch.SetSparc64(true) // fixme: something wrong?, sparc standard is big-endian
-        case "ppc", // assemble only
+        case "ppc",   // assemble only
              "powerpc"     : mc = arch.SetPowerPC(true)
-//        case "ppc64",
-//             "powerpc64"   : mc = arch.SetPowerPC64(asmsh, true)
-//        case "ppc64el",
-//             "powerpc64el" : mc = arch.SetPowerPC64(asmsh, false)
+        case "ppc64", // assemble only
+             "powerpc64"   : mc = arch.SetPowerPC64(true)
+        case "ppc64el", // assemble only
+             "powerpc64el" : mc = arch.SetPowerPC64(false)
 //        case "sysz",
 //             "systemz",
 //             "systemZ"     : mc = arch.SetSystemZ(asmsh)
