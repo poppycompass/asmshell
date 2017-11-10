@@ -12,6 +12,7 @@ func SetX86() Machine {
     mc.bit = 32
     mc.sp = uc.X86_REG_ESP
     mc.bp = uc.X86_REG_EBP
+    mc.start = 0x0000
 
     mc.ks, _ = keystone.New(keystone.ARCH_X86, keystone.MODE_32)
     mc.ks.Option(keystone.OPT_SYNTAX, keystone.OPT_SYNTAX_INTEL)

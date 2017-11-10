@@ -12,6 +12,7 @@ func SetI8086() Machine {
     mc.bit = 16
     mc.sp = uc.X86_REG_SP
     mc.bp = uc.X86_REG_BP
+    mc.start = 0x0000
 
     mc.ks, _ = keystone.New(keystone.ARCH_X86, keystone.MODE_16)
     mc.ks.Option(keystone.OPT_SYNTAX, keystone.OPT_SYNTAX_INTEL)

@@ -19,6 +19,7 @@ type Machine struct {
     bit int // 16, 32, 64, maybe 128?
     sp int  // stack pointer
     bp int  // base pointer
+    start int // code addr
     regOrder []string
     regs map[string]int
     oldCtx unicorn.Context
@@ -48,11 +49,10 @@ func (mc Machine) Emulate(c *ishell.Context, mnemonic string) error {
 func (mc Machine) run(c *ishell.Context, mnemonic string, code []byte) error {
     var (
         opts = unicorn.UcOptions{Timeout:60000000, Count:0} // Timeout is microseconds, now: 60 seconds
-        start uint64 = 0x0001 // 0x1 is for ARM THUMB Mode
     )
 
-    mc.mu.MemWrite(start, code)
-    if err := mc.mu.StartWithOptions(start, start+uint64(len(code)), &opts); err != nil {
+    mc.mu.MemWrite(uint64(mc.start), code)
+    if err := mc.mu.StartWithOptions(uint64(mc.start), uint64(mc.start)+uint64(len(code)), &opts); err != nil {
         return err
     }
 

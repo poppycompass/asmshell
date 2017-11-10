@@ -68,29 +68,29 @@ func setArch(strArch string) arch.Machine {
         case "i8086"       : mc = arch.SetI8086()
         case "x86"         : mc = arch.SetX86()
         case "x64"         : mc = arch.SetX64()
-//        case "arm-thumb"   : arch.SetArmThumb(asmsh, false)
-//        case "arm-thumbeb" : arch.SetArmThumb(asmsh, true)
-//        case "arm"         : arch.SetArm(asmsh  , false)
-//        case "armeb"       : arch.SetArm(asmsh  , true)
-//        case "arm64"       : arch.SetArm64(asmsh, false)
-//        case "arm64eb"     : arch.SetArm64(asmsh, true)   // fixme: something wrong?
-//        case "mips"        : arch.SetMips(asmsh, false)
-//        case "mipseb"      : arch.SetMips(asmsh, true)
-//        case "mips64"      : arch.SetMips64(asmsh, false) // fixme: something wrong?
-//        case "mips64eb"    : arch.SetMips64(asmsh, true)  // fixme: something wrong?
-//        case "sparc"       : arch.SetSparc(asmsh, true)   // sparc standard is big-endian
-//        case "sparcel"     : arch.SetSparc(asmsh, false)  // assemble only, unicorn: UNSUPPORTED, keystone: supported
-//        case "sparc64"     : arch.SetSparc64(asmsh, true) // fixme: something wrong?, sparc standard is big-endian
+//        case "arm-thumb"   : mc = arch.SetArmThumb(asmsh, false)
+//        case "arm-thumbeb" : mc = arch.SetArmThumb(asmsh, true)
+        case "arm"         : mc = arch.SetArm(false)
+        case "armeb"       : mc = arch.SetArm(true)
+//        case "arm64"       : mc = arch.SetArm64(asmsh, false)
+//        case "arm64eb"     : mc = arch.SetArm64(asmsh, true)   // fixme: something wrong?
+//        case "mips"        : mc = arch.SetMips(asmsh, false)
+//        case "mipseb"      : mc = arch.SetMips(asmsh, true)
+//        case "mips64"      : mc = arch.SetMips64(asmsh, false) // fixme: something wrong?
+//        case "mips64eb"    : mc = arch.SetMips64(asmsh, true)  // fixme: something wrong?
+//        case "sparc"       : mc = arch.SetSparc(asmsh, true)   // sparc standard is big-endian
+//        case "sparcel"     : mc = arch.SetSparc(asmsh, false)  // assemble only, unicorn: UNSUPPORTED, keystone: supported
+//        case "sparc64"     : mc = arch.SetSparc64(asmsh, true) // fixme: something wrong?, sparc standard is big-endian
 //        case "ppc",
-//             "powerpc"     : arch.SetPowerPC(asmsh, true)
+//             "powerpc"     : mc = arch.SetPowerPC(asmsh, true)
 //        case "ppc64",
-//             "powerpc64"   : arch.SetPowerPC64(asmsh, true)
+//             "powerpc64"   : mc = arch.SetPowerPC64(asmsh, true)
 //        case "ppc64el",
-//             "powerpc64el" : arch.SetPowerPC64(asmsh, false)
+//             "powerpc64el" : mc = arch.SetPowerPC64(asmsh, false)
 //        case "sysz",
 //             "systemz",
-//             "systemZ"     : arch.SetSystemZ(asmsh)
-        //case "m68k"        : arcSetitM68k(&asmsh) // unicorn: supported, keystone: UNSUPPORTED
+//             "systemZ"     : mc = arch.SetSystemZ(asmsh)
+        //case "m68k"        : mc = arcSetitM68k(&asmsh) // unicorn: supported, keystone: UNSUPPORTED
         default            : mc = arch.SetX86()
     }
     return mc

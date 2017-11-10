@@ -3,38 +3,41 @@ package arch
 import (
     "github.com/keystone-engine/keystone/bindings/go/keystone"
     uc "github.com/unicorn-engine/unicorn/bindings/go/unicorn"
-    as "github.com/poppycompass/asmshell/go"
 )
-
-func SetArm(asmsh *as.AsmShell, bigEndian bool) {
-    asmsh.CodeAddr  = 0x100000
-    asmsh.PrintSize = 64 + 16
-    asmsh.PrintMergin = 32
-    asmsh.StackStart = 0x300000
-    asmsh.StackSize   = 2 * 1024 * 1024
-    asmsh.StackAddr = asmsh.StackStart + (asmsh.StackSize / 2)
-
-    asmsh.KeystoneArch = keystone.ARCH_ARM
-    asmsh.UnicornArch = uc.ARCH_ARM
+// mov r0, 0x37; sub r1, r2, r3 
+func SetArm(bigEndian bool) Machine {
+    var mc Machine
+    mc.bit = 32
+    mc.sp = uc.ARM_REG_R13
+    mc.bp = uc.ARM_REG_R11
+    mc.start = 0x0000
 
     if bigEndian {
-        asmsh.KeystoneMode = keystone.MODE_ARM + keystone.MODE_BIG_ENDIAN
-        asmsh.UnicornMode = uc.MODE_ARM + uc.MODE_BIG_ENDIAN
-        asmsh.Prompt = "(armeb)> "
+        mc.ks, _ = keystone.New(keystone.ARCH_ARM, keystone.MODE_ARM + keystone.MODE_BIG_ENDIAN)
+        mc.mu, _ = uc.NewUnicorn(uc.ARCH_ARM, uc.MODE_ARM + uc.MODE_BIG_ENDIAN)
+        mc.oldMu, _ = uc.NewUnicorn(uc.ARCH_ARM, uc.MODE_ARM + uc.MODE_BIG_ENDIAN)
+        mc.Prompt = "(armeb)> "
     } else {
-        asmsh.KeystoneMode = keystone.MODE_ARM + keystone.MODE_LITTLE_ENDIAN
-        asmsh.UnicornMode = uc.MODE_ARM
-        asmsh.Prompt = "(arm)> "
+        mc.ks, _ = keystone.New(keystone.ARCH_ARM, keystone.MODE_ARM + keystone.MODE_LITTLE_ENDIAN)
+        mc.mu, _ = uc.NewUnicorn(uc.ARCH_ARM, uc.MODE_ARM)
+        mc.oldMu, _ = uc.NewUnicorn(uc.ARCH_ARM, uc.MODE_ARM)
+        mc.Prompt = "(arm)> "
     }
 
-    asmsh.SavedCtx = nil
-    asmsh.SavedStackSize = 256
-    asmsh.SavedStack = make([]byte, asmsh.SavedStackSize)
-    for i := uint64(0); i < asmsh.SavedStackSize; i++ {
-        asmsh.SavedStack[i] = 0xFF
+    mc.mu.MemMap(0x0000, 0x2000)
+    mc.mu.RegWrite(mc.sp, 0x1000)
+    mc.mu.RegWrite(mc.bp, 0x8000)
+
+    mc.oldCtx, _ = mc.mu.ContextSave(nil)
+
+    mc.regOrder = []string{
+        "r0", "    r8", "r1", "    r9",
+        "r2", "   r10", "r3", "r11/fp",
+        "r4", "r12/ip", "r5", "r13/sp",
+        "r6", "r14/lr", "r7", "r15/pc",
+        "cpsr",
     }
-    asmsh.RegOrder = []string{"r0",  "    r8", "r1", "    r9", "r2", "   r10", "r3", "r11/fp", "r4", "r12/ip", "r5", "r13/sp", "r6", "r14/lr", "r7", "r15/pc", "cpsr"}
-    asmsh.Regs = map[string]int{
+    mc.regs = map[string]int{
         "r0"        : uc.ARM_REG_R0,
         "r1"        : uc.ARM_REG_R1,
         "r2"        : uc.ARM_REG_R2,
@@ -53,6 +56,5 @@ func SetArm(asmsh *as.AsmShell, bigEndian bool) {
         "r15/pc"    : uc.ARM_REG_R15, // program counter
         "cpsr"      : uc.ARM_REG_CPSR,// current program status register
     }
-    asmsh.SP = uc.ARM_REG_R13
-    asmsh.PrintCtx = asmsh.PrintCtx32
+    return mc
 }

@@ -12,6 +12,7 @@ func SetX64() Machine {
     mc.bit = 64
     mc.sp = uc.X86_REG_RSP
     mc.bp = uc.X86_REG_RBP
+    mc.start = 0x0000
 
     mc.ks, _ = keystone.New(keystone.ARCH_X86, keystone.MODE_64)
     mc.ks.Option(keystone.OPT_SYNTAX, keystone.OPT_SYNTAX_INTEL)
