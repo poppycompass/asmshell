@@ -36,8 +36,10 @@ func (mc Machine) Emulate(c *ishell.Context, mnemonic string) error {
     }
 
     c.ColorPrintf(pallet.BoldWhite, "mnemonic: %s [hex: %x]\n", mnemonic, code)
-    if err := mc.run(c, mnemonic, code); err != nil ||
-       mc.mu == nil { // if unicorn supported
+    if mc.mu == nil { // if unicorn supported
+        return nil
+    }
+    if err := mc.run(c, mnemonic, code); err != nil {
         return err
     }
 

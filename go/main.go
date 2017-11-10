@@ -78,8 +78,8 @@ func setArch(strArch string) arch.Machine {
         case "mipseb"      : mc = arch.SetMips(true)
         case "mips64"      : mc = arch.SetMips64(false) // fixme: something wrong?
         case "mips64eb"    : mc = arch.SetMips64(true)  // fixme: something wrong?
-//        case "sparc"       : mc = arch.SetSparc(asmsh, true)   // sparc standard is big-endian
-//        case "sparcel"     : mc = arch.SetSparc(asmsh, false)  // assemble only, unicorn: UNSUPPORTED, keystone: supported
+        case "sparc"       : mc = arch.SetSparc(true)   // sparc standard is big-endian
+        case "sparcel"     : mc = arch.SetSparc(false)  // assemble only, unicorn: UNSUPPORTED, keystone: supported
 //        case "sparc64"     : mc = arch.SetSparc64(asmsh, true) // fixme: something wrong?, sparc standard is big-endian
 //        case "ppc",
 //             "powerpc"     : mc = arch.SetPowerPC(asmsh, true)
