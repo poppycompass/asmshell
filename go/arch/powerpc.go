@@ -5,7 +5,7 @@ import (
 //    uc "github.com/unicorn-engine/unicorn/bindings/go/unicorn"
 )
 
-// sample: add, 1, 2, 3
+// sample: add 1, 2, 3
 func SetPowerPC(bigEndian bool) Machine {
     var mc Machine
     if bigEndian {

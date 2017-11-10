@@ -35,7 +35,7 @@ func (mc Machine) Emulate(c *ishell.Context, mnemonic string) error {
         return fmt.Errorf("Error: assemble instruction(%s)", mnemonic)
     }
 
-    c.ColorPrintf(pallet.BoldWhite, "mnemonic: %s [hex: %x]\n", mnemonic, code)
+    c.ColorPrintf(pallet.BoldWhite, "mnemonic: %s [ hex: %x ]\n", mnemonic, code)
     if mc.mu == nil { // if unicorn supported
         return nil
     }
@@ -54,7 +54,7 @@ func (mc Machine) run(c *ishell.Context, mnemonic string, code []byte) error {
     )
 
     mc.mu.MemWrite(uint64(mc.start), code)
-    if err := mc.mu.StartWithOptions(uint64(mc.start), uint64(mc.start)+uint64(len(code)), &opts); err != nil {
+    if err := mc.mu.StartWithOptions(uint64(mc.start), uint64(mc.start)+uint64(len(code))-1, &opts); err != nil {
         return err
     }
 

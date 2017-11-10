@@ -1,4 +1,4 @@
-// TODO: tests, README, add vector(arm), float and 128bit registers(x86, arm, mips), add hook?, arm64eb support, mnemonic suggestion, windows/mac/linux installer|prebuild
+// TODO: tests, README, add vector(arm), float and 128bit registers(x86, arm, mips), mnemonic suggestion, windows/mac/linux installer|prebuild
 
 package main
 
@@ -73,17 +73,17 @@ func setArch(strArch string) arch.Machine {
         case "arm"         : mc = arch.SetArm(false)
         case "armeb"       : mc = arch.SetArm(true)
         case "arm64"       : mc = arch.SetArm64(false)  // TODO: test, fixme: something wrong?
-        case "arm64eb"     : mc = arch.SetArm64(true)   // TODO: test, fixme: something wrong?
+        //case "arm64eb"     : mc = arch.SetArm64(true)   // keystone unsupported?, TODO: test, fixme: something wrong?
         case "mips"        : mc = arch.SetMips(false)
         case "mipseb"      : mc = arch.SetMips(true)
         case "mips64"      : mc = arch.SetMips64(false) // fixme: something wrong?
         case "mips64eb"    : mc = arch.SetMips64(true)  // fixme: something wrong?
         case "sparc"       : mc = arch.SetSparc(true)   // sparc standard is big-endian
         case "sparcel"     : mc = arch.SetSparc(false)  // assemble only, unicorn: UNSUPPORTED, keystone: supported
-        case "sparc64"     : mc = arch.SetSparc64(true) // fixme: something wrong?, sparc standard is big-endian
-        case "ppc",   // assemble only
+        case "sparc64"     : mc = arch.SetSparc64(true) // fixme: something wrong?, sparc standard is big-endian, keystone sparc64el does not supported
+        case "ppc",     // big-endian, assemble only
              "powerpc"     : mc = arch.SetPowerPC(true)
-        case "ppc64", // assemble only
+        case "ppc64",   // assemble only
              "powerpc64"   : mc = arch.SetPowerPC64(true)
         case "ppc64el", // assemble only
              "powerpc64el" : mc = arch.SetPowerPC64(false)
