@@ -99,15 +99,15 @@ func (mc Machine) showStack(c *ishell.Context) error {
     bit := mc.bit
 
     for i := 0; i < (bit/2*5); i+=(bit/2) {
-        c.Printf(FMT[bit/32]+": ", sp-uint64(bit+i)) // print stack addr
+        c.Printf(FMT[bit/32]+": ", sp-uint64(bit)+uint64(i)) // print stack addr
         for j := 0; j < (bit/2); j+=(bit/8) {
             if bit == (i-j) { // if addr == esp
-                for k := 0; k < (bit/8); k++ {
-                    c.ColorPrintf(pallet.HiRed, "%02x", data[i+j+k])
+                for k := (bit/8); k > 0; k-=1 {
+                    c.ColorPrintf(pallet.HiRed, "%02x", data[i+j+k-1])
                 }
             } else {
-                for k := 0; k < (bit/8); k++ {
-                    c.ColorPrintf(pallet.HiYellow, "%02x", data[i+j+k])
+                for k := (bit/8); k > 0; k-=1 {
+                    c.ColorPrintf(pallet.HiYellow, "%02x", data[i+j+k-1])
                 }
             }
             c.ColorPrintf(pallet.Yellow, " ")
