@@ -87,9 +87,9 @@ func setArch(strArch string) arch.Machine {
              "powerpc64"   : mc = arch.SetPowerPC64(true)
         case "ppc64el", // assemble only
              "powerpc64el" : mc = arch.SetPowerPC64(false)
-//        case "sysz",
-//             "systemz",
-//             "systemZ"     : mc = arch.SetSystemZ(asmsh)
+        case "sysz",
+             "systemz",
+             "systemZ"     : mc = arch.SetSystemZ()
         //case "m68k"        : mc = arcSetitM68k(&asmsh) // unicorn: supported, keystone: UNSUPPORTED
         default            : mc = arch.SetX86()
     }
