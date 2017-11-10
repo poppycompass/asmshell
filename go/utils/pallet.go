@@ -25,7 +25,8 @@ type Pallet struct {
     HiCyan      *color.Color
     HiWhite     *color.Color
 }
-func InitPallet(p *Pallet) {
+func InitPallet() Pallet {
+    var p Pallet
     p.Red         = color.New(color.FgRed)
     p.Green       = color.New(color.FgGreen)
     p.Yellow      = color.New(color.FgYellow)
@@ -47,4 +48,5 @@ func InitPallet(p *Pallet) {
     p.HiMagenta   = color.New(color.FgHiMagenta)
     p.HiCyan      = color.New(color.FgHiCyan)
     p.HiWhite     = color.New(color.FgHiWhite)
+    return p
 }

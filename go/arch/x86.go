@@ -3,33 +3,35 @@ package arch
 import (
     "github.com/keystone-engine/keystone/bindings/go/keystone"
     uc "github.com/unicorn-engine/unicorn/bindings/go/unicorn"
-    as "github.com/poppycompass/asmshell/go"
 )
 
 // sample: mov ecx, 0x20; j1:; inc eax; dec ecx; jnz j1
-func SetX86(asmsh *as.AsmShell) {
-    asmsh.CodeAddr  = 0x100000
-    asmsh.PrintSize = 64 + 16
-    asmsh.PrintMergin = 32
-    asmsh.StackStart = 0x300000
-    asmsh.StackSize   = 2 * 1024 * 1024
-    asmsh.StackAddr = asmsh.StackStart + (asmsh.StackSize / 2)
+func SetX86() Machine {
+    var mc Machine
+    mc.Prompt = "(x86)> "
+    mc.bit = 32
+    mc.sp = uc.X86_REG_ESP
+    mc.bp = uc.X86_REG_EBP
 
-    asmsh.KeystoneArch = keystone.ARCH_X86
-    asmsh.KeystoneMode = keystone.MODE_32
-    asmsh.KeystoneOPTType = keystone.OPT_SYNTAX
-    asmsh.KeystoneOPTVal = keystone.OPT_SYNTAX_INTEL
-    asmsh.UnicornArch = uc.ARCH_X86
-    asmsh.UnicornMode = uc.MODE_32
-    asmsh.SavedCtx = nil
-    asmsh.SavedStackSize = 256
-    asmsh.SavedStack = make([]byte, asmsh.SavedStackSize)
-    for i := uint64(0); i < asmsh.SavedStackSize; i++ {
-        asmsh.SavedStack[i] = 0xFF
+    mc.ks, _ = keystone.New(keystone.ARCH_X86, keystone.MODE_32)
+    mc.ks.Option(keystone.OPT_SYNTAX, keystone.OPT_SYNTAX_INTEL)
+
+    mc.mu, _ = uc.NewUnicorn(uc.ARCH_X86, uc.MODE_32)
+    mc.mu.MemMap(0x0000, 0x200000)
+    mc.mu.RegWrite(mc.sp, 0x100000)
+    mc.mu.RegWrite(mc.bp, 0x80000)
+
+    mc.oldCtx, _ = mc.mu.ContextSave(nil)
+    mc.oldMu, _ = uc.NewUnicorn(uc.ARCH_X86, uc.MODE_32)
+
+
+    mc.regOrder = []string{
+        "eax", "eip", "ebx", "eflags",
+        "ecx", " cs", "edx", " ss",
+        "esp", " ds", "ebp", " es",
+        "esi", " fs", "edi", " gs",
     }
-    asmsh.Prompt = "(x86)> "
-    asmsh.RegOrder = []string{"eax", "eip", "ebx", "eflags", "ecx", " cs", "edx", " ss", "esp", " ds", "ebp", " es", "esi", " fs", "edi", " gs"}
-    asmsh.Regs = map[string]int{
+    mc.regs = map[string]int{
         "eax"    : uc.X86_REG_EAX,
         "ebx"    : uc.X86_REG_EBX,
         "ecx"    : uc.X86_REG_ECX,
@@ -47,6 +49,5 @@ func SetX86(asmsh *as.AsmShell) {
         " fs"    : uc.X86_REG_FS,
         " gs"    : uc.X86_REG_GS,
     }
-    asmsh.SP = uc.X86_REG_ESP
-    asmsh.PrintCtx = asmsh.PrintCtx32
+    return mc
 }
