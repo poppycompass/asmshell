@@ -3,38 +3,42 @@ package arch
 import (
     "github.com/keystone-engine/keystone/bindings/go/keystone"
     uc "github.com/unicorn-engine/unicorn/bindings/go/unicorn"
-    as "github.com/poppycompass/asmshell/go"
 )
 
-// 32bit only
 // sample code: ori $at, $at, 0x3456
-func SetMips(asmsh *as.AsmShell, bigEndian bool) {
-    asmsh.CodeAddr  = 0x100000
-    asmsh.PrintSize = 64 + 16
-    asmsh.PrintMergin = 32
-    asmsh.StackStart = 0x300000
-    asmsh.StackSize   = 2 * 1024 * 1024
-    asmsh.StackAddr = asmsh.StackStart + (asmsh.StackSize / 2)
+func SetMips(bigEndian bool) Machine {
+    var mc Machine
+    mc.bit = 32
+    mc.sp = uc.MIPS_REG_29
+    mc.bp = uc.MIPS_REG_30
+    mc.start = 0x0000
 
-    asmsh.KeystoneArch = keystone.ARCH_MIPS
-    asmsh.UnicornArch = uc.ARCH_MIPS
     if bigEndian {
-        asmsh.KeystoneMode = keystone.MODE_MIPS32 + keystone.MODE_BIG_ENDIAN
-        asmsh.UnicornMode = uc.MODE_MIPS32 + uc.MODE_BIG_ENDIAN
-        asmsh.Prompt = "(mipseb)> "
+        mc.ks, _ = keystone.New(keystone.ARCH_MIPS, keystone.MODE_MIPS32 + keystone.MODE_BIG_ENDIAN)
+        mc.mu, _ = uc.NewUnicorn(uc.ARCH_MIPS, uc.MODE_MIPS32 + uc.MODE_BIG_ENDIAN)
+        mc.oldMu, _ = uc.NewUnicorn(uc.ARCH_MIPS, uc.MODE_MIPS32 + uc.MODE_BIG_ENDIAN)
+        mc.Prompt = "(mipseb)> "
     } else {
-        asmsh.KeystoneMode = keystone.MODE_MIPS32
-        asmsh.UnicornMode = uc.MODE_MIPS32 + uc.MODE_LITTLE_ENDIAN
-        asmsh.Prompt = "(mips)> "
+        mc.ks, _ = keystone.New(keystone.ARCH_MIPS, keystone.MODE_MIPS32)
+        mc.mu, _ = uc.NewUnicorn(uc.ARCH_MIPS, uc.MODE_MIPS32 + uc.MODE_LITTLE_ENDIAN)
+        mc.oldMu, _ = uc.NewUnicorn(uc.ARCH_MIPS, uc.MODE_MIPS32 + uc.MODE_LITTLE_ENDIAN)
+        mc.Prompt = "(mips)> "
     }
-    asmsh.SavedCtx = nil
-    asmsh.SavedStackSize = 256
-    asmsh.SavedStack = make([]byte, asmsh.SavedStackSize)
-    for i := uint64(0); i < asmsh.SavedStackSize; i++ {
-        asmsh.SavedStack[i] = 0xFF
+    mc.mu.MemMap(0x0000, 0x200000)
+    mc.mu.RegWrite(mc.sp, 0x100000)
+    mc.mu.RegWrite(mc.bp, 0x80000)
+    mc.oldCtx, _ = mc.mu.ContextSave(nil)
+
+    mc.regOrder = []string{
+        "zr", "at", "v0", "v1",
+        "a0", "a1", "a2", "a3",
+        "t0", "t1", "t2", "t3", "t4", "t5", "t6", "t7",
+        "s0", "s1", "s2", "s3", "s4", "s5", "s6", "s7",
+        "t8", "t9", "k0", "k1",
+        "gp", "sp", "fp", "ra",
+        "pc",
     }
-    asmsh.RegOrder = []string{ "zr", "at", "v0", "v1", "a0", "a1", "a2", "a3", "t0", "t1", "t2", "t3", "t4", "t5", "t6", "t7", "s0", "s1", "s2", "s3", "s4", "s5", "s6", "s7", "t8", "t9", "k0", "k1", "gp", "sp", "fp", "ra", "pc"}
-    asmsh.Regs = map[string]int{
+    mc.regs = map[string]int{
         "pc"    : uc.MIPS_REG_PC,
         "zr"    : uc.MIPS_REG_0,
         "at"    : uc.MIPS_REG_1,
@@ -70,6 +74,5 @@ func SetMips(asmsh *as.AsmShell, bigEndian bool) {
         "fp"    : uc.MIPS_REG_30,
         "ra"    : uc.MIPS_REG_31,
     }
-    asmsh.SP = uc.MIPS_REG_29
-    asmsh.PrintCtx = asmsh.PrintCtx32
+    return mc
 }
