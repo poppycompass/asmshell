@@ -1,4 +1,4 @@
-// TODO: tests, README, add vector(arm), float and 128bit registers(x86, arm, mips), mnemonic suggestion, windows/mac/linux installer|prebuild
+// TODO: tests, README, windows/mac/linux installer|prebuild
 
 package main
 
@@ -90,7 +90,7 @@ func setArch(strArch string) arch.Machine {
         case "sysz",
              "systemz",
              "systemZ"     : mc = arch.SetSystemZ()
-        //case "m68k"        : mc = arcSetitM68k(&asmsh) // unicorn: supported, keystone: UNSUPPORTED
+        //case "m68k"        : mc = arcSetM68k(&asmsh) // unicorn: supported, keystone: UNSUPPORTED
         default            : mc = arch.SetX86()
     }
     return mc

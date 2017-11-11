@@ -11,7 +11,7 @@ func SetArmThumb(bigEndian bool) Machine {
     mc.bit = 16
     mc.sp = uc.ARM_REG_R13
     mc.bp = uc.ARM_REG_R11
-    mc.start = 0x1001 // addr | 0x1 to indicate ARM THUMB Mode
+    mc.start = 0x0001 // addr | 0x1 to indicate ARM THUMB Mode
 
     if bigEndian {
         mc.ks, _ = keystone.New(keystone.ARCH_ARM, keystone.MODE_THUMB + keystone.MODE_BIG_ENDIAN)

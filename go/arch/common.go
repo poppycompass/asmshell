@@ -29,17 +29,16 @@ var pallet utils.Pallet
 // assemble and run
 func (mc Machine) Emulate(c *ishell.Context, mnemonic string) error {
     pallet = utils.InitPallet()
-    // TODO: What is the effect of the second argument(address) of Assemble
-    code, _, ok := mc.ks.Assemble(mnemonic, 0)
-    if !ok {
-        return fmt.Errorf("Error: assemble instruction(%s)", mnemonic)
+    code, err := mc.assemble(mnemonic)
+    if err != nil {
+        return err
     }
 
     c.ColorPrintf(pallet.BoldWhite, "mnemonic: %s [ hex: %x ]\n", mnemonic, code)
     if mc.mu == nil { // if unicorn supported
         return nil
     }
-    if err := mc.run(c, mnemonic, code); err != nil {
+    if err := mc.run(mnemonic, code); err != nil {
         return err
     }
 
@@ -48,13 +47,29 @@ func (mc Machine) Emulate(c *ishell.Context, mnemonic string) error {
     return nil
 }
 
-func (mc Machine) run(c *ishell.Context, mnemonic string, code []byte) error {
+func (mc Machine) assemble(mnemonic string) ([]byte, error) {
+    // TODO: What is the effect of the second argument(address) of Assemble
+    code, _, ok := mc.ks.Assemble(mnemonic, 0)
+    if !ok {
+        return nil, fmt.Errorf("Error: assemble instruction(%s)", mnemonic)
+    }
+    return code, nil
+}
+
+func (mc Machine) run(mnemonic string, code []byte) error {
     var (
         opts = unicorn.UcOptions{Timeout:60000000, Count:0} // Timeout is microseconds, now: 60 seconds
+        codeEnd uint64
     )
 
+    if mc.start == 0x0001 { // arm thumb mode
+        codeEnd = uint64(mc.start)+uint64(len(code))-1
+    } else {
+        codeEnd = uint64(mc.start)+uint64(len(code))
+    }
+
     mc.mu.MemWrite(uint64(mc.start), code)
-    if err := mc.mu.StartWithOptions(uint64(mc.start), uint64(mc.start)+uint64(len(code))-1, &opts); err != nil {
+    if err := mc.mu.StartWithOptions(uint64(mc.start), codeEnd, &opts); err != nil {
         return err
     }
 
