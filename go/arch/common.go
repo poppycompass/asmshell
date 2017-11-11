@@ -2,6 +2,7 @@ package arch
 
 import (
     "fmt"
+    "reflect"
     "github.com/poppycompass/ishell"
     "github.com/poppycompass/asmshell/go/utils"
     "github.com/keystone-engine/keystone/bindings/go/keystone"
@@ -26,8 +27,8 @@ type Machine struct {
 }
 
 var pallet utils.Pallet
-// assemble and run
-func (mc Machine) Emulate(c *ishell.Context, mnemonic string) error {
+// assemble and emulate
+func (mc Machine) Run(c *ishell.Context, mnemonic string) error {
     pallet = utils.InitPallet()
     code, err := mc.assemble(mnemonic)
     if err != nil {
@@ -38,7 +39,7 @@ func (mc Machine) Emulate(c *ishell.Context, mnemonic string) error {
     if mc.mu == nil { // if unicorn supported
         return nil
     }
-    if err := mc.run(mnemonic, code); err != nil {
+    if err := mc.emulate(mnemonic, code); err != nil {
         return err
     }
 
@@ -56,7 +57,7 @@ func (mc Machine) assemble(mnemonic string) ([]byte, error) {
     return code, nil
 }
 
-func (mc Machine) run(mnemonic string, code []byte) error {
+func (mc Machine) emulate(mnemonic string, code []byte) error {
     var (
         opts = unicorn.UcOptions{Timeout:60000000, Count:0} // Timeout is microseconds, now: 60 seconds
         codeEnd uint64
@@ -175,4 +176,13 @@ func (mc Machine) showStatusReg(c *ishell.Context, key string, reg uint64, oldRe
 
 func (mc Machine) Finalize() {
     mc.ks.Close()
+}
+
+// for test
+func (mc Machine) check(input string, correct []byte) bool {
+    code, err := mc.assemble(input)
+    if err != nil || reflect.DeepEqual(code, correct) {
+        return false
+    }
+    return true
 }
