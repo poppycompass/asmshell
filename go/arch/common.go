@@ -69,10 +69,10 @@ func (mc Machine) Run(c *ishell.Context, mnemonic string) error {
     }
 
     c.ColorPrintf(pallet.BoldWhite, "mnemonic: %s [ hex: %x ]\n", mnemonic, code)
-    if mc.mu == nil { // if unicorn supported
+    if mc.mu == nil { // if unicorn does not supported
         return nil
     }
-    if err := mc.emulate(mnemonic, code); err != nil {
+    if err := mc.emulate(code); err != nil {
         return err
     }
 
@@ -83,14 +83,14 @@ func (mc Machine) Run(c *ishell.Context, mnemonic string) error {
 
 func (mc Machine) assemble(mnemonic string) ([]byte, error) {
     // TODO: What is the effect of the second argument(address) of Assemble
-    code, _, ok := mc.ks.Assemble(mnemonic, 0)
-    if !ok {
+    code, cnt, ok := mc.ks.Assemble(mnemonic, 0)
+    if !ok || cnt == 0 {
         return nil, fmt.Errorf("Error: assemble instruction(%s)", mnemonic)
     }
     return code, nil
 }
 
-func (mc Machine) emulate(mnemonic string, code []byte) error {
+func (mc Machine) emulate(code []byte) error {
     var (
         opts = unicorn.UcOptions{Timeout:60000000, Count:0} // Timeout is microseconds, now: 60 seconds
         codeEnd uint64
