@@ -31,7 +31,7 @@ func main() {
     }
 
     pallet = utils.InitPallet()
-    mc = setArch(opts.OptArch)
+    mc = arch.SetArch(opts.OptArch)
     shell = initShell(mc.Prompt)
     bannar()
     shell.Run()
@@ -60,40 +60,6 @@ func parseOption() (options, error) {
         return options{}, fmt.Errorf("Not implemented")
     }
     return *opts, nil
-}
-
-func setArch(strArch string) arch.Machine {
-    var mc arch.Machine
-    switch strArch {
-        case "i8086"       : mc = arch.SetI8086()
-        case "x86"         : mc = arch.SetX86()
-        case "x64"         : mc = arch.SetX64()
-        case "arm-thumb"   : mc = arch.SetArmThumb(false) // TODO: test
-        case "arm-thumbeb" : mc = arch.SetArmThumb(true) // TODO: test
-        case "arm"         : mc = arch.SetArm(false)
-        case "armeb"       : mc = arch.SetArm(true)
-        case "arm64"       : mc = arch.SetArm64(false)  // TODO: test, fixme: something wrong?
-        //case "arm64eb"     : mc = arch.SetArm64(true)   // keystone unsupported?, TODO: test, fixme: something wrong?
-        case "mips"        : mc = arch.SetMips(false)
-        case "mipseb"      : mc = arch.SetMips(true)
-        case "mips64"      : mc = arch.SetMips64(false) // fixme: something wrong?
-        case "mips64eb"    : mc = arch.SetMips64(true)  // fixme: something wrong?
-        case "sparc"       : mc = arch.SetSparc(true)   // sparc standard is big-endian
-        case "sparcel"     : mc = arch.SetSparc(false)  // assemble only, unicorn: UNSUPPORTED, keystone: supported
-        case "sparc64"     : mc = arch.SetSparc64(true) // fixme: something wrong?, sparc standard is big-endian, keystone sparc64el does not supported
-        case "ppc",     // big-endian, assemble only
-             "powerpc"     : mc = arch.SetPowerPC(true)
-        case "ppc64",   // assemble only
-             "powerpc64"   : mc = arch.SetPowerPC64(true)
-        case "ppc64el", // assemble only
-             "powerpc64el" : mc = arch.SetPowerPC64(false)
-        case "sysz",
-             "systemz",
-             "systemZ"     : mc = arch.SetSystemZ()
-        //case "m68k"        : mc = arcSetM68k(&asmsh) // unicorn: supported, keystone: UNSUPPORTED
-        default            : mc = arch.SetX86()
-    }
-    return mc
 }
 
 func bannar() {

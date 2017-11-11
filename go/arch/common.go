@@ -2,7 +2,6 @@ package arch
 
 import (
     "fmt"
-    "reflect"
     "github.com/poppycompass/ishell"
     "github.com/poppycompass/asmshell/go/utils"
     "github.com/keystone-engine/keystone/bindings/go/keystone"
@@ -27,6 +26,40 @@ type Machine struct {
 }
 
 var pallet utils.Pallet
+
+func SetArch(strArch string) Machine {
+    var mc Machine
+    switch strArch {
+        case "i8086"       : mc = SetI8086()
+        case "x86"         : mc = SetX86()
+        case "x64"         : mc = SetX64()
+        case "arm-thumb"   : mc = SetArmThumb(false) // TODO: test
+        case "arm-thumbeb" : mc = SetArmThumb(true) // TODO: test
+        case "arm"         : mc = SetArm(false)
+        case "armeb"       : mc = SetArm(true)
+        case "arm64"       : mc = SetArm64(false)  // TODO: test, fixme: something wrong?
+        //case "arm64eb"     : mc = SetArm64(true)   // keystone unsupported?, TODO: test, fixme: something wrong?
+        case "mips"        : mc = SetMips(false)
+        case "mipseb"      : mc = SetMips(true)
+        case "mips64"      : mc = SetMips64(false) // fixme: something wrong?
+        case "mips64eb"    : mc = SetMips64(true)  // fixme: something wrong?
+        case "sparc"       : mc = SetSparc(true)   // sparc standard is big-endian
+        case "sparcel"     : mc = SetSparc(false)  // assemble only, unicorn: UNSUPPORTED, keystone: supported
+        case "sparc64"     : mc = SetSparc64(true) // fixme: something wrong?, sparc standard is big-endian, keystone sparc64el does not supported
+        case "ppc",     // big-endian, assemble only
+             "powerpc"     : mc = SetPowerPC(true)
+        case "ppc64",   // assemble only
+             "powerpc64"   : mc = SetPowerPC64(true)
+        case "ppc64el", // assemble only
+             "powerpc64el" : mc = SetPowerPC64(false)
+        case "sysz",
+             "systemz",
+             "systemZ"     : mc = SetSystemZ()
+        //case "m68k"        : mc = arcSetM68k(&asmsh) // unicorn: supported, keystone: UNSUPPORTED
+        default            : mc = SetX86()
+    }
+    return mc
+}
 // assemble and emulate
 func (mc Machine) Run(c *ishell.Context, mnemonic string) error {
     pallet = utils.InitPallet()
@@ -176,13 +209,4 @@ func (mc Machine) showStatusReg(c *ishell.Context, key string, reg uint64, oldRe
 
 func (mc Machine) Finalize() {
     mc.ks.Close()
-}
-
-// for test
-func (mc Machine) check(input string, correct []byte) bool {
-    code, err := mc.assemble(input)
-    if err != nil || reflect.DeepEqual(code, correct) {
-        return false
-    }
-    return true
 }

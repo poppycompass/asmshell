@@ -6,6 +6,7 @@ import (
     "io/ioutil"
     "github.com/poppycompass/ishell"
     "github.com/chzyer/readline"
+    "github.com/poppycompass/asmshell/go/arch"
 )
 
 // ishell settings
@@ -161,7 +162,7 @@ func set(c *ishell.Context) {
             c.Printf("Usage: set <arch>\n")
             c.Printf("Supported: %s\n", SUPPORTED)
         default:
-            mc = setArch(c.Args[0])
+            mc = arch.SetArch(c.Args[0])
             c.SetPrompt(mc.Prompt)
     }
 }
