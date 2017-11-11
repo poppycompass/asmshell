@@ -132,4 +132,5 @@ asmshell: .gopath
 	@sh -c "PATH=$(PATHX) go get -u github.com/gorilla/websocket"
 	@echo "$(GOBUILD) -o asmshell ./go"
 	@sh -c "PATH=$(PATHX) $(GOBUILD) -o asmshell ./go"
+	#go run main.go shell.go const.go help.go -a x64
 #	$(FIXRPATH) asmshell
