@@ -28,7 +28,7 @@ func SetSparc(bigEndian bool) Machine {
         mc.ks, _ = keystone.New(keystone.ARCH_SPARC, keystone.MODE_SPARC32 + keystone.MODE_LITTLE_ENDIAN)
         mc.mu = nil
         mc.oldMu = nil
-        mc.Prompt = "(sparcel)> "
+        mc.Prompt = "(sparcle)> "
     }
 
     mc.regOrder = []string{

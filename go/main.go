@@ -1,4 +1,4 @@
-// TODO: tests, README, windows/mac/linux installer|prebuild
+// TODO: README/Makefile, windows/mac/linux installer|prebuild
 
 package main
 

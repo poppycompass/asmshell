@@ -15,7 +15,7 @@ func SetPowerPC64(bigEndian bool) Machine {
     } else {
         mc.ks, _ = keystone.New(keystone.ARCH_PPC, keystone.MODE_PPC64 + keystone.MODE_LITTLE_ENDIAN)
         mc.mu = nil
-        mc.Prompt = "(ppc64el)> "
+        mc.Prompt = "(ppc64le)> "
     }
     return mc
 }

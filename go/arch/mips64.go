@@ -18,7 +18,7 @@ func SetMips64(bigEndian bool) Machine {
         mc.ks, _ = keystone.New(keystone.ARCH_MIPS, keystone.MODE_MIPS64 + keystone.MODE_BIG_ENDIAN)
         mc.mu, _ = uc.NewUnicorn(uc.ARCH_MIPS, uc.MODE_MIPS64 + uc.MODE_BIG_ENDIAN)
         mc.oldMu, _ = uc.NewUnicorn(uc.ARCH_MIPS, uc.MODE_MIPS64 + uc.MODE_BIG_ENDIAN)
-        mc.Prompt = "(mips64eb)> "
+        mc.Prompt = "(mips64be)> "
     } else {
         mc.ks, _ = keystone.New(keystone.ARCH_MIPS, keystone.MODE_MIPS64)
         mc.mu, _ = uc.NewUnicorn(uc.ARCH_MIPS, uc.MODE_MIPS64 + uc.MODE_LITTLE_ENDIAN)

@@ -29,7 +29,7 @@ func SetSparc64(bigEndian bool) Machine {
         mc.ks, _ = keystone.New(keystone.ARCH_SPARC, keystone.MODE_SPARC64 + keystone.MODE_LITTLE_ENDIAN)
         mc.mu = nil
         mc.oldMu = nil
-        mc.Prompt = "(sparc64el)> "
+        mc.Prompt = "(sparc64le)> "
     }
 
     mc.regOrder = []string{

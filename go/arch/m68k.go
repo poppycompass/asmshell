@@ -1,7 +1,7 @@
 package arch
 
 import (
-    "github.com/keystone-engine/keystone/bindings/go/keystone"
+//    "github.com/keystone-engine/keystone/bindings/go/keystone"
     uc "github.com/unicorn-engine/unicorn/bindings/go/unicorn"
 )
 
@@ -10,7 +10,7 @@ func SetM68k() Machine {
     var mc Machine
     mc.bit = 32
     mc.sp = uc.M68K_REG_A7
-    mc.bp = uc.M68K_REG__SR // correct?
+    mc.bp = uc.M68K_REG_SR // correct?
     mc.start = 0x0000
 
     //mc.ks, _ = keystone.New(keystone.ARCH_ARM, keystone.MODE_ARM + keystone.MODE_BIG_ENDIAN)

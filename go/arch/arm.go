@@ -16,7 +16,7 @@ func SetArm(bigEndian bool) Machine {
         mc.ks, _ = keystone.New(keystone.ARCH_ARM, keystone.MODE_ARM + keystone.MODE_BIG_ENDIAN)
         mc.mu, _ = uc.NewUnicorn(uc.ARCH_ARM, uc.MODE_ARM + uc.MODE_BIG_ENDIAN)
         mc.oldMu, _ = uc.NewUnicorn(uc.ARCH_ARM, uc.MODE_ARM + uc.MODE_BIG_ENDIAN)
-        mc.Prompt = "(armeb)> "
+        mc.Prompt = "(armbe)> "
     } else {
         mc.ks, _ = keystone.New(keystone.ARCH_ARM, keystone.MODE_ARM + keystone.MODE_LITTLE_ENDIAN)
         mc.mu, _ = uc.NewUnicorn(uc.ARCH_ARM, uc.MODE_ARM)

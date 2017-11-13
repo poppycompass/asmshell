@@ -14,12 +14,12 @@ func SetArm64(bigEndian bool) Machine {
     mc.bp = uc.ARM64_REG_X29
     mc.start = 0x0000
 
-    // fixme: arm64eb(armebv8) cannot assemble with keystone, but keystone say supported!
+    // fixme: arm64be cannot assemble with keystone
     if bigEndian {
         mc.ks, _ = keystone.New(keystone.ARCH_ARM, keystone.MODE_ARM + keystone.MODE_BIG_ENDIAN + keystone.MODE_V8)
         mc.mu, _ = uc.NewUnicorn(uc.ARCH_ARM64, uc.MODE_ARM + uc.MODE_BIG_ENDIAN)
         mc.oldMu, _ = uc.NewUnicorn(uc.ARCH_ARM64, uc.MODE_ARM + uc.MODE_BIG_ENDIAN)
-        mc.Prompt = "(arm64eb)> "
+        mc.Prompt = "(arm64be)> "
     } else {
         mc.ks, _ = keystone.New(keystone.ARCH_ARM64, keystone.MODE_LITTLE_ENDIAN)
         mc.mu, _ = uc.NewUnicorn(uc.ARCH_ARM64, uc.MODE_ARM + uc.MODE_LITTLE_ENDIAN)

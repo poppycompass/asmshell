@@ -17,12 +17,12 @@ func SetArmThumb(bigEndian bool) Machine {
         mc.ks, _ = keystone.New(keystone.ARCH_ARM, keystone.MODE_THUMB + keystone.MODE_BIG_ENDIAN)
         mc.mu, _ = uc.NewUnicorn(uc.ARCH_ARM, uc.MODE_THUMB + uc.MODE_BIG_ENDIAN)
         mc.oldMu, _ = uc.NewUnicorn(uc.ARCH_ARM, uc.MODE_THUMB + uc.MODE_BIG_ENDIAN)
-        mc.Prompt = "(armeb-thumbeb)> "
+        mc.Prompt = "(thumbbe)> "
     } else {
         mc.ks, _ = keystone.New(keystone.ARCH_ARM, keystone.MODE_THUMB)
         mc.mu, _ = uc.NewUnicorn(uc.ARCH_ARM, uc.MODE_THUMB + uc.MODE_LITTLE_ENDIAN)
         mc.oldMu, _ = uc.NewUnicorn(uc.ARCH_ARM, uc.MODE_THUMB+ uc.MODE_LITTLE_ENDIAN)
-        mc.Prompt = "(arm-thumb)> "
+        mc.Prompt = "(thumb)> "
     }
 
     mc.mu.MemMap(0x0000, 0x8000)
