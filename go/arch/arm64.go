@@ -6,7 +6,7 @@ import (
 )
 
 // 'AArch64'? ref: bindings/vb6/mKeystone.bas:ARM-64, also called AArch64
-// sample: str w11, [x13]; ldrb w15, [x13]; mov x0, 0x37; sub x0,x1,x2
+// sample: str w11, [x13], 0; ldrb w15, [x13], 0; mov x0, 0x37; sub x0,x1,x2
 func SetArm64(bigEndian bool) Machine {
     var mc Machine
     mc.bit = 64
@@ -14,9 +14,10 @@ func SetArm64(bigEndian bool) Machine {
     mc.bp = uc.ARM64_REG_X29
     mc.start = 0x0000
 
-    // fixme: arm64be cannot assemble with keystone
     if bigEndian {
-        mc.ks, _ = keystone.New(keystone.ARCH_ARM, keystone.MODE_ARM + keystone.MODE_BIG_ENDIAN + keystone.MODE_V8)
+        // fixme: arm64be assemble mode with keystone
+//        mc.ks, _ = keystone.New(keystone.ARCH_ARM, keystone.MODE_BIG_ENDIAN)
+        mc.ks, _ = keystone.New(keystone.ARCH_ARM64, keystone.MODE_LITTLE_ENDIAN)
         mc.mu, _ = uc.NewUnicorn(uc.ARCH_ARM64, uc.MODE_ARM + uc.MODE_BIG_ENDIAN)
         mc.oldMu, _ = uc.NewUnicorn(uc.ARCH_ARM64, uc.MODE_ARM + uc.MODE_BIG_ENDIAN)
         mc.Prompt = "(arm64be)> "
