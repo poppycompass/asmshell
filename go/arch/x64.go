@@ -31,6 +31,8 @@ func SetX64() Machine {
         "rcx", " cs", "rdx", " ss",
         "rsp", " ds", "rbp", " es",
         "rsi", " fs", "rdi", " gs",
+        " r8", " r9", "r10", "r11",
+        "r12", "r13", "r14", "r15",
     }
     mc.regs = map[string]int{
         "rax"    : uc.X86_REG_RAX,
@@ -49,6 +51,14 @@ func SetX64() Machine {
         " es"    : uc.X86_REG_ES,
         " fs"    : uc.X86_REG_FS,
         " gs"    : uc.X86_REG_GS,
+        " r8"    : uc.X86_REG_R8,
+        " r9"    : uc.X86_REG_R9,
+        "r10"    : uc.X86_REG_R10,
+        "r11"    : uc.X86_REG_R11,
+        "r12"    : uc.X86_REG_R12,
+        "r13"    : uc.X86_REG_R13,
+        "r14"    : uc.X86_REG_R14,
+        "r15"    : uc.X86_REG_R15,
     }
     return mc
 }
