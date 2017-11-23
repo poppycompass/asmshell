@@ -6,6 +6,7 @@ import (
 )
 
 // sample: sub sp, 0xc; mov r0, 0x37; sub r1, r2, r3 
+// movs r4, 0xf
 func SetArmThumb(bigEndian bool) Machine {
     var mc Machine
     mc.bit = 16

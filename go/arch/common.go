@@ -98,11 +98,12 @@ func (mc Machine) emulate(code []byte) error {
 
     if mc.start == 0x0001 { // arm thumb mode
         codeEnd = uint64(mc.start)+uint64(len(code))-1
+        mc.mu.MemWrite(uint64(mc.start-1), code)
     } else {
         codeEnd = uint64(mc.start)+uint64(len(code))
+        mc.mu.MemWrite(uint64(mc.start), code)
     }
 
-    mc.mu.MemWrite(uint64(mc.start), code)
     if err := mc.mu.StartWithOptions(uint64(mc.start), codeEnd, &opts); err != nil {
         return err
     }
