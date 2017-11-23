@@ -28,10 +28,10 @@ var testCodes = map[string][]string {
   "i8086"       :{ "b8221150","mov ax, 0x1122;push ax",},
   "x86"         :{ "b84433221150","mov eax, 0x11223344; push eax",},
   "x64"         :{ "48b8887766554433221150","mov rax, 0x1122334455667788;push rax",},
-  "thumb"   :{ "83b04ff03700a2eb0301","sub sp, 0xc; mov r0, 0x37; sub r1,r2,r3",},
-  "thumbbe" :{ "b083f04f0037eba20103","sub sp, 0xc; mov r0, 0x37; sub r1,r2,r3",},
+  "thumb"       :{ "41f222100090","mov r0, 0x1122; str r0, [sp]",},
+  "thumbbe"     :{ "f24110229000","mov r0, 0x1122; str r0, [sp]",},
   "arm"         :{ "440303e3220141e300008de5","mov r0, 0x3344; movt r0, 0x1122; str r0, [sp]",},
-  "armbe"         :{ "e3030344e3410122e58d0000","mov r0, 0x3344; movt r0, 0x1122; str r0, [sp]",},
+  "armbe"       :{ "e3030344e3410122e58d0000","mov r0, 0x3344; movt r0, 0x1122; str r0, [sp]",},
   "arm64"       :{ "e00680d2410003cb","mov x0, 0x37; sub x1,x2,x3",},
   // "arm64be",  {"","mov x0, 0x37; sub x1,x2,x3",},
   "mips"        :{ "2211013c44332134204001010000a8af","addi $t0, $t0, 0x11223344;sw $t0,0($sp)",},
@@ -244,6 +244,54 @@ func TestXSparcEmulate(t *testing.T) {
     }
     sp, _ := mc.mu.RegRead(mc.sp)
     data, _ := mc.mu.MemRead(sp, uint64(mc.bit/8))
+    if !reflect.DeepEqual(data, correctData) {
+        t.Errorf("[-] %s stack(o: %x, x: %x)", arch, correctData, data)
+    }
+    mc.Finalize()
+}
+
+func TestXThumbEmulate(t *testing.T) {
+    var (
+        arch string = "thumb"
+        readReg string = "r0"
+        correctReg  = uint64(0x1122)
+        correctData = []byte("\x22\x11")
+    )
+    mc := SetArch(arch)
+    code, _ := hex.DecodeString(testCodes[arch][0])
+    if err := mc.emulate(code); err != nil {
+        t.Errorf("[-] %s,%s ]", arch, err)
+    }
+    reg, _ := mc.mu.RegRead(mc.regs[readReg])
+    if reg != correctReg {
+        t.Errorf("[-] %s register(o: %x, x: %x) ]", arch, correctReg, reg)
+    }
+    sp, _ := mc.mu.RegRead(mc.sp)
+    data, _ := mc.mu.MemRead(sp, uint64(mc.bit/8))
+    if !reflect.DeepEqual(data, correctData) {
+        t.Errorf("[-] %s stack(o: %x, x: %x)", arch, correctData, data)
+    }
+    mc.Finalize()
+}
+// fixme: sp+2 is correct?
+func TestXThumbbeEmulate(t *testing.T) {
+    var (
+        arch string = "thumbbe"
+        readReg string = "r0"
+        correctReg  = uint64(0x1122)
+        correctData = []byte("\x11\x22")
+    )
+    mc := SetArch(arch)
+    code, _ := hex.DecodeString(testCodes[arch][0])
+    if err := mc.emulate(code); err != nil {
+        t.Errorf("[-] %s,%s ]", arch, err)
+    }
+    reg, _ := mc.mu.RegRead(mc.regs[readReg])
+    if reg != correctReg {
+        t.Errorf("[-] %s register(o: %x, x: %x) ]", arch, correctReg, reg)
+    }
+    sp, _ := mc.mu.RegRead(mc.sp)
+    data, _ := mc.mu.MemRead(sp+2, uint64(mc.bit/8))
     if !reflect.DeepEqual(data, correctData) {
         t.Errorf("[-] %s stack(o: %x, x: %x)", arch, correctData, data)
     }
