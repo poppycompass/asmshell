@@ -4,7 +4,8 @@ import (
     "github.com/keystone-engine/keystone/bindings/go/keystone"
     uc "github.com/unicorn-engine/unicorn/bindings/go/unicorn"
 )
-// mov r0, 0x37; sub r1, r2, r3 
+// mov r0, 0x37; sub r1, r2, r3;
+// mov r0, 0x3344; movt r0, 0x1122; str r0, [sp]
 func SetArm(bigEndian bool) Machine {
     var mc Machine
     mc.bit = 32
@@ -52,7 +53,7 @@ func SetArm(bigEndian bool) Machine {
         "r11/fp"    : uc.ARM_REG_R11, // frame pointer(fp, like 'ebp')
         "r12/ip"    : uc.ARM_REG_R12, // intra-procedure call scratch register
         "r13/sp"    : uc.ARM_REG_R13, // stack pointer
-        "r14/lr"    : uc.ARM_REG_R14, // link register
+        "r14/lr"    : uc.ARM_REG_R14, // link register, return address
         "r15/pc"    : uc.ARM_REG_R15, // program counter
         "cpsr"      : uc.ARM_REG_CPSR,// current program status register
     }

@@ -1,4 +1,7 @@
 testing, testing, testing
+  - emulation test(arch/run_test.go)
+    - sparc64, mips64(eb), arm64(eb), arm-thumb(eb)
+    - failure test case
 HTTP support
-Arm: vector support
-Intel/ArmMips: float register, 128bit register
+ARM: vector support
+Intel/Arm/Mips: float register, 128bit register

@@ -19,6 +19,9 @@ var archList = []string{
     "powerpc64", "powerpc64le",
     "systemZ",
 }
+var bit32 = []string{
+    "x86", "arm", "mips", "sparc",
+}
 
 // 'key': {"correct code", "mnemonic"}
 var testCodes = map[string][]string {
@@ -27,15 +30,15 @@ var testCodes = map[string][]string {
   "x64"         :{ "48b8887766554433221150","mov rax, 0x1122334455667788;push rax",},
   "thumb"   :{ "83b04ff03700a2eb0301","sub sp, 0xc; mov r0, 0x37; sub r1,r2,r3",},
   "thumbbe" :{ "b083f04f0037eba20103","sub sp, 0xc; mov r0, 0x37; sub r1,r2,r3",},
-  "arm"         :{ "0cd04de23700a0e3031042e0","sub sp, 0xc; mov r0, 0x37; sub r1,r2,r3",},
-  "armbe"       :{ "e24dd00ce3a00037e0421003","sub sp, 0xc; mov r0, 0x37; sub r1,r2,r3",},
+  "arm"         :{ "440303e3220141e300008de5","mov r0, 0x3344; movt r0, 0x1122; str r0, [sp]",},
+  "armbe"         :{ "e3030344e3410122e58d0000","mov r0, 0x3344; movt r0, 0x1122; str r0, [sp]",},
   "arm64"       :{ "e00680d2410003cb","mov x0, 0x37; sub x1,x2,x3",},
   // "arm64be",  {"","mov x0, 0x37; sub x1,x2,x3",},
   "mips"        :{ "2211013c44332134204001010000a8af","addi $t0, $t0, 0x11223344;sw $t0,0($sp)",},
   "mipsbe"      :{ "3c0111223421334401014020afa80000","addi $t0, $t0, 0x11223344;sw $t0,0($sp)",},
   "mips64"      :{ "56342134","ori $at, $at, 0x3456",},
   "mips64be"    :{ "34213456","ori $at, $at, 0x3456",},
-  "sparc"       :{ "86004002","add %g1, %g2, %g3",},
+  "sparc"       :{ "8200611283286004820060028328600c820063348328600482006004c2238000","add %g1, 0x112, %g1; sll %g1, 4, %g1; add %g1, 2, %g1; sll %g1, 12, %g1; add %g1, 0x334, %g1; sll %g1, 4, %g1; add %g1, 4, %g1; st %g1, [%sp];",},
   "sparcle"     :{ "02400086","add %g1, %g2, %g3",},
   "sparc64"     :{ "86004002","add %g1, %g2, %g3",},
   "powerpc"     :{ "7c221a14","add 1,2,3",},
@@ -129,6 +132,7 @@ func TestXX64Emulate(t *testing.T) {
     }
     mc.Finalize()
 }
+
 func TestXMipsEmulate(t *testing.T) {
     var (
         arch string = "mips"
@@ -156,6 +160,76 @@ func TestXMipsbeEmulate(t *testing.T) {
     var (
         arch string = "mipsbe"
         readReg string = "t0"
+        correctReg  = uint64(0x11223344)
+        correctData = []byte("\x11\x22\x33\x44")
+    )
+    mc := SetArch(arch)
+    code, _ := hex.DecodeString(testCodes[arch][0])
+    if err := mc.emulate(code); err != nil {
+        t.Errorf("[-] %s,%s ]", arch, err)
+    }
+    reg, _ := mc.mu.RegRead(mc.regs[readReg])
+    if reg != correctReg {
+        t.Errorf("[-] %s register(o: %x, x: %x) ]", arch, correctReg, reg)
+    }
+    sp, _ := mc.mu.RegRead(mc.sp)
+    data, _ := mc.mu.MemRead(sp, uint64(mc.bit/8))
+    if !reflect.DeepEqual(data, correctData) {
+        t.Errorf("[-] %s stack(o: %x, x: %x)", arch, correctData, data)
+    }
+    mc.Finalize()
+}
+
+func TestXArmEmulate(t *testing.T) {
+    var (
+        arch string = "arm"
+        readReg string = "r0"
+        correctReg  = uint64(0x11223344)
+        correctData = []byte("\x44\x33\x22\x11")
+    )
+    mc := SetArch(arch)
+    code, _ := hex.DecodeString(testCodes[arch][0])
+    if err := mc.emulate(code); err != nil {
+        t.Errorf("[-] %s,%s ]", arch, err)
+    }
+    reg, _ := mc.mu.RegRead(mc.regs[readReg])
+    if reg != correctReg {
+        t.Errorf("[-] %s register(o: %x, x: %x) ]", arch, correctReg, reg)
+    }
+    sp, _ := mc.mu.RegRead(mc.sp)
+    data, _ := mc.mu.MemRead(sp, uint64(mc.bit/8))
+    if !reflect.DeepEqual(data, correctData) {
+        t.Errorf("[-] %s stack(o: %x, x: %x)", arch, correctData, data)
+    }
+    mc.Finalize()
+}
+func TestXArmbeEmulate(t *testing.T) {
+    var (
+        arch string = "armbe"
+        readReg string = "r0"
+        correctReg  = uint64(0x11223344)
+        correctData = []byte("\x11\x22\x33\x44")
+    )
+    mc := SetArch(arch)
+    code, _ := hex.DecodeString(testCodes[arch][0])
+    if err := mc.emulate(code); err != nil {
+        t.Errorf("[-] %s,%s ]", arch, err)
+    }
+    reg, _ := mc.mu.RegRead(mc.regs[readReg])
+    if reg != correctReg {
+        t.Errorf("[-] %s register(o: %x, x: %x) ]", arch, correctReg, reg)
+    }
+    sp, _ := mc.mu.RegRead(mc.sp)
+    data, _ := mc.mu.MemRead(sp, uint64(mc.bit/8))
+    if !reflect.DeepEqual(data, correctData) {
+        t.Errorf("[-] %s stack(o: %x, x: %x)", arch, correctData, data)
+    }
+    mc.Finalize()
+}
+func TestXSparcEmulate(t *testing.T) {
+    var (
+        arch string = "sparc"
+        readReg string = "g1"
         correctReg  = uint64(0x11223344)
         correctData = []byte("\x11\x22\x33\x44")
     )

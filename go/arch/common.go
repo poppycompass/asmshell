@@ -34,11 +34,11 @@ func SetArch(strArch string) Machine {
         case "x86"         : mc = SetX86()
         case "x64"         : mc = SetX64()
         case "thumb"       : mc = SetArmThumb(false) // TODO: test
-        case "thumbbe"     : mc = SetArmThumb(true) // TODO: test
+        case "thumbbe"     : mc = SetArmThumb(true)  // TODO: test
         case "arm"         : mc = SetArm(false)
         case "armbe"       : mc = SetArm(true)
-        case "arm64"       : mc = SetArm64(false)  // TODO: test, fixme: something wrong?
-        case "arm64be"     : mc = SetArm64(true)   // keystone unsupported?, fixme: something wrong?
+        case "arm64"       : mc = SetArm64(false)    // TODO: test, fixme: something wrong?
+        case "arm64be"     : mc = SetArm64(true)     // keystone UNSUPPORTED?, unicorn: supported, fixme: something wrong?
         case "mips"        : mc = SetMips(false)
         case "mipsbe"      : mc = SetMips(true)
         case "mips64"      : mc = SetMips64(false) // fixme: something wrong?

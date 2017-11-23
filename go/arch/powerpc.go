@@ -6,6 +6,7 @@ import (
 )
 
 // sample: add 1, 2, 3
+// MEMO: sparc has status register
 func SetPowerPC(bigEndian bool) Machine {
     var mc Machine
     if bigEndian {
