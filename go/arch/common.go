@@ -2,6 +2,7 @@ package arch
 
 import (
     "fmt"
+    "strings"
     "github.com/poppycompass/ishell"
     "github.com/poppycompass/asmshell/go/utils"
     "github.com/keystone-engine/keystone/bindings/go/keystone"
@@ -97,7 +98,7 @@ func (mc Machine) emulate(code []byte) error {
         codeEnd uint64
     )
 
-    if mc.start == 0x0001 { // arm thumb mode
+    if strings.Contains(mc.Prompt, "thumb") { // arm thumb mode
         codeEnd = uint64(mc.start)+uint64(len(code))-1
         mc.mu.MemWrite(uint64(mc.start-1), code)
     } else {
