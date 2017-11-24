@@ -22,6 +22,7 @@ func initShell(prompt string) *ishell.Shell {
     frags := fragCmd()
     frags.AddCmd(fragRun())
     frags.AddCmd(fragShow())
+    frags.AddCmd(fragDel())
     shell.AddCmd(frags)
     shell.AddCmd(setCmd())
     shell.AddCmd(readExeCmd())
@@ -79,6 +80,14 @@ func fragShow() *ishell.Cmd {
     }
 }
 
+func fragDel() *ishell.Cmd {
+    return &ishell.Cmd {
+        Name: "delete",
+        Aliases: []string{"del", "d"},
+        Help: "delete registered fragments",
+        Func: del,
+    }
+}
 func setCmd() *ishell.Cmd {
     return &ishell.Cmd {
         Name: "set",
@@ -90,7 +99,7 @@ func setCmd() *ishell.Cmd {
 func readExeCmd() *ishell.Cmd {
     return &ishell.Cmd {
         Name: "exe",
-        Help: "read exe file",
+        Help: "(Comming soon)read exe file",
         Func: readExe,
     }
 }
@@ -153,6 +162,21 @@ func show(c *ishell.Context) {
                 tmp = strings.Replace(tmp, ":", ":  ", -1) // symbol
                 c.Printf("%s\n", tmp)
             }
+    }
+}
+
+// delete registered fragment
+func del(c *ishell.Context) {
+    switch len(c.Args) {
+        case 0: // show help
+            c.Println("Usage: fragment delete <registered frag>")
+        default:
+            c.Printf("Delete: ")
+            for _, value := range c.Args {
+                delete(fragList, value)
+                c.Printf("'%s' ", value)
+            }
+            c.Printf("\n%s", mc.Prompt)
     }
 }
 
