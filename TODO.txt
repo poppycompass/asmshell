@@ -1,6 +1,6 @@
 testing, testing, testing
   - emulation test(arch/run_test.go)
-    - sparc64, mips64(eb), arm64(eb), arm-thumb(eb)
+    - sparc64, mips64(eb), arm64(eb)
     - failure test case
 HTTP support
 ARM: vector support

@@ -1,71 +1,115 @@
 Assembler Shell(asmshell)
 ==============
 
-Assembler Shell(asmshell) is a command line assembler emulator. 
+Assembler(Keystone-Engine) + Emulator(Unicorn-Engine) + interactive cli library([ishell](https://github.com/abiosoft/ishell)) = Text-base Assembler Emulator
+
+Assembler Shell(asmshell) is a Text-base assembler emulator.
 
 You can easily check the execution result of the assembler.
 
-Emulate all architecture implemented in unicorn engine.(Now x86/64 only)
-
-
 Enjoy! :)
 
+## Feature
+Multi-architecture support(depends on unicorn/keystone-engine)
+
+	Assemble & emulation          : i8086, x86, x64, arm-thumb(be), arm(be), arm64, mips(be), mips64(be), sparc, sparc64
+	Assemble only                 : powerpc, powerpc64(le), sparcle, systemZ
+	Future support                : arm64be, m68k
+	Shell like commands           : fragments, run linux commands...etc
+	Handled like a shell          : Ctrl-P/Ctrl-N, Ctrl-A/Ctrl-E, Ctrl-H/Ctr-D...etc
+	Cross Platform(depends on go) : *NIX, OSX, Windows
+
 ## Install
+Needs Go language and unicorn-engine and keystone-engine. 
 
-### Ubuntu
-	$ ./install.sh
+If you are windows user, you can use [pre-compiled binary](https://github.com/poppycompass/asmshell/prebuild).
 
-### Other Linux
-NEED [Unicorn](https://github.com/unicorn-engine/unicorn) and [radare2](https://github.com/radare/radare2).
+### Dependencies
 
-	$ git clone https://github.com/unicorn-engine/unicorn
-	$ cd unicorn && ./make.sh
-	$ sudo make install
-	$ sudo python unicorn/bindings/python/setup.py install
-	$ git clone https://github.com/radare/radare2
-	$ cd radare2 && sys/install.sh
+1. Install [Go(version 1.6 or later)](https://golang.org/dl/)
+
+2. Install unicorn-engine
+
+	`$ git clone https://github.com/unicorn-engine/unicorn`  
+	`$ cd unicorn && ./make.sh`  
+	`$ sudo make install`  
+
+3. Install keystone-engine
+
+	`$ git clone https://github.com/keystone-engine/beta/bindings/go/keystone`  
+	`$ mkdir build && cd build`  
+	`$ ../make-share.sh`  
+	`$ sudo make install`  
+	`$ sudo ldconfig # if you use OSX, "sudo update_dyld_shared_cache"`  
+
+4. Build asmshell
+
+	`$ git clone https://github.com/poppycompass/asmshell`  
+	`$ cd asmshell && make`  
+	`$ ./asmshell.exe -h`  
+
 
 ## Usage
 
+### Help
+	$ ./asmshell.exe [-h/--help]
+
 ### x86
-	$ python ./asmshell.py
+	$ ./asmshell.exe
 ![x86 mode](https://github.com/poppycompass/asmshell/blob/master/images/x86.jpg)
 
-
-### diff mode(output changed register only)
-	$ python ./asmshell.py -d
-![x86 diff mode](https://github.com/poppycompass/asmshell/blob/master/images/diff.jpg)
-
 ### x64
-	$ python ./asmshell.py -a x64
+	$ ./asmshell.exe -a x64
 ![x64 mode](https://github.com/poppycompass/asmshell/blob/master/images/x64.jpg)
 
-### Support Function
 
-- Input History(Ctrl-P/N)
+## Tutorial
 
-- Clear line(Ctrl-U)
+### Fragment Commands(Example: Symbol, encrypt)
+You can register mnemonic fragments.
 
-- Backspace(Ctrl-H/Backspace key)
+	$ ./asmshell.exe
+	(x86)> fragment symbol # register from input
+	in> mov ecx, 0x20
+	... l1:
+	... inc eax
+	... dec ecx
+	... jnz l1; # ';' is end the register
+	'symbol` is registered
+	(x86)> fragment show # show registered fragments. If you want show specify fragments, run this -> 'fragment show <name1> <name2>...'
+	'symbol'
+	    l1:
+	    inc eax
+	    dec ecx
+	    jnz l1
+	(x86)> fragment run symbol
 
-## Trouble Shooting
+### Change Architecture
 
-### UserWarning: .python-eggs is writable
-If you have warnings such as 
-```
-/usr/lib/python2.7/dist-packages/pkg_resources.py:1031: UserWarning: /home/vagrant/.python-eggs is writable by group/others and vulnerable to attack when used with get_resource_filename. Consider a more secure location (set with .set_extraction_path or the PYTHON_EGG_CACHE environment variable).
-```
-, run this command.
-```
-$ chmod g-wx,o-wx ~/.python-eggs
-```
+	$ ./asmshell.exe
+	(x86)> set # show available architecture
+	Usage: set <arch>
+	Supported: i8086, x86, x64, arm-thumb(be), arm(be), arm64, mips(be), mips64(be), sparc(le), sparc64, [ppc|powerpc], [ppc64(le)|powerpc64(le)], [sysz|systemz|systemZ]
+	(x86)> set arm
+	(arm)>
+
+## Available Shell Commands
+	help                       : display help
+	fragment [run/show/delete] : register/run/show/delete fragment
+	!<cmd>                     : run shell commands
+	set <arch>                 : set architecture and mode
+	exit/quit/q                : exit the program
+
 
 ## Contribution
+I am not an architectual expert. Therefore, I think there are many bugs and strangeness in this program.
+If you want to contribute, please pick up something from our [Github issues](https://github.com/poppycompass/asmshell/issues).
+We also maintain a list of more challenged problems in a TODO.txt.
 
 
 ## License
 
-The software in this repository is covered by the MIT license[the MIT license](LICENSE).
+The software in this repository is covered by [the MIT license](LICENSE).
 
 
 ## Author
