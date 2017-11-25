@@ -84,6 +84,16 @@ You can register mnemonic fragments.
 	    jnz l1
 	(x86)> fragment run symbol
 
+If you have these codes.
+
+	$ cat encrpyt.txt
+	...
+	$ ./asmshell.exe
+	(x86)> f encrypt encrypt.txt # register from file. 'f' is alias of fragment
+	(x86)> f s encrypt # 'f s' is alias of 'fragment show'
+	(x86)> f r encrypt # fragment run encrypt
+
+
 ### Change Architecture
 
 	$ ./asmshell.exe
@@ -92,6 +102,10 @@ You can register mnemonic fragments.
 	Supported: i8086, x86, x64, arm-thumb(be), arm(be), arm64, mips(be), mips64(be), sparc(le), sparc64, [ppc|powerpc], [ppc64(le)|powerpc64(le)], [sysz|systemz|systemZ]
 	(x86)> set arm
 	(arm)>
+
+### Run shell command(now linux & mac only)
+	$ ./asmshell.exe
+	(x86)> !ls -lga
 
 ## Available Shell Commands
 	help                       : display help
