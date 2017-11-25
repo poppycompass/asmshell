@@ -1,6 +1,5 @@
 .DEFAULT_GOAL := build
-#ALL_TARGETS := go unicorn keystone asmshell
-ALL_TARGETS := asmshell
+ALL_TARGETS := go unicorn keystone asmshell
 .PHONY: test deps ${ALL_TARGETS}
 
 all: ${ALL_TARGETS}
@@ -56,14 +55,14 @@ unicorn:
 	cd deps/build && \
 	git clone https://github.com/unicorn-engine/unicorn.git && git --git-dir unicorn fetch; \
 	cd unicorn && git clean -fdx && git reset --hard origin/master && \
-	make && make PREFIX=$(DEST) install
+	make && sudo make install
 
 keystone:
 	cd deps/build && \
 	git clone https://github.com/keystone-engine/keystone.git && git --git-dir keystone pull; \
 	cd keystone; git clean -fdx && git reset --hard origin/master; mkdir build && cd build && \
-	cmake -DCMAKE_INSTALL_PREFIX=$(DEST) -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=ON -DLLVM_TARGETS_TO_BUILD="all" -G "Unix Makefiles" .. && \
-	make -j2 install
+	cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=ON -DLLVM_TARGETS_TO_BUILD="all" -G "Unix Makefiles" .. && \
+	sudo make -j2 install
 
 # Go executable targets
 .gopath:
@@ -92,8 +91,6 @@ endif
 DEPS=$(shell env PATH=$(PATHX) GOROOT=$(GOROOT) GOPATH=$(GOPATH) go list -f '{{join .Deps "\n"}}' ./go/... | grep -v usercorn | grep '\.' | sort -u)
 PKGS=$(shell env PATH=$(PATHX) GOROOT=$(GOROOT) GOPATH=$(GOPATH) go list ./go/... | sort -u | rev | sed -e 's,og/.*$$,,' | rev | sed -e 's,^,github.com/poppycompass/asmshell/go,')
 
-# ifeq "ls, https://www.ecoop.net/coop/translated/GNUMake3.77/make_7.jp.html
-# TODO: more DRY
 asmshell: .gopath
 	@echo "go get -u github.com/fatih/color"
 	@sh -c "PATH=$(PATHX) go get -u github.com/fatih/color"
@@ -112,4 +109,3 @@ asmshell: .gopath
 	@echo "$(GOBUILD) -o asmshell ./go"
 	@sh -c "PATH=$(PATHX) $(GOBUILD) -o asmshell.exe ./go"
 	@echo "Done!"
-#	$(FIXRPATH) asmshell

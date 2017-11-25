@@ -26,7 +26,7 @@ If you are windows user, you can use [pre-compiled binary](https://github.com/po
 
 ### Dependencies
 
-1. Install [Go(version 1.6 or later)](https://golang.org/dl/)
+1. Install [Go(version 1.6 or later)](https://golang.org/dl/) and [CMake](https://cmake.org/download/)
 
 2. Install unicorn-engine
 
