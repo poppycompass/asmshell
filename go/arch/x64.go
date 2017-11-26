@@ -6,9 +6,9 @@ import (
 )
 
 // sample 
-func SetX64() Machine {
+func SetX64(strArch string) Machine {
     var mc Machine
-    mc.Prompt = "(x64)> "
+    mc.Prompt = "(" + strArch + ")> "
     mc.bit = 64
     mc.sp = uc.X86_REG_RSP
     mc.bp = uc.X86_REG_RBP

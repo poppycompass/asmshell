@@ -7,16 +7,15 @@ import (
 
 // sample: add 1, 2, 3
 // MEMO: sparc has status register
-func SetPowerPC(bigEndian bool) Machine {
+func SetPowerPC(strArch string, bigEndian bool) Machine {
     var mc Machine
     if bigEndian {
         mc.ks, _ = keystone.New(keystone.ARCH_PPC, keystone.MODE_PPC32 + keystone.MODE_BIG_ENDIAN)
         mc.mu = nil
-        mc.Prompt = "(powerpc)> "
     } else {
         mc.ks, _ = keystone.New(keystone.ARCH_PPC, keystone.MODE_PPC32 + keystone.MODE_LITTLE_ENDIAN)
         mc.mu = nil
-        mc.Prompt = "(ppcle)> "
     }
+    mc.Prompt = "(" + strArch + ")> "
     return mc
 }

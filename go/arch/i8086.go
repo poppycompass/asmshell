@@ -6,9 +6,9 @@ import (
 )
 
 // sample: inc ax; push ax; pop dx
-func SetI8086() Machine {
+func SetI8086(strArch string) Machine {
     var mc Machine
-    mc.Prompt = "(i8086)> "
+    mc.Prompt = "(" + strArch + ")> "
     mc.bit = 16
     mc.sp = uc.X86_REG_SP
     mc.bp = uc.X86_REG_BP

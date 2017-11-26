@@ -6,7 +6,7 @@ import (
 )
 // mov r0, 0x37; sub r1, r2, r3;
 // mov r0, 0x3344; movt r0, 0x1122; str r0, [sp]
-func SetArm(bigEndian bool) Machine {
+func SetArm(strArch string, bigEndian bool) Machine {
     var mc Machine
     mc.bit = 32
     mc.sp = uc.ARM_REG_R13
@@ -17,13 +17,12 @@ func SetArm(bigEndian bool) Machine {
         mc.ks, _ = keystone.New(keystone.ARCH_ARM, keystone.MODE_ARM + keystone.MODE_BIG_ENDIAN)
         mc.mu, _ = uc.NewUnicorn(uc.ARCH_ARM, uc.MODE_ARM + uc.MODE_BIG_ENDIAN)
         mc.oldMu, _ = uc.NewUnicorn(uc.ARCH_ARM, uc.MODE_ARM + uc.MODE_BIG_ENDIAN)
-        mc.Prompt = "(armbe)> "
     } else {
         mc.ks, _ = keystone.New(keystone.ARCH_ARM, keystone.MODE_ARM + keystone.MODE_LITTLE_ENDIAN)
         mc.mu, _ = uc.NewUnicorn(uc.ARCH_ARM, uc.MODE_ARM)
         mc.oldMu, _ = uc.NewUnicorn(uc.ARCH_ARM, uc.MODE_ARM)
-        mc.Prompt = "(arm)> "
     }
+    mc.Prompt = "(" + strArch + ")> "
 
     mc.mu.MemMap(0x0000, 0x2000)
     mc.mu.RegWrite(mc.sp, 0x1000)

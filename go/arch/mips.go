@@ -6,7 +6,7 @@ import (
 )
 
 // sample code: ori $at, $at, 0x3456
-func SetMips(bigEndian bool) Machine {
+func SetMips(strArch string, bigEndian bool) Machine {
     var mc Machine
     mc.bit = 32
     mc.sp = uc.MIPS_REG_29
@@ -17,13 +17,12 @@ func SetMips(bigEndian bool) Machine {
         mc.ks, _ = keystone.New(keystone.ARCH_MIPS, keystone.MODE_MIPS32 + keystone.MODE_BIG_ENDIAN)
         mc.mu, _ = uc.NewUnicorn(uc.ARCH_MIPS, uc.MODE_MIPS32 + uc.MODE_BIG_ENDIAN)
         mc.oldMu, _ = uc.NewUnicorn(uc.ARCH_MIPS, uc.MODE_MIPS32 + uc.MODE_BIG_ENDIAN)
-        mc.Prompt = "(mipsbe)> "
     } else {
         mc.ks, _ = keystone.New(keystone.ARCH_MIPS, keystone.MODE_MIPS32)
         mc.mu, _ = uc.NewUnicorn(uc.ARCH_MIPS, uc.MODE_MIPS32 + uc.MODE_LITTLE_ENDIAN)
         mc.oldMu, _ = uc.NewUnicorn(uc.ARCH_MIPS, uc.MODE_MIPS32 + uc.MODE_LITTLE_ENDIAN)
-        mc.Prompt = "(mips)> "
     }
+    mc.Prompt = "(" + strArch + ")> "
     mc.mu.MemMap(0x0000, 0x200000)
     mc.mu.RegWrite(mc.sp, 0x100000)
     mc.mu.RegWrite(mc.bp, 0x80000)

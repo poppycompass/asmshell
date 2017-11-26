@@ -7,7 +7,7 @@ import (
 
 // sample: sub sp, 0xc; mov r0, 0x37; sub r1, r2, r3 
 // movs r4, 0xf
-func SetArmThumb(bigEndian bool) Machine {
+func SetArmThumb(strArch string, bigEndian bool) Machine {
     var mc Machine
     mc.bit = 16
     mc.sp = uc.ARM_REG_R13
@@ -18,13 +18,12 @@ func SetArmThumb(bigEndian bool) Machine {
         mc.ks, _ = keystone.New(keystone.ARCH_ARM, keystone.MODE_THUMB + keystone.MODE_BIG_ENDIAN)
         mc.mu, _ = uc.NewUnicorn(uc.ARCH_ARM, uc.MODE_THUMB + uc.MODE_BIG_ENDIAN)
         mc.oldMu, _ = uc.NewUnicorn(uc.ARCH_ARM, uc.MODE_THUMB + uc.MODE_BIG_ENDIAN)
-        mc.Prompt = "(thumbbe)> "
     } else {
         mc.ks, _ = keystone.New(keystone.ARCH_ARM, keystone.MODE_THUMB)
         mc.mu, _ = uc.NewUnicorn(uc.ARCH_ARM, uc.MODE_THUMB + uc.MODE_LITTLE_ENDIAN)
         mc.oldMu, _ = uc.NewUnicorn(uc.ARCH_ARM, uc.MODE_THUMB+ uc.MODE_LITTLE_ENDIAN)
-        mc.Prompt = "(thumb)> "
     }
+    mc.Prompt = "(" + strArch + ")> "
 
     mc.mu.MemMap(0x0000, 0x8000)
     mc.mu.RegWrite(mc.sp, 0x1000)

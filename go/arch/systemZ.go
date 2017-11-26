@@ -6,12 +6,12 @@ import (
 )
 
 // sample: a %r0, 4095(%r15,%r1)
-func SetSystemZ() Machine {
+func SetSystemZ(strArch string) Machine {
     var mc Machine
 
     mc.ks, _ = keystone.New(keystone.ARCH_SYSTEMZ, keystone.MODE_BIG_ENDIAN)
     mc.mu = nil
-    mc.Prompt = "(systemZ)> "
+    mc.Prompt = "(" + strArch + ")> "
 
     return mc
 }

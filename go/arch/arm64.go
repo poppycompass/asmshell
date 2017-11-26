@@ -7,7 +7,7 @@ import (
 
 // 'AArch64'? ref: bindings/vb6/mKeystone.bas:ARM-64, also called AArch64
 // sample: str w11, [x13], 0; ldrb w15, [x13], 0; mov x0, 0x37; sub x0,x1,x2
-func SetArm64(bigEndian bool) Machine {
+func SetArm64(strArch string, bigEndian bool) Machine {
     var mc Machine
     mc.bit = 64
     mc.sp = uc.ARM64_REG_SP
@@ -20,13 +20,12 @@ func SetArm64(bigEndian bool) Machine {
         mc.ks, _ = keystone.New(keystone.ARCH_ARM64, keystone.MODE_LITTLE_ENDIAN)
         mc.mu, _ = uc.NewUnicorn(uc.ARCH_ARM64, uc.MODE_ARM + uc.MODE_BIG_ENDIAN)
         mc.oldMu, _ = uc.NewUnicorn(uc.ARCH_ARM64, uc.MODE_ARM + uc.MODE_BIG_ENDIAN)
-        mc.Prompt = "(arm64be)> "
     } else {
         mc.ks, _ = keystone.New(keystone.ARCH_ARM64, keystone.MODE_LITTLE_ENDIAN)
         mc.mu, _ = uc.NewUnicorn(uc.ARCH_ARM64, uc.MODE_ARM + uc.MODE_LITTLE_ENDIAN)
         mc.oldMu, _ = uc.NewUnicorn(uc.ARCH_ARM64, uc.MODE_ARM + uc.MODE_LITTLE_ENDIAN)
-        mc.Prompt = "(arm64)> "
     }
+    mc.Prompt = "(" + strArch + ")> "
 
     mc.mu.MemMap(0x0000, 0x2000)
     mc.mu.RegWrite(mc.sp, 0x1000)

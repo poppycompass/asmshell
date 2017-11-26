@@ -7,7 +7,7 @@ import (
 
 // 32bit only
 // sample: add %g1, %g2, %g3
-func SetSparc(bigEndian bool) Machine {
+func SetSparc(strArch string, bigEndian bool) Machine {
     var mc Machine
     mc.bit = 32
     mc.sp = uc.SPARC_REG_SP
@@ -18,7 +18,6 @@ func SetSparc(bigEndian bool) Machine {
         mc.ks, _ = keystone.New(keystone.ARCH_SPARC, keystone.MODE_SPARC32 + keystone.MODE_BIG_ENDIAN)
         mc.mu, _ = uc.NewUnicorn(uc.ARCH_SPARC, uc.MODE_SPARC32 | uc.MODE_BIG_ENDIAN)
         mc.oldMu, _ = uc.NewUnicorn(uc.ARCH_SPARC, uc.MODE_SPARC32 | uc.MODE_BIG_ENDIAN)
-        mc.Prompt = "(sparc)> "
 
         mc.mu.MemMap(0x0000, 0x200000)
         mc.mu.RegWrite(mc.sp, 0x100000)
@@ -28,8 +27,8 @@ func SetSparc(bigEndian bool) Machine {
         mc.ks, _ = keystone.New(keystone.ARCH_SPARC, keystone.MODE_SPARC32 + keystone.MODE_LITTLE_ENDIAN)
         mc.mu = nil
         mc.oldMu = nil
-        mc.Prompt = "(sparcle)> "
     }
+    mc.Prompt = "(" + strArch + ")> "
 
     mc.regOrder = []string{
         "g0", "g1", "g2", "g3", "g4", "g5", "g6", "g7",

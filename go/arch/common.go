@@ -31,34 +31,34 @@ var pallet utils.Pallet
 func SetArch(strArch string) Machine {
     var mc Machine
     switch strArch {
-        case "i8086"       : mc = SetI8086()
-        case "x86"         : mc = SetX86()
-        case "x64"         : mc = SetX64()
-        case "thumb"       : mc = SetArmThumb(false)
-        case "thumbbe"     : mc = SetArmThumb(true)
-        case "arm"         : mc = SetArm(false)
-        case "armbe"       : mc = SetArm(true)
-        case "arm64"       : mc = SetArm64(false)    // TODO: test, fixme: something wrong?
-        //case "arm64be"     : mc = SetArm64(true)     // keystone UNSUPPORTED?, unicorn: supported, fixme: something wrong?
+        case "i8086"       : mc = SetI8086(strArch)
+        case "x86"         : mc = SetX86(strArch)
+        case "x64"         : mc = SetX64(strArch)
+        case "thumb"       : mc = SetArmThumb(strArch, false)
+        case "thumbbe"     : mc = SetArmThumb(strArch, true)
+        case "arm"         : mc = SetArm(strArch, false)
+        case "armbe"       : mc = SetArm(strArch, true)
+        case "arm64"       : mc = SetArm64(strArch, false)    // TODO: test, fixme: something wrong?
+        //case "arm64be"     : mc = SetArm64(strArch, true)     // keystone UNSUPPORTED?, unicorn: supported, fixme: something wrong?
 
-        case "mips"        : mc = SetMips(false)
-        case "mipsbe"      : mc = SetMips(true)
-        case "mips64"      : mc = SetMips64(false) // fixme: something wrong?
-        case "mips64be"    : mc = SetMips64(true)  // fixme: something wrong?
-        case "sparc"       : mc = SetSparc(true)   // sparc standard is big-endian
-        case "sparcle"     : mc = SetSparc(false)  // assemble only, unicorn: UNSUPPORTED, keystone: supported
-        case "sparc64"     : mc = SetSparc64(true) // fixme: something wrong?, sparc standard is big-endian, keystone sparc64el does not supported
+        case "mips"        : mc = SetMips(strArch, false)
+        case "mipsbe"      : mc = SetMips(strArch, true)
+        case "mips64"      : mc = SetMips64(strArch, false) // fixme: something wrong?
+        case "mips64be"    : mc = SetMips64(strArch, true)  // fixme: something wrong?
+        case "sparc"       : mc = SetSparc(strArch, true)   // sparc standard is big-endian
+        case "sparcle"     : mc = SetSparc(strArch, false)  // assemble only, unicorn: UNSUPPORTED, keystone: supported
+        case "sparc64"     : mc = SetSparc64(strArch, true) // fixme: something wrong?, sparc standard is big-endian, keystone sparc64el does not supported
         case "ppc",     // big-endian, assemble only
-             "powerpc"     : mc = SetPowerPC(true)
+             "powerpc"     : mc = SetPowerPC(strArch, true)
         case "ppc64",   // assemble only
-             "powerpc64"   : mc = SetPowerPC64(true)
+             "powerpc64"   : mc = SetPowerPC64(strArch, true)
         case "ppc64le", // assemble only
-             "powerpc64le" : mc = SetPowerPC64(false)
+             "powerpc64le" : mc = SetPowerPC64(strArch, false)
         case "sysz",
              "systemz",
-             "systemZ"     : mc = SetSystemZ()
-        //case "m68k"        : mc = arcSetM68k(&asmsh) // unicorn: supported, keystone: UNSUPPORTED
-        default            : mc = SetX86()
+             "systemZ"     : mc = SetSystemZ(strArch)
+        //case "m68k"        : mc = SetM68k(strArch) // unicorn: supported, keystone: UNSUPPORTED
+        default            : mc = SetX86(strArch)
     }
     return mc
 }

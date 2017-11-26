@@ -6,9 +6,9 @@ import (
 )
 
 // sample: mov ecx, 0x20; j1:; inc eax; dec ecx; jnz j1
-func SetX86() Machine {
+func SetX86(strArch string) Machine {
     var mc Machine
-    mc.Prompt = "(x86)> "
+    mc.Prompt = "(" + strArch + ")> "
     mc.bit = 32
     mc.sp = uc.X86_REG_ESP
     mc.bp = uc.X86_REG_EBP

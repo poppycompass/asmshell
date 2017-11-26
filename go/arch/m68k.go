@@ -6,7 +6,7 @@ import (
 )
 
 // keystone is not supported, rasm2 supports only disassembler
-func SetM68k() Machine {
+func SetM68k(strArch string) Machine {
     var mc Machine
     mc.bit = 32
     mc.sp = uc.M68K_REG_A7
@@ -16,7 +16,7 @@ func SetM68k() Machine {
     //mc.ks, _ = keystone.New(keystone.ARCH_ARM, keystone.MODE_ARM + keystone.MODE_BIG_ENDIAN)
     mc.mu, _ = uc.NewUnicorn(uc.ARCH_M68K, uc.MODE_BIG_ENDIAN)
     mc.oldMu, _ = uc.NewUnicorn(uc.ARCH_M68K, uc.MODE_BIG_ENDIAN)
-    mc.Prompt = "(m68k)> "
+    mc.Prompt = "(" + strArch + ")> "
 
     mc.regOrder = []string{
         "d0", "a0", "d1", "a1",
