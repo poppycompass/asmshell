@@ -210,6 +210,14 @@ func (mc Machine) showStatusReg(c *ishell.Context, key string, reg uint64, oldRe
     c.Printf("]")
 }
 
+func (mc Machine) GetRegister(key string) (uint64, error) {
+    return mc.mu.RegRead(mc.regs[key])
+}
+
+func (mc Machine) SetRegister(key string, val uint64) (error) {
+    return mc.mu.RegWrite(mc.regs[key], val)
+}
+
 func (mc Machine) Finalize() {
     mc.ks.Close()
 }
