@@ -38,7 +38,7 @@ func handleNotFound(c *ishell.Context) {
         c.Printf("%s", out)
         return
     }
-    err := mc.Run(c, strings.Join(c.Args, " "))
+    err := mc.IshellRun(c, strings.Join(c.Args, " "))
     if err != nil {
         c.Printf("[-] %s\n", err)
     }
@@ -130,7 +130,7 @@ func register(c *ishell.Context) {
 func run(c *ishell.Context) {
     switch len(c.Args) {
         case 1: // run fragment code
-            err := mc.Run(c, fragList[c.Args[0]])
+            err := mc.IshellRun(c, fragList[c.Args[0]])
             if err != nil {
                 c.Printf("[-] %s, %s\n", c.Args[0], fragList[c.Args[0]])
                 c.Printf("[-] %s\n", err)

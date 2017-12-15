@@ -62,8 +62,8 @@ func SetArch(strArch string) Machine {
     }
     return mc
 }
-// assemble and emulate
-func (mc Machine) Run(c *ishell.Context, mnemonic string) error {
+// assemble and emulate(for ishell)
+func (mc Machine) IshellRun(c *ishell.Context, mnemonic string) error {
     pallet = utils.InitPallet()
     code, err := mc.assemble(mnemonic)
     if err != nil {
@@ -79,6 +79,22 @@ func (mc Machine) Run(c *ishell.Context, mnemonic string) error {
     }
 
     mc.showCtx(c)
+    mc.oldCtx, _ = mc.mu.ContextSave(nil)
+    return nil
+}
+
+// assemble and emulate only does not output
+func (mc Machine) Run(mnemonic string) error {
+    code, err := mc.assemble(mnemonic)
+    if err != nil {
+        return err
+    }
+    if mc.mu == nil { // if unicorn does not supported
+        return nil
+    }
+    if err := mc.emulate(code); err != nil {
+        return err
+    }
     mc.oldCtx, _ = mc.mu.ContextSave(nil)
     return nil
 }
