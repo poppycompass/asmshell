@@ -214,8 +214,16 @@ func (mc Machine) GetRegister(key string) (uint64, error) {
     return mc.mu.RegRead(mc.regs[key])
 }
 
-func (mc Machine) SetRegister(key string, val uint64) (error) {
+func (mc Machine) SetRegister(key string, val uint64) error {
     return mc.mu.RegWrite(mc.regs[key], val)
+}
+
+func (mc Machine) MemRead(addr uint64, size uint64) ([]byte, error) {
+    return mc.mu.MemRead(addr, size)
+}
+
+func (mc Machine) MemWrite(addr uint64, data []byte) error {
+    return mc.mu.MemWrite(addr, data)
 }
 
 func (mc Machine) Finalize() {
