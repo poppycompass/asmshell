@@ -26,7 +26,7 @@ Useful functions
 ## Install
 Needs Go language and unicorn-engine and keystone-engine. 
 
-If you are windows user, you can use [pre-compiled binary](https://github.com/poppycompass/asmshell/prebuild).
+<!-- If you are windows user, you can use [pre-compiled binary](https://github.com/poppycompass/asmshell/prebuild). -->
 
 ### Dependencies
 
