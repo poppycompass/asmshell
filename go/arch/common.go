@@ -65,7 +65,7 @@ func SetArch(strArch string) Machine {
 // assemble and emulate(for ishell)
 func (mc Machine) IshellRun(c *ishell.Context, mnemonic string) error {
     pallet = utils.InitPallet()
-    code, err := mc.assemble(mnemonic)
+    code, err := mc.Assemble(mnemonic)
     if err != nil {
         return err
     }
@@ -74,7 +74,7 @@ func (mc Machine) IshellRun(c *ishell.Context, mnemonic string) error {
     if mc.mu == nil { // if unicorn does not supported
         return nil
     }
-    if err := mc.emulate(code); err != nil {
+    if err := mc.Emulate(code); err != nil {
         return err
     }
 
@@ -85,14 +85,14 @@ func (mc Machine) IshellRun(c *ishell.Context, mnemonic string) error {
 
 // assemble and emulate only does not output
 func (mc Machine) Run(mnemonic string) error {
-    code, err := mc.assemble(mnemonic)
+    code, err := mc.Assemble(mnemonic)
     if err != nil {
         return err
     }
     if mc.mu == nil { // if unicorn does not supported
         return nil
     }
-    if err := mc.emulate(code); err != nil {
+    if err := mc.Emulate(code); err != nil {
         return err
     }
     mc.oldCtx, _ = mc.mu.ContextSave(nil)
@@ -108,7 +108,7 @@ func (mc Machine) assemble(mnemonic string) ([]byte, error) {
     return code, nil
 }
 
-func (mc Machine) emulate(code []byte) error {
+func (mc Machine) Emulate(code []byte) error {
     var (
         opts = unicorn.UcOptions{Timeout:60000000, Count:0} // Timeout is microseconds, now: 60 seconds
         codeEnd uint64

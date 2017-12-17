@@ -55,7 +55,7 @@ func TestXAssemble(t *testing.T) {
     for _, arch := range archList {
         mc = SetArch(arch)
         correct, _ := hex.DecodeString(testCodes[arch][0])
-        code,_ := mc.assemble(testCodes[arch][1])
+        code,_ := mc.Assemble(testCodes[arch][1])
         if !reflect.DeepEqual(code, correct) {
             t.Errorf("[-]: %s(o: %x, x: %x)", arch, correct, code)
         }
@@ -72,7 +72,7 @@ func TestXI8086Emulate(t *testing.T) {
     )
     mc := SetArch(arch)
     code, _ := hex.DecodeString(testCodes[arch][0])
-    if err := mc.emulate(code); err != nil {
+    if err := mc.Emulate(code); err != nil {
         t.Errorf("[-] %s,%s ]", arch, err)
     }
     reg, _ := mc.mu.RegRead(mc.regs[readReg])
@@ -95,7 +95,7 @@ func TestXX86Emulate(t *testing.T) {
     )
     mc := SetArch(arch)
     code, _ := hex.DecodeString(testCodes[arch][0])
-    if err := mc.emulate(code); err != nil {
+    if err := mc.Emulate(code); err != nil {
         t.Errorf("[-] %s,%s ]", arch, err)
     }
     reg, _ := mc.mu.RegRead(mc.regs[readReg])
@@ -118,7 +118,7 @@ func TestXX64Emulate(t *testing.T) {
     )
     mc := SetArch(arch)
     code, _ := hex.DecodeString(testCodes[arch][0])
-    if err := mc.emulate(code); err != nil {
+    if err := mc.Emulate(code); err != nil {
         t.Errorf("[-] %s,%s ]", arch, err)
     }
     reg, _ := mc.mu.RegRead(mc.regs[readReg])
@@ -142,7 +142,7 @@ func TestXMipsEmulate(t *testing.T) {
     )
     mc := SetArch(arch)
     code, _ := hex.DecodeString(testCodes[arch][0])
-    if err := mc.emulate(code); err != nil {
+    if err := mc.Emulate(code); err != nil {
         t.Errorf("[-] %s,%s ]", arch, err)
     }
     reg, _ := mc.mu.RegRead(mc.regs[readReg])
@@ -165,7 +165,7 @@ func TestXMipsbeEmulate(t *testing.T) {
     )
     mc := SetArch(arch)
     code, _ := hex.DecodeString(testCodes[arch][0])
-    if err := mc.emulate(code); err != nil {
+    if err := mc.Emulate(code); err != nil {
         t.Errorf("[-] %s,%s ]", arch, err)
     }
     reg, _ := mc.mu.RegRead(mc.regs[readReg])
@@ -189,7 +189,7 @@ func TestXArmEmulate(t *testing.T) {
     )
     mc := SetArch(arch)
     code, _ := hex.DecodeString(testCodes[arch][0])
-    if err := mc.emulate(code); err != nil {
+    if err := mc.Emulate(code); err != nil {
         t.Errorf("[-] %s,%s ]", arch, err)
     }
     reg, _ := mc.mu.RegRead(mc.regs[readReg])
@@ -212,7 +212,7 @@ func TestXArmbeEmulate(t *testing.T) {
     )
     mc := SetArch(arch)
     code, _ := hex.DecodeString(testCodes[arch][0])
-    if err := mc.emulate(code); err != nil {
+    if err := mc.Emulate(code); err != nil {
         t.Errorf("[-] %s,%s ]", arch, err)
     }
     reg, _ := mc.mu.RegRead(mc.regs[readReg])
@@ -235,7 +235,7 @@ func TestXSparcEmulate(t *testing.T) {
     )
     mc := SetArch(arch)
     code, _ := hex.DecodeString(testCodes[arch][0])
-    if err := mc.emulate(code); err != nil {
+    if err := mc.Emulate(code); err != nil {
         t.Errorf("[-] %s,%s ]", arch, err)
     }
     reg, _ := mc.mu.RegRead(mc.regs[readReg])
@@ -259,7 +259,7 @@ func TestXThumbEmulate(t *testing.T) {
     )
     mc := SetArch(arch)
     code, _ := hex.DecodeString(testCodes[arch][0])
-    if err := mc.emulate(code); err != nil {
+    if err := mc.Emulate(code); err != nil {
         t.Errorf("[-] %s,%s ]", arch, err)
     }
     reg, _ := mc.mu.RegRead(mc.regs[readReg])
@@ -283,7 +283,7 @@ func TestXThumbbeEmulate(t *testing.T) {
     )
     mc := SetArch(arch)
     code, _ := hex.DecodeString(testCodes[arch][0])
-    if err := mc.emulate(code); err != nil {
+    if err := mc.Emulate(code); err != nil {
         t.Errorf("[-] %s,%s ]", arch, err)
     }
     reg, _ := mc.mu.RegRead(mc.regs[readReg])
