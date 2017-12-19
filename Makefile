@@ -1,5 +1,5 @@
 .DEFAULT_GOAL := build
-ALL_TARGETS := go unicorn keystone asmshell
+ALL_TARGETS := go unicorn keystone symlink deps asmshell
 .PHONY: test deps ${ALL_TARGETS}
 
 all: ${ALL_TARGETS}
@@ -64,11 +64,6 @@ keystone:
 	cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=ON -DLLVM_TARGETS_TO_BUILD="all" -G "Unix Makefiles" .. && \
 	sudo make -j2 install
 
-# Go executable targets
-.gopath:
-	mkdir -p .gopath/src/github.com/poppycompass
-	ln -s ../../../../ .gopath/src/github.com/poppycompass/asmshell
-
 LD_LIBRARY_PATH=
 DYLD_LIBRARY_PATH=
 ifneq "$(OS)" "Darwin"
@@ -85,14 +80,17 @@ ifneq ($(wildcard $(DEST)/$(GODIR)/.),)
 	export GOROOT := $(DEST)/$(GODIR)
 endif
 ifneq ($(GOPATH),)
-	export GOPATH := $(GOPATH):$(shell pwd)/.gopath
+	export GOPATH := $(GOPATH)
 else
-	export GOPATH := $(DEST)/gopath:$(shell pwd)/.gopath
+	export GOPATH := $(DEST)/gopath
 endif
 DEPS=$(shell env PATH=$(PATHX) GOROOT=$(GOROOT) GOPATH=$(GOPATH) go list -f '{{join .Deps "\n"}}' ./go/... | grep -v usercorn | grep '\.' | sort -u)
 PKGS=$(shell env PATH=$(PATHX) GOROOT=$(GOROOT) GOPATH=$(GOPATH) go list ./go/... | sort -u | rev | sed -e 's,og/.*$$,,' | rev | sed -e 's,^,github.com/poppycompass/asmshell/go,')
 
-asmshell: .gopath
+symlink:
+	ln -s ../../../../../ deps/gopath/src/github.com/poppycompass
+
+deps: $(DEST)/gopath
 	@echo "go get -u github.com/fatih/color"
 	@sh -c "PATH=$(PATHX) go get -u github.com/fatih/color"
 	@echo "go get -u github.com/jessevdk/go-flags"
@@ -107,6 +105,8 @@ asmshell: .gopath
 	@sh -c "PATH=$(PATHX) go get -u github.com/poppycompass/ishell"
 #	@echo "go get -u github.com/gorilla/websocket"
 #	@sh -c "PATH=$(PATHX) go get -u github.com/gorilla/websocket"
+
+asmshell:
 	@echo "$(GOBUILD) -o asmshell ./go"
 	@sh -c "PATH=$(PATHX) $(GOBUILD) -o asmshell.exe ./go"
 	@echo "Done!"
