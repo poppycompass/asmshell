@@ -67,6 +67,7 @@ keystone:
 # Go executable targets
 .gopath:
 	mkdir -p .gopath/src/github.com/poppycompass
+	ln -s ../../../../ .gopath/src/github.com/poppycompass/asmshell
 
 LD_LIBRARY_PATH=
 DYLD_LIBRARY_PATH=
