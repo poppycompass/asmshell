@@ -99,7 +99,7 @@ func (mc Machine) Run(mnemonic string) error {
     return nil
 }
 
-func (mc Machine) assemble(mnemonic string) ([]byte, error) {
+func (mc Machine) Assemble(mnemonic string) ([]byte, error) {
     // TODO: What is the effect of the second argument(address) of Assemble
     code, cnt, ok := mc.ks.Assemble(mnemonic, 0)
     if !ok || cnt == 0 {
