@@ -54,11 +54,11 @@ TODO
 
 ### x86
 	$ ./asmshell.exe
-![x86 mode](https://github.com/poppycompass/asmshell/blob/master/images/x86.jpg)
+![x86 mode](https://github.com/poppycompass/asmshell/blob/master/images/go_x86.jpg)
 
 ### x64
 	$ ./asmshell.exe -a x64
-![x64 mode](https://github.com/poppycompass/asmshell/blob/master/images/x64.jpg)
+![x64 mode](https://github.com/poppycompass/asmshell/blob/master/images/go_x64.jpg)
 
 
 ## Tutorial
