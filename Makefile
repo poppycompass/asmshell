@@ -65,7 +65,7 @@ keystone:
 	sudo make -j2 install
 
 symlink:
-	ln -s ../../../../../ deps/gopath/src/github.com/poppycompass
+	ln -s ../../../../../ deps/gopath/src/github.com/poppycompass/asmshell
 
 LD_LIBRARY_PATH=
 DYLD_LIBRARY_PATH=
