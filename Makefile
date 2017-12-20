@@ -64,6 +64,9 @@ keystone:
 	cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=ON -DLLVM_TARGETS_TO_BUILD="all" -G "Unix Makefiles" .. && \
 	sudo make -j2 install
 
+symlink:
+	ln -s ../../../../../ deps/gopath/src/github.com/poppycompass
+
 LD_LIBRARY_PATH=
 DYLD_LIBRARY_PATH=
 ifneq "$(OS)" "Darwin"
@@ -86,9 +89,6 @@ else
 endif
 DEPS=$(shell env PATH=$(PATHX) GOROOT=$(GOROOT) GOPATH=$(GOPATH) go list -f '{{join .Deps "\n"}}' ./go/... | grep -v usercorn | grep '\.' | sort -u)
 PKGS=$(shell env PATH=$(PATHX) GOROOT=$(GOROOT) GOPATH=$(GOPATH) go list ./go/... | sort -u | rev | sed -e 's,og/.*$$,,' | rev | sed -e 's,^,github.com/poppycompass/asmshell/go,')
-
-symlink:
-	ln -s ../../../../../ deps/gopath/src/github.com/poppycompass
 
 deps: $(DEST)/gopath
 	@echo "go get -u github.com/fatih/color"
