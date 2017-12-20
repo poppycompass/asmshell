@@ -24,33 +24,27 @@ Useful functions
 	APIs                          : see go/examples
 
 ## Install
-Needs Go language and unicorn-engine and keystone-engine. 
+Go language, unicorn-engine and keystone-engine are necessary, but the installation process is automated with Makefile. 
 
 <!-- If you are windows user, you can use [pre-compiled binary](https://github.com/poppycompass/asmshell/prebuild). -->
 
-### Dependencies
+### Linux/Mac
 
-1. Install [Go(version 1.6 or later)](https://golang.org/dl/) and [CMake](https://cmake.org/download/)
+1. Install [CMake](https://cmake.org/download/)
 
-2. Install unicorn-engine
-
-	`$ git clone https://github.com/unicorn-engine/unicorn`  
-	`$ cd unicorn && ./make.sh`  
-	`$ sudo make install`  
-
-3. Install keystone-engine
-
-	`$ git clone https://github.com/keystone-engine/beta/bindings/go/keystone`  
-	`$ mkdir build && cd build`  
-	`$ ../make-share.sh`  
-	`$ sudo make install`  
-	`$ sudo ldconfig # if you use OSX, "sudo update_dyld_shared_cache"`  
-
-4. Build asmshell
+2. Build asmshell
 
 	`$ git clone https://github.com/poppycompass/asmshell`  
 	`$ cd asmshell && make`  
 	`$ ./asmshell.exe -h`  
+
+If you have already installed go and unicorn, keystone, run this.
+
+	$ make symlink
+
+### Windows
+
+TODO
 
 
 ## Usage
