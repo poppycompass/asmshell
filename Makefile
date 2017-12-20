@@ -84,7 +84,7 @@ ifneq ($(wildcard $(DEST)/$(GODIR)/.),)
 	export GOROOT := $(DEST)/$(GODIR)
 endif
 ifneq ($(GOPATH),)
-	export GOPATH := $(GOPATH)
+	export GOPATH := $(GOPATH):$(DEST)/gopath
 else
 	export GOPATH := $(DEST)/gopath
 endif
