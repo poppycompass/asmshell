@@ -116,7 +116,7 @@ If you have these codes.
 ## Contribution
 I am not an architectual expert. Therefore, I think there are many bugs and strangeness in this program.
 If you want to contribute, please pick up something from our [Github issues](https://github.com/poppycompass/asmshell/issues).
-We also maintain a list of more challenged problems in a TODO.txt.
+We also maintain a list of more challenged problems in a [TODO.txt](https://github.com/poppycompass/asmshell/blob/master/TODO.txt).
 
 
 ## License
