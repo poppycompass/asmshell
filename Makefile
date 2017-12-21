@@ -110,4 +110,9 @@ deps: $(DEST)/gopath
 asmshell:
 	@echo "$(GOBUILD) -o asmshell ./go"
 	@sh -c "PATH=$(PATHX) $(GOBUILD) -o asmshell.exe ./go"
-	@echo "Done!"
+	@echo "Generate 'asmshell.exe'"
+	ifeq "$(OS)" "Darwin"
+		@echo "Please run 'export DYLD_LIBRARY_PATH=$(pwd)/deps/lib' before wake up asmshell.exe"
+	else ifeq "$(OS)" "Linux"
+		@echo ""
+	endif
