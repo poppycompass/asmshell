@@ -55,14 +55,14 @@ unicorn:
 	cd deps/build && \
 	git clone https://github.com/unicorn-engine/unicorn.git && git --git-dir unicorn fetch; \
 	cd unicorn && git clean -fdx && git reset --hard origin/master && \
-	make && sudo make install
+	make && make PREFIX=$(DEST) install
 
 keystone:
 	cd deps/build && \
 	git clone https://github.com/keystone-engine/keystone.git && git --git-dir keystone pull; \
 	cd keystone; git clean -fdx && git reset --hard origin/master; mkdir build && cd build && \
-	cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=ON -DLLVM_TARGETS_TO_BUILD="all" -G "Unix Makefiles" .. && \
-	sudo make -j2 install
+	cmake -DCMAKE_INSTALL_PREFIX=$(DEST) -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=ON -DLLVM_TARGETS_TO_BUILD="all" -G "Unix Makefiles" .. && \
+	make -j2 install
 
 symlink:
 	mkdir -p deps/gopath/src/github.com/poppycompass
