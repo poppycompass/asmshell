@@ -40,7 +40,7 @@ Go language, unicorn-engine and keystone-engine are necessary, but the installat
 
 If you have already installed go and unicorn, keystone, run this.
 
-	$ make symlink
+	$ make symlink deps asmshell
 
 ### Windows
 
