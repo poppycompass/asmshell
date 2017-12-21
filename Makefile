@@ -111,8 +111,9 @@ asmshell:
 	@echo "$(GOBUILD) -o asmshell ./go"
 	@sh -c "PATH=$(PATHX) $(GOBUILD) -o asmshell.exe ./go"
 	@echo "Generate 'asmshell.exe'"
-	ifeq "$(OS)" "Darwin"
-		@echo "Please run 'export DYLD_LIBRARY_PATH=$(DYLD_LIBRARY_PATH):$(DEST)/lib' before wake up asmshell.exe"
-	else ifeq "$(OS)" "Linux"
-		@echo "Please run 'export LD_LIBRARY_PATH=$(LD_LIBRARY_PATH):$(DEST)/lib' before wake up asmshell.exe"
-	endif
+
+ifeq "$(OS)" "Darwin"
+	@echo "Please run 'export DYLD_LIBRARY_PATH=$${DYLD_LIBRARY_PATH}:$$(pwd)/deps/lib' before wake up asmshell.exe"
+else ifeq "$(OS)" "Linux"
+	@echo "Please run 'export LD_LIBRARY_PATH=$${LD_LIBRARY_PATH}:$$(pwd)/deps/lib' before wake up asmshell.exe"
+endif
