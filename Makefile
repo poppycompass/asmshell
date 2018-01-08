@@ -104,6 +104,8 @@ deps: $(DEST)/gopath
 	@sh -c "PATH=$(PATHX) go get -u github.com/keystone-engine/keystone/bindings/go/keystone"
 	@echo "go get -u github.com/poppycompass/ishell"
 	@sh -c "PATH=$(PATHX) go get -u github.com/poppycompass/ishell"
+	@echo "go get -u github.com/bnagy/gapstone"
+	@sh -c "PATH=$(PATHX) go get -u github.com/bnagy/gapstone"
 #	@echo "go get -u github.com/gorilla/websocket"
 #	@sh -c "PATH=$(PATHX) go get -u github.com/gorilla/websocket"
 
