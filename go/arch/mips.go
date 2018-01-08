@@ -3,6 +3,7 @@ package arch
 import (
     "github.com/keystone-engine/keystone/bindings/go/keystone"
     uc "github.com/unicorn-engine/unicorn/bindings/go/unicorn"
+    "github.com/bnagy/gapstone"
 )
 
 // sample code: ori $at, $at, 0x3456
@@ -17,10 +18,18 @@ func SetMips(strArch string, bigEndian bool) Machine {
         mc.ks, _ = keystone.New(keystone.ARCH_MIPS, keystone.MODE_MIPS32 + keystone.MODE_BIG_ENDIAN)
         mc.mu, _ = uc.NewUnicorn(uc.ARCH_MIPS, uc.MODE_MIPS32 + uc.MODE_BIG_ENDIAN)
         mc.oldMu, _ = uc.NewUnicorn(uc.ARCH_MIPS, uc.MODE_MIPS32 + uc.MODE_BIG_ENDIAN)
+        mc.cs, _ = gapstone.New(
+            gapstone.CS_ARCH_MIPS,
+            gapstone.CS_MODE_MIPS32 + gapstone.CS_MODE_BIG_ENDIAN,
+        )
     } else {
         mc.ks, _ = keystone.New(keystone.ARCH_MIPS, keystone.MODE_MIPS32)
         mc.mu, _ = uc.NewUnicorn(uc.ARCH_MIPS, uc.MODE_MIPS32 + uc.MODE_LITTLE_ENDIAN)
         mc.oldMu, _ = uc.NewUnicorn(uc.ARCH_MIPS, uc.MODE_MIPS32 + uc.MODE_LITTLE_ENDIAN)
+        mc.cs, _ = gapstone.New(
+            gapstone.CS_ARCH_MIPS,
+            gapstone.CS_MODE_MIPS32 + gapstone.CS_MODE_LITTLE_ENDIAN,
+        )
     }
     mc.Prompt = "(" + strArch + ")> "
     mc.mu.MemMap(0x0000, 0x200000)

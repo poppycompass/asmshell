@@ -3,6 +3,7 @@ package arch
 import (
     "github.com/keystone-engine/keystone/bindings/go/keystone"
     uc "github.com/unicorn-engine/unicorn/bindings/go/unicorn"
+    "github.com/bnagy/gapstone"
 )
 
 // sample: inc ax; push ax; pop dx
@@ -21,6 +22,11 @@ func SetI8086(strArch string) Machine {
     mc.mu.MemMap(0x0000, 0x2000)
     mc.mu.RegWrite(mc.sp, 0x1000)
     mc.mu.RegWrite(mc.bp, 0x8000)
+
+    mc.cs, _ = gapstone.New(
+        gapstone.CS_ARCH_X86,
+        gapstone.CS_MODE_16,
+    )
 
     mc.oldCtx, _ = mc.mu.ContextSave(nil)
     mc.oldMu, _ = uc.NewUnicorn(uc.ARCH_X86, uc.MODE_16)

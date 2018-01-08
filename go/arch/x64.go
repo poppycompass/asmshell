@@ -3,6 +3,7 @@ package arch
 import (
     "github.com/keystone-engine/keystone/bindings/go/keystone"
     uc "github.com/unicorn-engine/unicorn/bindings/go/unicorn"
+    "github.com/bnagy/gapstone"
 )
 
 // sample 
@@ -16,6 +17,11 @@ func SetX64(strArch string) Machine {
 
     mc.ks, _ = keystone.New(keystone.ARCH_X86, keystone.MODE_64)
     mc.ks.Option(keystone.OPT_SYNTAX, keystone.OPT_SYNTAX_INTEL)
+
+    mc.cs, _ = gapstone.New(
+        gapstone.CS_ARCH_X86,
+        gapstone.CS_MODE_64,
+    )
 
     mc.mu, _ = uc.NewUnicorn(uc.ARCH_X86, uc.MODE_64)
     mc.mu.MemMap(0x0000, 0x200000)

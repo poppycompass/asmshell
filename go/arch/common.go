@@ -7,6 +7,7 @@ import (
     "github.com/poppycompass/asmshell/go/utils"
     "github.com/keystone-engine/keystone/bindings/go/keystone"
     "github.com/unicorn-engine/unicorn/bindings/go/unicorn"
+    "github.com/bnagy/gapstone"
 )
 
 var FMT = []string{"0x%04x", "0x%08x", "0x%016x", "0x%032x"}
@@ -16,6 +17,7 @@ type Machine struct {
     mu unicorn.Unicorn
     oldMu unicorn.Unicorn
     ks *keystone.Keystone
+    cs gapstone.Engine
 
     bit int // 16, 32, 64, maybe 128?
     sp int  // stack pointer
@@ -106,6 +108,18 @@ func (mc Machine) Assemble(mnemonic string) ([]byte, error) {
         return nil, fmt.Errorf("Error: assemble instruction(%s)", mnemonic)
     }
     return code, nil
+}
+
+func (mc Machine) DisAssemble(code []byte) (string, error) {
+    insns, err := mc.cs.Disasm(code, uint64(mc.start), 0)
+    if err != nil {
+        return "", err
+    }
+    var mnemonics = ""
+    for _, insn := range insns {
+        mnemonics += fmt.Sprintf("%s %s\n", insn.Mnemonic, insn.OpStr)
+    }
+    return mnemonics, nil
 }
 
 func (mc Machine) Emulate(code []byte) error {
@@ -244,4 +258,5 @@ func (mc Machine) MemWrite(addr uint64, data []byte) error {
 
 func (mc Machine) Finalize() {
     mc.ks.Close()
+    mc.cs.Close()
 }

@@ -117,7 +117,11 @@ func register(c *ishell.Context) {
                  c.Printf("Error: read '%s'\n", c.Args[1])
                  return
              }
-             fragList[c.Args[0]] = string(buf)
+             if strings.HasSuffix(c.Args[1], ".bin") { // if file has binary code, TODO: error check
+                 fragList[c.Args[0]], _ = mc.DisAssemble(buf)
+             } else {
+                 fragList[c.Args[0]] = string(buf)
+             }
         default : // show help
              c.Println("Usage: [fragment/f] [<word>|file <file>|show <word>|run <word>]")
              c.Println("register: fragment <word> or fragment <word> <file>\n")
@@ -127,6 +131,7 @@ func register(c *ishell.Context) {
     c.Printf("'%s' is registered\n", c.Args[0])
     c.SetPrompt(mc.Prompt)
 }
+
 func run(c *ishell.Context) {
     switch len(c.Args) {
         case 1: // run fragment code

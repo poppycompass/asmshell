@@ -3,6 +3,7 @@ package arch
 import (
     "github.com/keystone-engine/keystone/bindings/go/keystone"
     uc "github.com/unicorn-engine/unicorn/bindings/go/unicorn"
+    "github.com/bnagy/gapstone"
 )
 
 // 32bit only
@@ -23,10 +24,19 @@ func SetSparc(strArch string, bigEndian bool) Machine {
         mc.mu.RegWrite(mc.sp, 0x100000)
         mc.mu.RegWrite(mc.bp, 0x80000)
         mc.oldCtx, _ = mc.mu.ContextSave(nil)
+
+        mc.cs, _ = gapstone.New(
+            gapstone.CS_ARCH_SPARC,
+            gapstone.CS_MODE_BIG_ENDIAN,
+        )
     } else {
         mc.ks, _ = keystone.New(keystone.ARCH_SPARC, keystone.MODE_SPARC32 + keystone.MODE_LITTLE_ENDIAN)
         mc.mu = nil
         mc.oldMu = nil
+        mc.cs, _ = gapstone.New(
+            gapstone.CS_ARCH_SPARC,
+            gapstone.CS_MODE_LITTLE_ENDIAN,
+        )
     }
     mc.Prompt = "(" + strArch + ")> "
 

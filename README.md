@@ -1,9 +1,9 @@
 Assembler Shell(asmshell)
 ==============
 
-Assembler([Keystone-Engine](http://www.keystone-engine.org/)) + Emulator([Unicorn-Engine](http://www.unicorn-engine.org/)) + interactive cli library([ishell](https://github.com/abiosoft/ishell)) = Text-base Assembler Emulator
+Assembler([Keystone-Engine](http://www.keystone-engine.org/)) + Emulator([Unicorn-Engine](http://www.unicorn-engine.org/)) + interactive cli library([ishell](https://github.com/abiosoft/ishell)) = Text-based Assembler Emulator
 
-Assembler Shell(asmshell) is a Text-base assembler emulator.
+Assembler Shell(asmshell) is a Text-based assembler emulator.
 
 You can easily check the execution result of the assembler.
 
@@ -38,7 +38,7 @@ Go language, unicorn-engine and keystone-engine are necessary, but the installat
 	`$ cd asmshell && make`  
 	`$ ./asmshell.exe -h`  
 
-If you have already installed go and unicorn, keystone, run this.
+If you have already installed go and unicorn, keystone and capstone, run this.
 
 	$ make symlink deps asmshell
 
@@ -63,7 +63,7 @@ TODO
 
 ## Tutorial
 
-### Fragment Commands(Example: Symbol, encrypt)
+### Fragment Commands(Example: Symbol, Read file)
 You can register mnemonic fragments.
 
 	$ ./asmshell.exe
@@ -82,7 +82,7 @@ You can register mnemonic fragments.
 	    jnz l1
 	(x86)> fragment run symbol
 
-If you have these codes.
+Read from file.
 
 	$ cat xor.txt
 	xor ax, cx
@@ -91,6 +91,10 @@ If you have these codes.
 	(x86)> f s encrypt           # 'f s' is alias of 'fragment show'
 	(x86)> f r encrypt           # fragment run encrypt
 
+If you want to register binary code, change filename to "<filename>.bin".(".bin" suffix is very important)  
+
+	(x86)> f test code.bin # disassemble code.bin and register
+	(x86)> f s test
 
 ### Change Architecture
 

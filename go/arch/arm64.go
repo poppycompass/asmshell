@@ -3,6 +3,7 @@ package arch
 import (
     "github.com/keystone-engine/keystone/bindings/go/keystone"
     uc "github.com/unicorn-engine/unicorn/bindings/go/unicorn"
+    "github.com/bnagy/gapstone"
 )
 
 // 'AArch64'? ref: bindings/vb6/mKeystone.bas:ARM-64, also called AArch64
@@ -20,10 +21,20 @@ func SetArm64(strArch string, bigEndian bool) Machine {
         mc.ks, _ = keystone.New(keystone.ARCH_ARM64, keystone.MODE_LITTLE_ENDIAN)
         mc.mu, _ = uc.NewUnicorn(uc.ARCH_ARM64, uc.MODE_ARM + uc.MODE_BIG_ENDIAN)
         mc.oldMu, _ = uc.NewUnicorn(uc.ARCH_ARM64, uc.MODE_ARM + uc.MODE_BIG_ENDIAN)
+
+        mc.cs, _ = gapstone.New(
+            gapstone.CS_ARCH_ARM64,
+            gapstone.CS_MODE_BIG_ENDIAN,
+        )
     } else {
         mc.ks, _ = keystone.New(keystone.ARCH_ARM64, keystone.MODE_LITTLE_ENDIAN)
         mc.mu, _ = uc.NewUnicorn(uc.ARCH_ARM64, uc.MODE_ARM + uc.MODE_LITTLE_ENDIAN)
         mc.oldMu, _ = uc.NewUnicorn(uc.ARCH_ARM64, uc.MODE_ARM + uc.MODE_LITTLE_ENDIAN)
+
+        mc.cs, _ = gapstone.New(
+            gapstone.CS_ARCH_ARM64,
+            gapstone.CS_MODE_LITTLE_ENDIAN,
+        )
     }
     mc.Prompt = "(" + strArch + ")> "
 

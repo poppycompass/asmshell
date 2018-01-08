@@ -3,6 +3,7 @@ package arch
 import (
 //    "github.com/keystone-engine/keystone/bindings/go/keystone"
     uc "github.com/unicorn-engine/unicorn/bindings/go/unicorn"
+//    "github.com/bnagy/gapstone"
 )
 
 // keystone is not supported, rasm2 supports only disassembler
@@ -16,6 +17,7 @@ func SetM68k(strArch string) Machine {
     //mc.ks, _ = keystone.New(keystone.ARCH_ARM, keystone.MODE_ARM + keystone.MODE_BIG_ENDIAN)
     mc.mu, _ = uc.NewUnicorn(uc.ARCH_M68K, uc.MODE_BIG_ENDIAN)
     mc.oldMu, _ = uc.NewUnicorn(uc.ARCH_M68K, uc.MODE_BIG_ENDIAN)
+    //mc.cs = nil
     mc.Prompt = "(" + strArch + ")> "
 
     mc.regOrder = []string{
