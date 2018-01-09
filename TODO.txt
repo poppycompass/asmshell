@@ -6,3 +6,4 @@ HTTP support
 ARM: vector support
 Intel/Arm/Mips: float register, 128bit register
 enable call libc functions
+abstract disassemble

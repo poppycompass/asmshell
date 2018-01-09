@@ -1,5 +1,5 @@
 .DEFAULT_GOAL := build
-ALL_TARGETS := go unicorn keystone symlink deps asmshell
+ALL_TARGETS := go unicorn keystone capstone symlink deps asmshell
 .PHONY: test deps ${ALL_TARGETS}
 
 all: ${ALL_TARGETS}
@@ -63,6 +63,13 @@ keystone:
 	cd keystone; git clean -fdx && git reset --hard origin/master; mkdir build && cd build && \
 	cmake -DCMAKE_INSTALL_PREFIX=$(DEST) -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=ON -DLLVM_TARGETS_TO_BUILD="all" -G "Unix Makefiles" .. && \
 	make -j2 install
+
+capstone:
+	cd deps/build && \
+	git clone https://github.com/aquynh/capstone && \
+	cd capstone && mkdir build && cd build && \
+	cmake -DCMAKE_INSTALL_PREFIX=$(DEST) .. && \
+	make && make install
 
 symlink:
 	mkdir -p deps/gopath/src/github.com/poppycompass
