@@ -30,10 +30,11 @@ Go language, unicorn-engine and keystone-engine are necessary, but the installat
 
 ### Linux/Mac
 
-1. Install [CMake](https://cmake.org/download/)
+1. Install [CMake](https://cmake.org/download/)/Python(2.X,virtualenv)/make/Compiler(gcc,g++)/Git
 
 2. Build asmshell
 
+	`$ virtualenv2 ENV && . ENV/bin/activate`
 	`$ git clone https://github.com/poppycompass/asmshell`  
 	`$ cd asmshell && make`  
 	`$ ./asmshell.exe -h`  
