@@ -1,6 +1,6 @@
 .DEFAULT_GOAL := build
 ALL_TARGETS := go unicorn keystone capstone symlink deps asmshell
-.PHONY: test deps ${ALL_TARGETS}
+.PHONY: clean ${ALL_TARGETS}
 
 all: ${ALL_TARGETS}
 
@@ -44,7 +44,7 @@ endif
 
 go:
 	echo $(GOMSG)
-	[ -n $(GOURL) ] && \
+	-[ -n $(GOURL) -a ! -e deps/build/go-dist.tar.gz ] && \
 	mkdir -p deps/build deps/gopath && \
 	cd deps/build && \
 	curl -o go-dist.tar.gz "$(GOURL)" && \
@@ -52,40 +52,44 @@ go:
 	mv go $(GODIR)
 
 unicorn:
-	cd deps/build && \
+	-cd deps/build && [ ! -e unicorn ] && \
 	git clone https://github.com/unicorn-engine/unicorn.git && git --git-dir unicorn fetch; \
 	cd unicorn && git clean -fdx && git reset --hard origin/master && \
 	make && make PREFIX=$(DEST) install
 
 keystone:
-	cd deps/build && \
+	-cd deps/build && [ ! -e keystone ] && \
 	git clone https://github.com/keystone-engine/keystone.git && git --git-dir keystone pull; \
 	cd keystone; git clean -fdx && git reset --hard origin/master; mkdir build && cd build && \
 	cmake -DCMAKE_INSTALL_PREFIX=$(DEST) -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=ON -DLLVM_TARGETS_TO_BUILD="all" -G "Unix Makefiles" .. && \
 	make -j2 install
 
 capstone:
-	cd deps/build && \
+	-cd deps/build && [ ! -e capstone ] && \
 	git clone https://github.com/aquynh/capstone && \
-	cd capstone && mkdir build && cd build && \
+	cd capstone && git checkout 3.0.5 && mkdir build && cd build && \
 	cmake -DCMAKE_INSTALL_PREFIX=$(DEST) .. && \
 	make && make install
 
 symlink:
 	mkdir -p deps/gopath/src/github.com/poppycompass
-	ln -s ../../../../../ deps/gopath/src/github.com/poppycompass/asmshell
+	-ln -s ../../../../../ deps/gopath/src/github.com/poppycompass/asmshell
 
 LD_LIBRARY_PATH=
 DYLD_LIBRARY_PATH=
+C_INCLUDE_PATH=
+C_PLUS_INCLUDE_PATH=
 ifneq "$(OS)" "Darwin"
-	export LD_LIBRARY_PATH := "$(LD_LIBRARY_PATH):$(DEST)/lib"
+	export DYLD_LIBRARY_PATH := "$(DEST)/lib:$(DEST)/lib64"
 else
-	export DYLD_LIBRARY_PATH := "$(DYLD_LIBRARY_PATH):$(DEST)/lib"
+	export LD_LIBRARY_PATH := "$(DEST)/lib:$(DEST)/lib64"
 endif
 GOBUILD := go build -i
 PATHX := '$(DEST)/$(GODIR)/bin:$(PATH)'
 export CGO_CFLAGS = -I$(DEST)/include
-export CGO_LDFLAGS = -L$(DEST)/lib
+export CGO_LDFLAGS = -L$(DEST)/lib -L$(DEST)/lib64
+export C_INCLUDE_PATH := "$(DEST)/include"
+export CPLUS_INCLUDE_PATH := "$(DEST)/include"
 
 ifneq ($(wildcard $(DEST)/$(GODIR)/.),)
 	export GOROOT := $(DEST)/$(GODIR)
@@ -122,7 +126,7 @@ asmshell:
 	@echo "Generate 'asmshell.exe'"
 
 ifeq "$(OS)" "Darwin"
-	@echo "Please run 'export DYLD_LIBRARY_PATH=$${DYLD_LIBRARY_PATH}:$$(pwd)/deps/lib' before wake up asmshell.exe"
+	@echo "Please run 'export DYLD_LIBRARY_PATH=$${DYLD_LIBRARY_PATH}:$$(pwd)/deps/lib:$$(pwd)/deps/lib64' before wake up asmshell.exe"
 else ifeq "$(OS)" "Linux"
-	@echo "Please run 'export LD_LIBRARY_PATH=$${LD_LIBRARY_PATH}:$$(pwd)/deps/lib' before wake up asmshell.exe"
+	@echo "Please run 'export LD_LIBRARY_PATH=$${LD_LIBRARY_PATH}:$$(pwd)/deps/lib:$$(pwd)/deps/lib64' before wake up asmshell.exe"
 endif
